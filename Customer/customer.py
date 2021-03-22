@@ -129,7 +129,7 @@ def add_customer():
     ), 201
 
 
-#delete customer 
+#delete customer d
 @app.route("/customers/<string:id>", methods=['DELETE'])
 def delete_customers(id):
     cust=Customer.query.filter_by(customer_id=id).first()
@@ -159,3 +159,6 @@ def delete_customers(id):
 if __name__ == '__main__':
     print("This is flask for " + os.path.basename(__file__) + ": manage customers")
     app.run(host='0.0.0.0', port=5002, debug=True)
+
+
+######
