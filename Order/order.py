@@ -43,8 +43,10 @@ class Order(db.Model):
             'c_phone_number': self.c_phone_number,
             'driver_id': self.driver_id,
             'd_phone_number': self.d_phone_number,
+            'date_time': self.date_time,
             'pickup_location': self.pickup_location,
             'destination': self.destination,
+            'status': self.status,
             'price': self.price
         }
 
@@ -145,6 +147,7 @@ def create_order():
 def update_order(order_id):
     try:
         order = Order.query.filter_by(order_id=order_id).first()
+
         if not order:
             return jsonify(
                 {
@@ -155,23 +158,22 @@ def update_order(order_id):
                     "message": "Order not found."
                 }
             ), 404
-        print(order.driver_id)
         # update status
         data = request.get_json()
-        if data['driver_id']:
-            order.driver_id = data['driver_id']
-        if data['d_phone_number']:
-            order.d_phone_number = data['d_phone_number']
+        print(data)
+        # if data['driver_id']:
+        #     order.driver_id = data['driver_id']
+        # if data['d_phone_number']:
+        #     order.d_phone_number = data['d_phone_number']
         if data['status']:
             order.status = data['status']
-
-        db.session.commit()
-        return jsonify(
-            {
-                "code": 200,
-                "data": order.json()
-            }
-        ), 200
+            db.session.commit()
+            return jsonify(
+                {
+                    "code": 200,
+                    "data": order.json()
+                }
+            ), 200
 
     except Exception as e:
         return jsonify(
