@@ -121,6 +121,7 @@ def processCreateOrder(order):
             'destination': destination,
             'price': price
         })
+        print('order_result:', order_result)
         # Check the order result;
         # if a failure, send it to the error microservice.
         code = order_result['code']
