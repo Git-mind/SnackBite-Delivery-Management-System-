@@ -29,7 +29,7 @@ def ConfirmDelivery(driverid):
 
 # TODO:
 # return json responses instead of string for the routes
-
+# add the telegram bot api for this 
 
 
 #route for webhook for telegram server updates
