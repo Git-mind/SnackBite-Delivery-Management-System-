@@ -63,7 +63,6 @@ CREATE TABLE IF NOT EXISTS `driver` (
 -- Dumping data for table `driver`
 --
 
- p
 
 
 -- --------------------------------------------------------
@@ -135,7 +134,7 @@ INSERT INTO `error` (`error_name`, `customer_id`) VALUES
 
 CREATE TABLE IF NOT EXISTS `order` (
   `order_id` int(11) NOT NULL AUTO_INCREMENT,
-  `customer_id` int(11) NOT NULL,
+  `customer_id` VARCHAR(100) NOT NULL,
   `driver_id` int(11) NOT NULL,
   `date_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `pickup_location` varchar(100) NOT NULL,

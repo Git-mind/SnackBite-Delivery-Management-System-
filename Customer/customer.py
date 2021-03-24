@@ -5,7 +5,7 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_cors import CORS
 
 app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = environ.get('dbURL') or 'mysql+mysqlconnector://root@localhost:3306/customer'
+app.config['SQLALCHEMY_DATABASE_URI'] = environ.get('dbURL') or 'mysql+mysqlconnector://root@localhost:3308/customer'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['SQLALCHEMY_ENGINE_OPTIONS'] = {'pool_recycle': 299}
 
@@ -54,21 +54,23 @@ def getAllCustomers():
 #check if customer id is present in the database 
 #return true if cust has signed up 
 #returns false if cust has not signed up 
-@app.route("/customers/<string:id>")
-def check_if_customer_exists(id):
-    cust= Customer.query.filter_by(customer_id=id).first()
-    print(cust)
-    if cust:
+@app.route("/customers/<string:customer_id>")
+def find_by_customer_id(customer_id):
+    customer = Customer.query.filter_by(customer_id=customer_id).first()
+    if customer:
         return jsonify(
             {
                 "code": 200,
-                "data": True
+                "data": customer.json()
             }
         )
     return jsonify(
         {
             "code": 404,
-            "message": False
+            "data": {
+                "customer_id": customer_id
+            },
+            "message": "Customer not found."
         }
     ), 404
 

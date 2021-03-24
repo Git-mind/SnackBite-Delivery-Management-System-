@@ -2,7 +2,6 @@ from invokes import invoke_http
 
 url="http://localhost:5002/customers"
 
-
 #get all customers 
 def get_all_customers():
     new_url =f"{url}/get_all_customers"
@@ -10,6 +9,12 @@ def get_all_customers():
     print(results)
     print("invocation is a success")
 
+#get customer details
+def find_by_customer_id(customer_id):
+    new_url=f"{url}/{customer_id}"
+    results=invoke_http(new_url,method='GET')
+    print(results)
+    print("invocation is a success")
 
 #check if user id is present on the database 
 def is_customer_exists():
@@ -41,3 +46,4 @@ def delete_customer():
     results=invoke_http(new_url,method='DELETE')
     print(results)
 
+print(find_by_customer_id(1))

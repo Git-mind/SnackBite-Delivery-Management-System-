@@ -15,7 +15,7 @@ import json
 
 app = Flask(__name__)
 # 3308 port used here, please alter to 3306 if necessary 
-app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+mysqlconnector://root@localhost:3308/snackbite'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+mysqlconnector://root@localhost:3308/driver'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['SQLALCHEMY_ENGINE_OPTIONS'] = {'pool_recycle': 299}
 
@@ -26,7 +26,7 @@ CORS(app)
 class Driver(db.Model):
     __tablename__ = 'driver'
 
-    driver_id = db.Column(db.Integer, primary_key=True)
+    order_id = db.Column(db.Integer, primary_key=True)
     driver_name = db.Column(db.String(100), nullable=False)
     phone_number = db.Column(db.Integer, nullable=False)
 
