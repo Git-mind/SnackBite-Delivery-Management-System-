@@ -25,6 +25,9 @@
                 <p>
                     <a href="./landing-page.html" type="submit" class="btn btn-danger">Log Out</a>
                 </p>
+                <p>
+                    <button @click="find_by_customer_id" class="btn btn-primary">Refresh order list</button>
+                </p>
                 <table class="table table-striped" v-if="hasOrders">
                     <!-- <table class="table table-striped"> -->
                     <thead>
