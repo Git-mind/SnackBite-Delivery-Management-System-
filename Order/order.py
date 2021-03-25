@@ -29,6 +29,7 @@ class Order(db.Model):
     customer_id = db.Column(db.String(100), nullable=False)
     c_phone_number = db.Column(db.Integer, nullable=False)
     driver_id = db.Column(db.Integer, nullable=True)
+    driver_name = db.Column(db.String(100), nullable=True)
     d_phone_number = db.Column(db.Integer, nullable=True)
     date_time = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
     pickup_location = db.Column(db.String(100), nullable=False)
@@ -42,6 +43,7 @@ class Order(db.Model):
             'customer_id': self.customer_id,
             'c_phone_number': self.c_phone_number,
             'driver_id': self.driver_id,
+            'driver_name': self.driver_name,
             'd_phone_number': self.d_phone_number,
             'date_time': self.date_time,
             'pickup_location': self.pickup_location,
@@ -108,6 +110,26 @@ def find_by_order_id(order_id):
         }
     ), 404
 
+@app.route("/order/customer/<string:customer_id>")
+def find_by_customer_id(customer_id):
+    orderlist = Order.query.filter_by(customer_id=customer_id).all()
+    # orderlist = Order.query.all()
+    if len(orderlist):
+        return jsonify(
+            {
+                "code": 200,
+                "data": {
+                    "orders": [order.json() for order in orderlist]
+                }
+            }
+        )
+    return jsonify(
+        {
+            "code": 404,
+            "message": "There are no orders"
+        }
+    ), 404
+
 @app.route("/order", methods=['POST'])
 def create_order():
     customer_id = request.json.get('customer_id')
@@ -161,10 +183,12 @@ def update_order(order_id):
         # update status
         data = request.get_json()
         print(data)
-        # if data['driver_id']:
-        #     order.driver_id = data['driver_id']
-        # if data['d_phone_number']:
-        #     order.d_phone_number = data['d_phone_number']
+        if data['driver_id']:
+            order.driver_id = data['driver_id']
+        if data['driver_name']:
+            order.driver_name = data['driver_name']
+        if data['d_phone_number']:
+            order.d_phone_number = data['d_phone_number']
         if data['status']:
             order.status = data['status']
             db.session.commit()

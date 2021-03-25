@@ -7,6 +7,7 @@ CREATE TABLE IF NOT EXISTS `order` (
   `customer_id` VARCHAR(100) NOT NULL,
   `c_phone_number` int NOT NULL,
   `driver_id` int(11),
+  `driver_name` VARCHAR(100),
   `d_phone_number` int,
   `date_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `pickup_location` varchar(100) NOT NULL,

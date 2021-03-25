@@ -7,7 +7,7 @@ from os import environ
 import requests
 from invokes import invoke_http
 
-import amqp_setup
+# import amqp_setup
 import pika
 import json
 
@@ -73,8 +73,8 @@ def processCreateOrder(order):
 
         # invoke_http(error_URL, method="POST", json=price_result)
         message = json.dumps(price_result)
-        amqp_setup.channel.basic_publish(exchange=amqp_setup.exchangename, routing_key="pricing.error", 
-            body=message, properties=pika.BasicProperties(delivery_mode = 2)) 
+        # amqp_setup.channel.basic_publish(exchange=amqp_setup.exchangename, routing_key="pricing.error", 
+        #     body=message, properties=pika.BasicProperties(delivery_mode = 2)) 
 
         # make message persistent within the matching queues until it is received by some receiver 
         # (the matching queues have to exist and be durable and bound to the exchange)
@@ -132,8 +132,8 @@ def processCreateOrder(order):
             print('\n\n-----Publishing the (order error) message with routing_key=order.error-----')
 
             # invoke_http(error_URL, method="POST", json=order_result)
-            amqp_setup.channel.basic_publish(exchange=amqp_setup.exchangename, routing_key="order.error", 
-                body=message, properties=pika.BasicProperties(delivery_mode = 2))
+            # amqp_setup.channel.basic_publish(exchange=amqp_setup.exchangename, routing_key="order.error", 
+            #     body=message, properties=pika.BasicProperties(delivery_mode = 2))
 
             print("\nShipping status ({:d}) published to the RabbitMQ Exchange:".format(
                 code), order_result)
@@ -153,8 +153,8 @@ def processCreateOrder(order):
             print('\n\n-----Publishing the (order info) message with routing_key=order.info-----')        
 
             # invoke_http(activity_log_URL, method="POST", json=order_result)            
-            amqp_setup.channel.basic_publish(exchange=amqp_setup.exchangename, routing_key="order.info", 
-                body=message)
+            # amqp_setup.channel.basic_publish(exchange=amqp_setup.exchangename, routing_key="order.info", 
+            #     body=message)
         
         print("\nOrder published to RabbitMQ Exchange.\n")
         # - reply from the invocation is not used;
