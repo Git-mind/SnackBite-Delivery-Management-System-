@@ -8,6 +8,7 @@ CREATE TABLE IF NOT EXISTS `customer` (
     `customer_name` VARCHAR(100) NOT NULL,
     `phone_number` INT NOT NULL,
     `credit_card`  VARCHAR(100) NOT NULL,
+    `tele_id`  VARCHAR(100) NOT NULL,
     CONSTRAINT customer_id_pk PRIMARY KEY (`customer_id`)
 )  ENGINE=INNODB;
 
