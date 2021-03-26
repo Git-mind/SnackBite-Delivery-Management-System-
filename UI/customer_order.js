@@ -52,6 +52,35 @@ var app = new Vue({
                 });
 
         },
+        find_by_customer_id_status: function (status) {
+            // on Vue instance created, load the book list
+            const response =
+                // fetch(order_URL)
+                fetch(order_URL + "/customer/" + this.customer_id + "&" + status)
+                .then(response => response.json())
+                .then(data => {
+                    console.log(response);
+                    if (data.code === 404) {
+                        // no book in db
+                        this.message = data.message;
+                    } else {
+                        console.log(data)
+                        msg = "";
+                        if (status == "Cancelled"){
+                            msg = "cancelled";
+                        }
+                        this.orders = data.data.orders;
+                        this.message = "You have " + this.orders.length + " "+ msg + " food orders"
+                    }
+                })
+                .catch(error => {
+                    // Errors when calling the service; such as network error, 
+                    // service offline, etc
+                    console.log(this.message + error);
+
+                });
+
+        },
         find_by_order_id: function (order_id) {
             // on Vue instance created, load the book list
             const response =

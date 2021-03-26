@@ -130,6 +130,26 @@ def find_by_customer_id(customer_id):
         }
     ), 404
 
+@app.route("/order/customer/<string:customer_id>&<string:status>")
+def find_by_customer_id_status(customer_id,status):
+    orderlist = Order.query.filter_by(customer_id=customer_id, status=status).all()
+    # orderlist = Order.query.all()
+    if len(orderlist):
+        return jsonify(
+            {
+                "code": 200,
+                "data": {
+                    "orders": [order.json() for order in orderlist]
+                }
+            }
+        )
+    return jsonify(
+        {
+            "code": 404,
+            "message": "There are no orders"
+        }
+    ), 404
+
 # @app.route("/order/delete/<string:order_id>", methods=['GET'])
 # def delete_order(order_id): 
 #     order = Order.query.filter_by(order_id=order_id).delete()
