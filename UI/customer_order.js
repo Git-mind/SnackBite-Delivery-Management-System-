@@ -24,7 +24,8 @@ var app = new Vue({
         // need to change customer_id and customer name dynamically see which customer login
         pickup_location: "",
         destination: "",
-        order_result: ""
+        order_result: "",
+        no_order: ""
     },
     methods: {
         find_by_customer_id: function () {
@@ -36,10 +37,12 @@ var app = new Vue({
                 .then(data => {
                     console.log(response);
                     if (data.code === 404) {
-                        // no book in db
+                        // no order in db
                         this.message = data.message;
+                        this.no_order = false;
                     } else {
                         console.log(data)
+                        this.no_order = true;
                         this.orders = data.data.orders;
                         this.message = "You have " + this.orders.length + " food orders"
                     }
@@ -61,10 +64,12 @@ var app = new Vue({
                 .then(data => {
                     console.log(response);
                     if (data.code === 404) {
-                        // no book in db
+                        // no order in db based on status
                         this.message = data.message;
+                        this.no_order = false;
                     } else {
                         console.log(data)
+                        this.no_order = true;
                         msg = "";
                         if (status == "Cancelled"){
                             msg = "cancelled";
