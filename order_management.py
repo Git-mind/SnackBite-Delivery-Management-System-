@@ -7,7 +7,7 @@ from os import environ
 import requests
 from invokes import invoke_http
 
-import amqp_setup
+# import amqp_setup
 import pika
 import json
 
@@ -155,8 +155,8 @@ def processCreateOrder(order):
         #print('\n\n-----Invoking activity_log microservice-----')
         print('\n\n-----Publishing the (order info) message with routing_key=order.info-----')        
       
-        amqp_setup.channel.basic_publish(exchange=amqp_setup.exchangename, routing_key="order.info", 
-            body=message)
+        # amqp_setup.channel.basic_publish(exchange=amqp_setup.exchangename, routing_key="order.info", 
+        #     body=message)
     
     print("\nOrder published to RabbitMQ Exchange.\n")
     # - reply from the invocation is not used;
