@@ -7,7 +7,7 @@ from os import environ
 import requests
 from invokes import invoke_http
 
-# import amqp_setup
+import amqp_setup
 import pika
 import json
 
@@ -63,112 +63,114 @@ def processCreateOrder(order):
     price_result = invoke_http(pricing_URL, method='POST', json=order)
     print('price_result:', price_result)
 
-    # 3. Check the order result; if a failure, send it to the error microservice.
+    # 3. Check the price result; if a failure, send it to the error microservice.
     code = price_result["code"]
-
+    price_result['type'] = "order"
+    price_result['activity_name'] = "pricing_result"
+    message = json.dumps(price_result)
     if code not in range(200, 300):
-        # Inform the error microservice
-        #print('\n\n-----Invoking error microservice as pricing fails-----')
+        # Inform the pricing microservice
+        #print('\n\n-----Invoking error microservice as order creation fails-----')
         print('\n\n-----Publishing the (pricing error) message with routing_key=pricing.error-----')
 
-        # invoke_http(error_URL, method="POST", json=price_result)
-        message = json.dumps(price_result)
         # amqp_setup.channel.basic_publish(exchange=amqp_setup.exchangename, routing_key="pricing.error", 
-        #     body=message, properties=pika.BasicProperties(delivery_mode = 2)) 
+        #     body=message, properties=pika.BasicProperties(delivery_mode = 2))
 
-        # make message persistent within the matching queues until it is received by some receiver 
-        # (the matching queues have to exist and be durable and bound to the exchange)
-
-        # - reply from the invocation is not used;
-        # continue even if this invocation fails        
-        print("\Order status ({:d}) published to the RabbitMQ Exchange:".format(
+        print("\Pricing status ({:d}) published to the RabbitMQ Exchange:".format(
             code), price_result)
 
-        # 7. Return error
+        # 4. Return error
         return {
-            "code": 500,
-            "data": {"pricing_result": price_result},
-            "message": "Pricing generation failure sent for error handling."
-        }
-
-    # Notice that we are publishing to "Activity Log" only when there is no error in order creation.
-    # In http version, we first invoked "Activity Log" and then checked for error.
-    # Since the "Activity Log" binds to the queue using '#' => any routing_key would be matched 
-    # and a message sent to “Error” queue can be received by “Activity Log” too.
-
-    else:
-        # 4. Get c_phone_number for order using customer microservice
-        # Invoke customer microservice
-        
-        print('\n-----Invoking customer microservice-----')
-        customer_URL = "http://localhost:5002/customers/" + str(price_result['data']['customer_id'])
-        customer_result = invoke_http(customer_URL, method='GET')
-
-        print('customer_result:', customer_result)
-        
-        # 5. Create order using order microservice
-        # Invoke order microservice 
-        print('\n-----Invoking order microservice-----')
-        customer_id = customer_result["data"]["customer_id"]
-        c_phone_number = customer_result["data"]["phone_number"]
-        pickup_location = price_result['data']['pickup_location']
-        destination = price_result['data']['destination']
-        price = price_result['data']['price']
-        order_result = invoke_http(order_URL, method='POST', json={
-            'customer_id': customer_id,
-            'c_phone_number': c_phone_number,
-            'pickup_location': pickup_location,
-            'destination': destination,
-            'price': price
-        })
-        print('order_result:', order_result)
-        # Check the order result;
-        # if a failure, send it to the error microservice.
-        code = order_result['code']
-        message = json.dumps(order_result)
-        if code not in range(200, 300):
-            # Inform the error microservice
-            #print('\n\n-----Invoking error microservice as order creation fails-----')
-            print('\n\n-----Publishing the (order error) message with routing_key=order.error-----')
-
-            # invoke_http(error_URL, method="POST", json=order_result)
-            # amqp_setup.channel.basic_publish(exchange=amqp_setup.exchangename, routing_key="order.error", 
-            #     body=message, properties=pika.BasicProperties(delivery_mode = 2))
-
-            print("\nShipping status ({:d}) published to the RabbitMQ Exchange:".format(
-                code), order_result)
-
-            # 7. Return error
-            return {
-                "code": 400,
-                "data": {
-                    "order_result": order_result
-                },
-                "message": "Simulated order creation record error sent for error handling."
-            }
-        else:
-            # 6. Record new order
-            # record the activity log anyway
-            #print('\n\n-----Invoking activity_log microservice-----')
-            print('\n\n-----Publishing the (order info) message with routing_key=order.info-----')        
-
-            # invoke_http(activity_log_URL, method="POST", json=order_result)            
-            # amqp_setup.channel.basic_publish(exchange=amqp_setup.exchangename, routing_key="order.info", 
-            #     body=message)
-        
-        print("\nOrder published to RabbitMQ Exchange.\n")
-        # - reply from the invocation is not used;
-        # continue even if this invocation fails
-
-        # 7. Return created order
-        return {
-            "code": 201,
+            "code": 400,
             "data": {
-                "order_result": order_result,
-                "price_result": price_result,
-                "customer_result": customer_result
-            }
+                "price_result": price_result
+            },
+            "message": "Simulated pricing error sent for error handling."
         }
+    else:
+        # 5. Record price result
+        # record the activity log anyway
+        #print('\n\n-----Invoking activity_log microservice-----')
+        print('\n\n-----Publishing the (pricing info) message with routing_key=pricing.info-----')        
+          
+        # amqp_setup.channel.basic_publish(exchange=amqp_setup.exchangename, routing_key="pricing.info", 
+        #     body=message)
+    
+    print("\nOrder published to RabbitMQ Exchange.\n")
+        
+    # 6. Get c_phone_number for order using customer microservice
+    # Invoke customer microservice
+    
+    print('\n-----Invoking customer microservice-----')
+    customer_URL = "http://localhost:5002/customers/" + str(price_result['data']['customer_id'])
+    customer_result = invoke_http(customer_URL, method='GET')
+
+    print('customer_result:', customer_result)
+        
+    # 7. Create order using order microservice
+    # Invoke order microservice 
+    print('\n-----Invoking order microservice-----')
+    customer_id = customer_result["data"]["customer_id"]
+    c_phone_number = customer_result["data"]["phone_number"]
+    pickup_location = price_result['data']['pickup_location']
+    destination = price_result['data']['destination']
+    price = price_result['data']['price']
+    order_result = invoke_http(order_URL, method='POST', json={
+        'customer_id': customer_id,
+        'c_phone_number': c_phone_number,
+        'pickup_location': pickup_location,
+        'destination': destination,
+        'price': price
+    })
+    print('order_result:', order_result)
+    # Check the order result;
+    # if a failure, send it to the error microservice.
+    code = order_result['code']
+    order_result['type'] = "order"
+    order_result['activity_name'] = "order_creation"
+    message = json.dumps(order_result)
+    print(order_result)
+    if code not in range(200, 300):
+        #8. Inform the error microservice
+        #print('\n\n-----Invoking error microservice as order creation fails-----')
+        print('\n\n-----Publishing the (order error) message with routing_key=order.error-----')
+
+        # amqp_setup.channel.basic_publish(exchange=amqp_setup.exchangename, routing_key="order.error", 
+        #     body=message, properties=pika.BasicProperties(delivery_mode = 2))
+
+        print("\Order Creation status ({:d}) published to the RabbitMQ Exchange:".format(
+            code), order_result)
+
+        # 9. Return error
+        return {
+            "code": 400,
+            "data": {
+                "order_result": order_result
+            },
+            "message": "Simulated order creation record error sent for error handling."
+        }
+    else:
+        # 10. Record new order
+        # record the activity log anyway
+        #print('\n\n-----Invoking activity_log microservice-----')
+        print('\n\n-----Publishing the (order info) message with routing_key=order.info-----')        
+      
+        amqp_setup.channel.basic_publish(exchange=amqp_setup.exchangename, routing_key="order.info", 
+            body=message)
+    
+    print("\nOrder published to RabbitMQ Exchange.\n")
+    # - reply from the invocation is not used;
+    # continue even if this invocation fails
+
+    # 11. Return created order
+    return {
+        "code": 201,
+        "data": {
+            "order_result": order_result,
+            "price_result": price_result,
+            "customer_result": customer_result
+        }
+    }
 
 
 # Execute this program if it is run as a main script (not by 'import')
