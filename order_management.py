@@ -14,10 +14,10 @@ import json
 app = Flask(__name__)
 CORS(app)
 
-driver_URL = "http://localhost:5001/driver"
+driver_URL = environ.get('driver_URL') or  "http://localhost:5001/driver"
 # customer_URL = "http://localhost:5002/customers/"
-pricing_URL = "http://localhost:5003/pricing" 
-order_URL = "http://localhost:5004/order" 
+pricing_URL = environ.get('pricing_URL') or "http://localhost:5003/pricing" 
+order_URL =  environ.get('order_URL') or "http://localhost:5004/order" 
 #activity_log_URL = "http://localhost:5003/activity_log"
 #error_URL = "http://localhost:5004/error"
 
