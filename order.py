@@ -110,6 +110,26 @@ def find_by_order_id(order_id):
         }
     ), 404
 
+@app.route("/order/customer/<string:customer_id>&<string:status>")
+def find_by_customer_id_status(customer_id,status):
+    orderlist = Order.query.filter_by(customer_id=customer_id, status=status).all()
+    # orderlist = Order.query.all()
+    if len(orderlist):
+        return jsonify(
+            {
+                "code": 200,
+                "data": {
+                    "orders": [order.json() for order in orderlist]
+                }
+            }
+        )
+    return jsonify(
+        {
+            "code": 404,
+            "message": "There are no orders"
+        }
+    ), 404
+
 @app.route("/order/customer/<string:customer_id>")
 def find_by_customer_id(customer_id):
     orderlist = Order.query.filter_by(customer_id=customer_id).all()
@@ -183,21 +203,22 @@ def update_order(order_id):
         # update status
         data = request.get_json()
         print(data)
-        if data['driver_id']:
-            order.driver_id = data['driver_id']
-        if data['driver_name']:
-            order.driver_name = data['driver_name']
-        if data['d_phone_number']:
-            order.d_phone_number = data['d_phone_number']
+        if 'driver_id' in data:
+            if data['driver_id']:
+                order.driver_id = data['driver_id']
+            if data['driver_name']:
+                order.driver_name = data['driver_name']
+            if data['d_phone_number']:
+                order.d_phone_number = data['d_phone_number']
         if data['status']:
             order.status = data['status']
-            db.session.commit()
-            return jsonify(
-                {
-                    "code": 200,
-                    "data": order.json()
-                }
-            ), 200
+        db.session.commit()
+        return jsonify(
+            {
+                "code": 200,
+                "data": order.json()
+            }
+        ), 200
 
     except Exception as e:
         return jsonify(
