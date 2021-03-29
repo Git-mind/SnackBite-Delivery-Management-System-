@@ -104,6 +104,8 @@ services:
     environment:
       dbURL: mysql+mysqlconnector://is213@host.docker.internal:3306/order
       PYTHONUNBUFFERED: 1 
+    ports: 
+      - "5004:5004"
 
   ###################################
   # Pricing: The Pricing microservice
@@ -129,6 +131,7 @@ services:
     environment:
       dbURL: mysql+mysqlconnector://is213@host.docker.internal:3306/driver
       PYTHONUNBUFFERED: 1 
+    
 
   ###################################
   # Customer: The Customer microservice
