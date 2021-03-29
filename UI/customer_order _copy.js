@@ -1,6 +1,6 @@
 var order_URL = "http://localhost:5004/order";
 var order_management_URL = "http://localhost:5100/create_order";
-var cus_url='http://localhost:5002/customers'
+var cus_url='http://localhost:5002/customer'
 
 
 //LOGIN BUTTON 
@@ -20,7 +20,6 @@ log_out.addEventListener('click',sign_out)
 vue_stuff=document.getElementById("vue_stuff")
 vue_stuff.style.display='none'
 
-
 //LOADING
 loading=document.getElementById('loading')
 
@@ -28,6 +27,11 @@ loading=document.getElementById('loading')
 welcome=document.getElementById('welcome_msg')
 
 //CHECK IF UUID IS PRESENT IN CUSTOMER DATABASE 
+error=document.getElementById('error')
+
+//ERROR DIV 
+error=document.getElementById('error')
+
 
 //LOG_IN FUNCTION 
 function sign_in(){
@@ -63,6 +67,8 @@ function sign_out(){
 //THIS FUNCTION CHECKS THE SESSION AND SEE IF A USER HAS LOGGED IN OR NOT 
 firebase.auth().onAuthStateChanged(function(user) {
 if (user) {
+
+    
     // alert(user.uid)
     //START VUE & INSERT UID OF CUSTOMER 
     mainVue(user.uid)
@@ -100,7 +106,7 @@ if (user) {
 //CHECK IF CUSTOMER IS PRESENT IN THE DATABASE (IF LOGGED IN WITHOUT SIGNING UP)
 async function check_cus(cus_url,uid){
     try{
-        response=await fetch(`${cus_url}/${uid}`)
+        response=await fetch(`${cus_url}/uid`)
 
         if (!response.ok){
             return 404
@@ -110,13 +116,11 @@ async function check_cus(cus_url,uid){
         }
     }
     catch(error){
-        return `Error in retrieving customer`
-
+        return `Error in retrieving customer data ${error}`
     }
-
 }
 
-check_cus(cus_url,'E1tQQB7gjvWd5PyqfE1Qljb6l5H3').then(response=>alert('cunt'))
+
 
 function mainVue(uid){
     var app = new Vue({

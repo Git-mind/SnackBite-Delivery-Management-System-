@@ -49,3 +49,4 @@ def get_cust_tele_id():
     results=invoke_http(new_url,method='GET')
     return results
 
+print(is_customer_exists())
