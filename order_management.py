@@ -255,6 +255,7 @@ def processUpdateOrder(order):
     # Invoke order microservice 
     print('\n-----Invoking order microservice-----')
     order_id = order["order_id"]
+    print(order_id)
     customer_id = order["customer_id"]
     pickup_location = price_result['data']['pickup_location']
     destination = price_result['data']['destination']

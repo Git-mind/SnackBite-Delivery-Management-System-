@@ -1,5 +1,5 @@
 var order_URL = "http://localhost:5004/order";
-var order_management_URL = "http://localhost:5100/create_order";
+var order_management_URL = "http://localhost:5100/";
 
 var app = new Vue({
     el: "#app",
@@ -19,13 +19,16 @@ var app = new Vue({
         customer_id: "1",
         customer_name: "John",
         //add status columns in customer.sql to see which customer has logged in. Maybe i dk if got any other methods to check which user logged in (workaround solution).
-        //I think should be outside of this vue
         //assuming customer login 
         // need to change customer_id and customer name dynamically see which customer login
         pickup_location: "",
         destination: "",
         order_result: "",
-        no_order: ""
+        no_order: "",
+        update_order_id: "",
+        update_pickup_location: "",
+        update_destination: "",
+        orderUpdated: false
     },
     methods: {
         find_by_customer_id: function () {
@@ -147,6 +150,50 @@ var app = new Vue({
                 });
 
         },
+        update_order: function () {
+            // on Vue instance created, load the book list
+            update_order_id = this.update_order_id
+            pickup_location = this.update_pickup_location
+            destination = this.update_destination
+            customer_id = this.customer_id
+            const response =
+                // fetch(order_URL)
+                fetch(order_management_URL + "/update_order", 
+                {
+                    method: "PUT",
+                    headers: {
+                        "Content-type": "application/json"
+                    },
+                    body: JSON.stringify(
+                        {
+                            "order_id": this.update_order_id,
+                            "pickup_location": this.update_pickup_location,
+                            "destination": this.update_destination,
+                            "customer_id": this.customer_id
+                        })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    console.log(response);
+                    if (data.code === 404) {
+                        // no book in db
+                        this.message = data.message;
+                    } else {
+                        console.log(data)
+                        this.orderUpdated = true;
+                        this.message = "You have updated order details of order id" + order_id;
+                        // update UI after cancelling order
+                        this.find_by_customer_id();
+                    }
+                })
+                .catch(error => {
+                    // Errors when calling the service; such as network error, 
+                    // service offline, etc
+                    console.log(this.message + error);
+
+                });
+
+        },
         create_order: function () {
 
             // use this to trigger an error
@@ -155,7 +202,7 @@ var app = new Vue({
             destination = this.destination
             customer_id = this.customer_id
             price = this.newPrice
-            fetch(order_management_URL, {
+            fetch(order_management_URL + "/create_order", {
                     method: "POST",
                     headers: {
                         "Content-type": "application/json"

@@ -57,3 +57,4 @@ if __name__ == "__main__":
     print("\nThis is " + os.path.basename(__file__), end='')
     print(": monitoring routing key '{}' in exchange '{}' ...".format(monitorBindingKey, amqp_setup.exchangename))
     consume()
+    ###
