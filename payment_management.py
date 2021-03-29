@@ -53,8 +53,8 @@ def order_completed():
     }), 400
 
 def processOrderCompleted(order):
-    # 2. Get pricing for delivery using pricing microservice
-    # Invoke the pricing microservice
+    # 2. Updating the order status using order microservice
+    # Invoke the order microservice
     order_id = order['order_id']
     print(order_id)
     print('\n-----Invoking order microservice-----')

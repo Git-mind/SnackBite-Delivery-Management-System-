@@ -29,7 +29,6 @@ class Order(db.Model):
     customer_id = db.Column(db.String(100), nullable=False)
     c_phone_number = db.Column(db.Integer, nullable=False)
     driver_id = db.Column(db.Integer, nullable=True)
-    driver_name = db.Column(db.String(100), nullable=True)
     d_phone_number = db.Column(db.Integer, nullable=True)
     date_time = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
     pickup_location = db.Column(db.String(100), nullable=False)
@@ -43,7 +42,6 @@ class Order(db.Model):
             'customer_id': self.customer_id,
             'c_phone_number': self.c_phone_number,
             'driver_id': self.driver_id,
-            'driver_name': self.driver_name,
             'd_phone_number': self.d_phone_number,
             'date_time': self.date_time,
             'pickup_location': self.pickup_location,
@@ -110,6 +108,26 @@ def find_by_order_id(order_id):
         }
     ), 404
 
+@app.route("/order/customer/<string:customer_id>&<string:status>")
+def find_by_customer_id_status(customer_id,status):
+    orderlist = Order.query.filter_by(customer_id=customer_id, status=status).all()
+    # orderlist = Order.query.all()
+    if len(orderlist):
+        return jsonify(
+            {
+                "code": 200,
+                "data": {
+                    "orders": [order.json() for order in orderlist]
+                }
+            }
+        )
+    return jsonify(
+        {
+            "code": 404,
+            "message": "There are no orders"
+        }
+    ), 404
+
 @app.route("/order/customer/<string:customer_id>")
 def find_by_customer_id(customer_id):
     orderlist = Order.query.filter_by(customer_id=customer_id).all()
@@ -169,7 +187,7 @@ def create_order():
 def update_order(order_id):
     try:
         order = Order.query.filter_by(order_id=order_id).first()
-
+        print(order)
         if not order:
             return jsonify(
                 {
@@ -182,29 +200,42 @@ def update_order(order_id):
             ), 404
         # update status
         data = request.get_json()
-        print(data)
-        if data['driver_id']:
-            order.driver_id = data['driver_id']
-        if data['driver_name']:
-            order.driver_name = data['driver_name']
-        if data['d_phone_number']:
-            order.d_phone_number = data['d_phone_number']
-        if data['status']:
+        # Accepted order
+        if 'driver_id' in data:
+            if data['driver_id']:
+                order.driver_id = data['driver_id']
+            if data['d_phone_number']:
+                order.d_phone_number = data['d_phone_number']
+
+        if 'status' in data:
             order.status = data['status']
-            db.session.commit()
-            return jsonify(
-                {
-                    "code": 200,
-                    "data": order.json()
-                }
-            ), 200
+
+        # Customer update details of order
+        if 'pickup_location' in data:
+            if data['pickup_location']:
+                order.pickup_location = data['pickup_location']
+            if data['destination']:
+                order.destination = data['destination']
+            if data['price']:
+                order.price = data['price']
+        
+        db.session.commit()
+
+        return jsonify(
+            {
+                "code": 200,
+                "data": order.json()
+            }
+        ), 200
 
     except Exception as e:
         return jsonify(
             {
                 "code": 500,
                 "data": {
-                    "order_id": order_id
+                    "order_id": order_id,
+                    "destination": data['destination'],
+                    "price": data['price']
                 },
                 "message": "An error occurred while updating the order details. " + str(e)
             }
