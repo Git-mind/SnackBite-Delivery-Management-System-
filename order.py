@@ -187,7 +187,6 @@ def create_order():
 def update_order(order_id):
     try:
         order = Order.query.filter_by(order_id=order_id).first()
-        print(order)
         if not order:
             return jsonify(
                 {
