@@ -29,7 +29,6 @@ class Order(db.Model):
     customer_id = db.Column(db.String(100), nullable=False)
     c_phone_number = db.Column(db.Integer, nullable=False)
     driver_id = db.Column(db.Integer, nullable=True)
-    driver_name = db.Column(db.String(100), nullable=True)
     d_phone_number = db.Column(db.Integer, nullable=True)
     date_time = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
     pickup_location = db.Column(db.String(100), nullable=False)
@@ -43,7 +42,6 @@ class Order(db.Model):
             'customer_id': self.customer_id,
             'c_phone_number': self.c_phone_number,
             'driver_id': self.driver_id,
-            'driver_name': self.driver_name,
             'd_phone_number': self.d_phone_number,
             'date_time': self.date_time,
             'pickup_location': self.pickup_location,
@@ -189,7 +187,6 @@ def create_order():
 def update_order(order_id):
     try:
         order = Order.query.filter_by(order_id=order_id).first()
-
         if not order:
             return jsonify(
                 {
@@ -202,17 +199,27 @@ def update_order(order_id):
             ), 404
         # update status
         data = request.get_json()
-        print(data)
+        # Accepted order
         if 'driver_id' in data:
             if data['driver_id']:
                 order.driver_id = data['driver_id']
-            if data['driver_name']:
-                order.driver_name = data['driver_name']
             if data['d_phone_number']:
                 order.d_phone_number = data['d_phone_number']
-        if data['status']:
+
+        if 'status' in data:
             order.status = data['status']
+
+        # Customer update details of order
+        if 'pickup_location' in data:
+            if data['pickup_location']:
+                order.pickup_location = data['pickup_location']
+            if data['destination']:
+                order.destination = data['destination']
+            if data['price']:
+                order.price = data['price']
+        
         db.session.commit()
+
         return jsonify(
             {
                 "code": 200,
@@ -225,7 +232,9 @@ def update_order(order_id):
             {
                 "code": 500,
                 "data": {
-                    "order_id": order_id
+                    "order_id": order_id,
+                    "destination": data['destination'],
+                    "price": data['price']
                 },
                 "message": "An error occurred while updating the order details. " + str(e)
             }
