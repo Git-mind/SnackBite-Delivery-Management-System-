@@ -244,7 +244,7 @@ services:
       pricing_URL: http://pricing:5003/pricing
       PYTHONUNBUFFERED: 1
     ports:
-      - "5300:500"
+      - "5300:5300"
 
 
   ###############################################
