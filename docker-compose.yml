@@ -172,7 +172,6 @@ services:
     environment:
       rabbit_host: rabbitmq
       rabbit_port: 5672
-      dbURL: mysql+mysqlconnector://is213@host.docker.internal:3306/activity 
       PYTHONUNBUFFERED: 1
 
   ###################################
@@ -189,7 +188,6 @@ services:
     environment:
       rabbit_host: rabbitmq
       rabbit_port: 5672
-      dbURL: mysql+mysqlconnector://is213@host.docker.internal:3306/error 
       PYTHONUNBUFFERED: 1 
 
 

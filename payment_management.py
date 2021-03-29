@@ -14,8 +14,8 @@ import json
 app = Flask(__name__)
 CORS(app)
 
-order_URL = environ.get('order_URL') or "http://localhost:5004/order"
-customer_URL = environ.get('customer_URL') or "http://localhost:5002/customers/"
+order_URL = "http://localhost:5004/order"
+customer_URL = "http://localhost:5002/customers/"
 # payment_URL = 
 
 @app.route("/order_completed", methods=['POST'])
