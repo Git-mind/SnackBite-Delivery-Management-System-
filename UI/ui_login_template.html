@@ -1,0 +1,133 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+
+    <title>Hello, world!</title>
+
+
+    <style>
+        #Log_out,#Log_in{
+            cursor:pointer;
+        }
+
+    </style>
+  </head>
+  <body>
+    <h1>Hello, world!</h1>
+
+    <btn class="btn btn-danger m-2 disabled" id='Log_out' >Log out</btn>
+
+    <btn class="btn btn-success m-2 " id='Log_in'>Log in</btn>
+
+    <!-- Optional JavaScript -->
+    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+
+<!-- FIREBASE CONFIG DO NOT TOUCH THIS-->
+    <!-- The core Firebase JS SDK is always required and must be listed first -->
+    <script src="https://www.gstatic.com/firebasejs/8.3.1/firebase-app.js"></script>
+
+    <!-- Add Firebase products that you want to use -->
+    <script src="https://www.gstatic.com/firebasejs/8.3.1/firebase-auth.js"></script>
+    
+    <script>
+    // Your web app's Firebase configuration
+    var firebaseConfig = {
+        apiKey: "AIzaSyCUs5MFQPqQV8rmg2rzy-0Rw8m5eAjoUSw",
+        authDomain: "snackbite-9355b.firebaseapp.com",
+        projectId: "snackbite-9355b",
+        storageBucket: "snackbite-9355b.appspot.com",
+        messagingSenderId: "165426704896",
+        appId: "1:165426704896:web:5bb86bb260e6552aa79ee5"
+    };
+    // Initialize Firebase
+    firebase.initializeApp(firebaseConfig);
+    </script>
+<!-- FIREBASE CONFIG DO NOT TOUCH THIS -->
+
+
+    <script>
+
+    log_in=document.getElementById("Log_in")
+
+    log_out=document.getElementById("Log_out")
+
+    firebase.auth().onAuthStateChanged(function(user) {
+    if (user) {
+        log_in.className='btn btn-success disabled'
+        log_in.style='pointer-events: none'
+        
+        log_out.className='btn btn-danger'
+        log_out.style='pointer-events: auto'
+
+    } else {
+        log_out.className='btn btn-danger disabled'
+        log_out.style='pointer-events: none'
+
+        log_in.className='btn btn-success'
+        log_in.style='pointer-events: auto'
+    }
+    });
+    
+
+    // sign in function 
+    function sign_in(){
+
+
+        provider = new firebase.auth.GoogleAuthProvider();
+        firebase.auth().signInWithRedirect(provider).then(function (result) {
+            alert("Sign_in has been successful")
+        }).catch(function (error) {
+            // Handle Errors here.
+            var errorCode = error.code;
+            var errorMessage = error.message;
+            // The email of the user's account used.
+            var email = error.email;
+            // The firebase.auth.AuthCredential type that was used.
+            var credential = error.credential;
+            // ...
+            alert(`User email ${email} could not be authenticated by ${credential} due to error : ${errorMessage}`)
+        });
+    }
+
+    // sign out function 
+    function sign_out(){
+        firebase.auth().signOut().then(() => {
+            alert("Sign_out has been successful")
+        }).catch((error) => {
+            alert("Sign out is unsuccessful, please try again!")
+        });
+    }
+
+
+
+
+
+
+    log_in.addEventListener("click",sign_in)
+
+    log_out.addEventListener("click",sign_out)
+
+
+
+
+
+
+
+
+
+
+
+
+
+    </script>
+</body>
+</html>

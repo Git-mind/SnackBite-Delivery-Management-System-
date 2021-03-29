@@ -2,7 +2,7 @@
 <html lang="en">
 
 <head>
-    <title>Title</title>
+    <title>CUSTOMER</title>
     <!-- Required meta tags -->
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
@@ -16,16 +16,19 @@
 <script src="https://cdn.jsdelivr.net/npm/vue@2/dist/vue.js"></script>
 
 <body>
-    <div id="app">
+    <div>
         <nav class="navbar navbar-light bg-light justify-content-between">
             <a class="navbar-brand"></a>
             <h1>SnackBite</h1>
             <form class="form-inline">
-                <h2 id="userName" class="mr-sm-2">Welcome back</h2>
-                <a href="./landing-page.html" class="btn btn-outline-danger ">Log Out</a>
+                <h2 id="welcome msg" class="mr-sm-2"></h2>
+                <a :class="[btn_class_in,btn_colour_in,btn_disabled_in]" id='log_in' >Log In</a>
+                <a :class="[btn_class_out,btn_colour_out,btn_disabled_out]" id='log_out' >Log Out</a>
+
             </form>
         </nav>
-        <div class="container">
+
+        <div class="container" id="app" >
             <div v-show="!orderPlaced">
                 <h1 class="d-inline">Your orders</h1>
                 <button @click="find_by_customer_id" class="btn btn-primary m-3">Refresh order list</button>
@@ -133,10 +136,40 @@
                     page</button>
             </div> <!-- place order -->
         </div> <!-- app: container -->
+
+
     </div>
 
+    
+<!-- FIREBASE CONFIG DO NOT TOUCH THIS-->
+    <!-- The core Firebase JS SDK is always required and must be listed first -->
+    <script src="https://www.gstatic.com/firebasejs/8.3.1/firebase-app.js"></script>
 
+    <!-- Add Firebase products that you want to use -->
+    <script src="https://www.gstatic.com/firebasejs/8.3.1/firebase-auth.js"></script>
+    
+    <script>
+    // Your web app's Firebase configuration
+    var firebaseConfig = {
+        apiKey: "AIzaSyCUs5MFQPqQV8rmg2rzy-0Rw8m5eAjoUSw",
+        authDomain: "snackbite-9355b.firebaseapp.com",
+        projectId: "snackbite-9355b",
+        storageBucket: "snackbite-9355b.appspot.com",
+        messagingSenderId: "165426704896",
+        appId: "1:165426704896:web:5bb86bb260e6552aa79ee5"
+    };
+    // Initialize Firebase
+    firebase.initializeApp(firebaseConfig);
+    </script>
+<!-- FIREBASE CONFIG DO NOT TOUCH THIS -->
+
+
+
+    <!-- External Javascript file  -->
     <script src="customer_order.js"></script>
+    
+
+
     <!-- Optional JavaScript -->
     <!-- jQuery first, then Popper.js, then Bootstrap JS -->
     <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
