@@ -1,58 +1,106 @@
 var order_URL = "http://localhost:5004/order";
 var order_management_URL = "http://localhost:5100/create_order";
 
-// mainVue()
 
+
+//LOGIN BUTTON 
+log_in=document.getElementById("log_in")
+
+//LOGOUT BUTTON
+log_out=document.getElementById("log_out")
+
+//ADD EVENTLISTENER TO LOG_IN BUTTON
+log_in.addEventListener('click',sign_in)
+
+//ADD EVENTLISTENER TO LOG_OUT BUTTON
+log_out.addEventListener('click',sign_out)
+
+
+//VUE STUFF
+vue_stuff=document.getElementById("vue_stuff")
+vue_stuff.style.display='none'
+
+
+//LOADING
+loading=document.getElementById('loading')
+
+//WELCOME MESSAGE
+welcome=document.getElementById('welcome_msg')
+
+
+//LOG_IN FUNCTION 
+function sign_in(){
+    provider = new firebase.auth.GoogleAuthProvider();
+    firebase.auth().signInWithRedirect(provider).then(function (result) {
+        alert("Sign_in has been successful")
+    }).catch(function (error) {
+        // Handle Errors here.
+        var errorCode = error.code;
+        var errorMessage = error.message;
+        // The email of the user's account used.
+        var email = error.email;
+        // The firebase.auth.AuthCredential type that was used.
+        var credential = error.credential;
+        // ...
+        alert(`User email ${email} could not be authenticated by ${credential} due to error : ${errorMessage}`)
+    });
+}
+
+
+//LOG_OUT FUNCTION 
+function sign_out(){
+    firebase.auth().signOut().then(() => {
+        alert("Sign_out has been successful")
+    }).catch((error) => {
+        alert("Sign out is unsuccessful, please try again!")
+    });
+    location.reload();
+}
 
 
 //DO NOT TOUCH THIS (CODE TO HANDLE AUTHENTICATION)
-
-
+//THIS FUNCTION CHECKS THE SESSION AND SEE IF A USER HAS LOGGED IN OR NOT 
 firebase.auth().onAuthStateChanged(function(user) {
 if (user) {
-    log_in=document.getElementById("Log_in")
+    // alert(user.uid)
+    //START VUE & INSERT UID OF CUSTOMER 
+    mainVue(user.uid)
+    //DISPLAY THE WRAPPER OF THE DIV WHICH THE VUE IS ATTACHED TO 
+    vue_stuff.style.display=''
 
-    log_out=document.getElementById("Log_out")
+    //HIDE THE LOADING GIF
+    loading.style.display='none'
 
+    //BUTTON DISABLING & ENABLING
     log_in.className='btn btn-success disabled'
     log_in.style='pointer-events: none'
     
     log_out.className='btn btn-danger'
     log_out.style='pointer-events: auto'
 
+    //ADD WELCOME MSG
+    welcome.innerHTML=`Welcome ${user.displayName}`
 } else {
-    log_in=document.getElementById("Log_in")
-    alert(log_in)
+    loading.style.display='none'
 
-    log_out=document.getElementById("Log_out")
-
+    //BUTTON DISABLING & ENABLING
     log_out.className='btn btn-danger disabled'
     log_out.style='pointer-events: none'
 
     log_in.className='btn btn-success'
     log_in.style='pointer-events: auto'
+
+    //ADD WELCOME MSG
+    welcome.innerHTML=`Please log in`
 }
 });
 //DO NOT TOUCH THIS (CODE TO HANDLE AUTHENTICATION)
-//yeah it is a horrible programming practice 
 
 
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-function mainVue(){
+function mainVue(uid){
     var app = new Vue({
         el: "#app",
         computed: {
@@ -68,7 +116,7 @@ function mainVue(){
             orderedBook: "",
             orderPlaced: false,
             orderSuccessful: false,
-            customer_id: "1",
+            customer_id: uid,
             customer_name: "",
             //add status columns in customer.sql to see which customer has logged in. Maybe i dk if got any other methods to check which user logged in (workaround solution).
             //I think should be outside of this vue
@@ -289,6 +337,7 @@ function mainVue(){
         },
         created: function () {
             // on Vue instance created, load the book list
+            
             this.find_by_customer_id();
         }
     });

@@ -21,28 +21,96 @@
             <a class="navbar-brand"></a>
             <h1>SnackBite</h1>
             <form class="form-inline">
-                <h2 id="welcome msg" class="mr-sm-2"></h2>
-                <a :class="[btn_class_in,btn_colour_in,btn_disabled_in]" id='log_in' >Log In</a>
-                <a :class="[btn_class_out,btn_colour_out,btn_disabled_out]" id='log_out' >Log Out</a>
+                <h2 id="welcome_msg" class="mr-sm-2"></h2>
+                <a class="btn btn-success" id='log_in' >Log In</a>
+                <a class="btn btn-danger" id='log_out' >Log Out</a>
 
             </form>
         </nav>
-
-        <div class="container" id="app" >
-            <div v-show="!orderPlaced">
-                <h1 class="d-inline">Your orders</h1>
-                <button @click="find_by_customer_id" class="btn btn-primary m-3">Refresh order list</button>
-            </div>
-
-            <button @click="find_by_customer_id" class="btn btn-primary m-3">View all orders</button>
-            <button @click="find_by_customer_id_status('NEW')" class="btn btn-primary m-3">Filter new</button>
-            <button @click="find_by_customer_id_status('Cancelled')" class="btn btn-primary m-3">Filter Cancelled</button>
-
-
-            <div class="row" v-show="!orderPlaced">
-                <div id="main" class="col-xl-9 col-lg-12 col-md-12">
-
-                    <table class="table table-striped" v-if="hasOrders" >
+        <!-- LOADING -->
+        <div id='loading' style='padding: 10%;'>
+            <img src='iphone-spinner-2.gif' class='m-auto d-block'>
+            <p class='m-auto text font-weight-bold' style='width: fit-content;'>Loading...</p>
+        </div>
+        
+        
+        <!--VUE STUFF -->
+        <div id='vue_stuff'>
+            <div class="container" id="app" >
+                <div v-show="!orderPlaced">
+                    <h1 class="d-inline">Your orders</h1>
+                    <button @click="find_by_customer_id" class="btn btn-primary m-3">Refresh order list</button>
+                </div>
+    
+                <button @click="find_by_customer_id" class="btn btn-primary m-3">View all orders</button>
+                <button @click="find_by_customer_id_status('NEW')" class="btn btn-primary m-3">Filter new</button>
+                <button @click="find_by_customer_id_status('Cancelled')" class="btn btn-primary m-3">Filter Cancelled</button>
+    
+    
+                <div class="row" v-show="!orderPlaced">
+                    <div id="main" class="col-xl-9 col-lg-12 col-md-12">
+                        <table class="table table-striped" v-if="hasOrders" >
+                            <!-- <table class="table table-striped"> -->
+                            <thead>
+                                <tr>
+                                    <th>Order ID</th>
+                                    <th>Pickup Location</th>
+                                    <th>Destination</th>
+                                    <th>Price</th>
+                                    <th>Driver name</th>
+                                    <th>Status</th>
+                                    <th>Action</th>
+                                </tr>
+                                <tr v-for="order in orders" v-show="no_order">
+                                    <td>{{ order.order_id }}</td>
+                                    <td>{{ order.pickup_location }}</td>
+                                    <td>{{ order.destination }}</td>
+                                    <td>{{ order.price }}</td>
+                                    <td>{{ order.driver_name }}</td>
+                                    <td>{{ order.status }}</td>
+    
+                                    <td>
+                                        <button v-if="order.status != 'Cancelled'" class="btn btn-danger" @click="cancel_order(order.order_id);">Cancel Order</button>
+                                        <!-- Chin ning use this to switch between accept order button on DRIVER UI -->
+                                        <!-- <button v-if="order.status == 'NEW'" class="btn btn-success mt-sm-2" @click="">Accept Order</button>
+                                        <button v-else-if="order.status == 'On delivery'" class="btn btn-primary" @click="">Complete delivery</button>
+                                        <button v-else-if="order.status == 'Cancelled'" class="btn btn-danger" @click="">Cancel Order</button> -->
+                                    </td>
+    
+    
+                                </tr>
+                            </thead>
+                        </table>
+                        <div class="text-danger" v-if="!hasOrders">{{ message }}</div>
+                        <div class="text-danger" v-if="hasOrders">{{ message }}</div>
+    
+                    </div> <!-- main & col -->
+                    <div class="col-xl-3 col-lg-12 col-md-12">
+                        <h2>Create a order</h2>
+                        <div class="form-group">
+                            <label for="pickup">Pick up location</label>
+                            <input v-model="pickup_location" type="text" class="form-control" id="pickup"
+                                placeholder="Enter pick up location">
+                        </div>
+                        <div class="form-group">
+                            <label for="destination">Destination</label>
+                            <input v-model="destination" type="text" class="form-control" id="destination"
+                                placeholder="Enter destination">
+                        </div>
+    
+                        <button @click="create_order();" class="btn btn-primary" v-on:submit.prevent="onSubmit">Create
+                            Order</button>
+                        <div class="text-success" v-if="orderCreated">
+                            The order has been successfully placed! <br>
+                            <br>
+                        </div>
+    
+                    </div> <!-- col -->
+                </div> <!-- row -->
+    
+                <div id="place_order" v-show="orderPlaced">
+                    <h3>Order Created</h3>
+                    <table class="table table-striped" v-if="hasOrders">
                         <!-- <table class="table table-striped"> -->
                         <thead>
                             <tr>
@@ -52,90 +120,32 @@
                                 <th>Price</th>
                                 <th>Driver name</th>
                                 <th>Status</th>
-                                <th>Action</th>
                             </tr>
-                            <tr v-for="order in orders" v-show="no_order">
-                                <td>{{ order.order_id }}</td>
-                                <td>{{ order.pickup_location }}</td>
-                                <td>{{ order.destination }}</td>
-                                <td>{{ order.price }}</td>
-                                <td>{{ order.driver_name }}</td>
-                                <td>{{ order.status }}</td>
-
-                                <td>
-                                    <button v-if="order.status != 'Cancelled'" class="btn btn-danger" @click="cancel_order(order.order_id);">Cancel Order</button>
-                                    <!-- Chin ning use this to switch between accept order button on DRIVER UI -->
-                                    <!-- <button v-if="order.status == 'NEW'" class="btn btn-success mt-sm-2" @click="">Accept Order</button>
-                                    <button v-else-if="order.status == 'On delivery'" class="btn btn-primary" @click="">Complete delivery</button>
-                                    <button v-else-if="order.status == 'Cancelled'" class="btn btn-danger" @click="">Cancel Order</button> -->
-                                </td>
-
-
+                            <tr>
+                                <td>{{ order_result.order_id }}</td>
+                                <td>{{ order_result.pickup_location }}</td>
+                                <td>{{ order_result.destination }}</td>
+                                <td>{{ order_result.price }}</td>
+                                <td>{{ order_result.driver_name }}</td>
+                                <td>{{ order_result.status }}</td>
                             </tr>
                         </thead>
                     </table>
-                    <div class="text-danger" v-if="!hasOrders">{{ message }}</div>
-                    <div class="text-danger" v-if="hasOrders">{{ message }}</div>
-
-                </div> <!-- main & col -->
-                <div class="col-xl-3 col-lg-12 col-md-12">
-                    <h2>Create a order</h2>
-                    <div class="form-group">
-                        <label for="pickup">Pick up location</label>
-                        <input v-model="pickup_location" type="text" class="form-control" id="pickup"
-                            placeholder="Enter pick up location">
-                    </div>
-                    <div class="form-group">
-                        <label for="destination">Destination</label>
-                        <input v-model="destination" type="text" class="form-control" id="destination"
-                            placeholder="Enter destination">
-                    </div>
-
-                    <button @click="create_order();" class="btn btn-primary" v-on:submit.prevent="onSubmit">Create
-                        Order</button>
-                    <div class="text-success" v-if="orderCreated">
+                    <div class="text-success" v-if="orderSuccessful">
                         The order has been successfully placed! <br>
                         <br>
                     </div>
+                    <div class="text-danger" v-else>
+                        There is a problem with creating this order, please check with the SnackBite for more details.<br>
+                        <br>
+                    </div>
+                    <button @click="orderPlaced = false; orderSuccessful = false" class="btn btn-primary">Return to home
+                        page</button>
+                </div> <!-- place order -->
+            </div> <!-- app: container -->
 
-                </div> <!-- col -->
-            </div> <!-- row -->
+        </div>
 
-            <div id="place_order" v-show="orderPlaced">
-                <h3>Order Created</h3>
-                <table class="table table-striped" v-if="hasOrders">
-                    <!-- <table class="table table-striped"> -->
-                    <thead>
-                        <tr>
-                            <th>Order ID</th>
-                            <th>Pickup Location</th>
-                            <th>Destination</th>
-                            <th>Price</th>
-                            <th>Driver name</th>
-                            <th>Status</th>
-                        </tr>
-                        <tr>
-                            <td>{{ order_result.order_id }}</td>
-                            <td>{{ order_result.pickup_location }}</td>
-                            <td>{{ order_result.destination }}</td>
-                            <td>{{ order_result.price }}</td>
-                            <td>{{ order_result.driver_name }}</td>
-                            <td>{{ order_result.status }}</td>
-                        </tr>
-                    </thead>
-                </table>
-                <div class="text-success" v-if="orderSuccessful">
-                    The order has been successfully placed! <br>
-                    <br>
-                </div>
-                <div class="text-danger" v-else>
-                    There is a problem with creating this order, please check with the SnackBite for more details.<br>
-                    <br>
-                </div>
-                <button @click="orderPlaced = false; orderSuccessful = false" class="btn btn-primary">Return to home
-                    page</button>
-            </div> <!-- place order -->
-        </div> <!-- app: container -->
 
 
     </div>
