@@ -31,7 +31,7 @@ var app = new Vue({
         orderUpdated: false
     },
     methods: {
-        find_by_driver_id: function () {
+        find_by_customer_id: function () {
             // on Vue instance created, load the book list
             const response =
                 // fetch(order_URL)
@@ -58,7 +58,7 @@ var app = new Vue({
                 });
 
         },
-        find_by_driver_id_status: function (status) {
+        find_by_customer_id_status: function (status) {
             // on Vue instance created, load the book list
             const response =
                 // fetch(order_URL)
@@ -139,7 +139,7 @@ var app = new Vue({
                         console.log(data)
                         this.message = "You have cancelled order id " + order_id;
                         // update UI after cancelling order
-                        this.find_by_driver_id();
+                        this.find_by_customer_id();
                     }
                 })
                 .catch(error => {
@@ -183,7 +183,7 @@ var app = new Vue({
                         this.orderUpdated = true;
                         this.message = "You have updated order details of order id" + order_id;
                         // update UI after cancelling order
-                        this.find_by_driver_id();
+                        this.find_by_customer_id();
                     }
                 })
                 .catch(error => {
@@ -227,7 +227,7 @@ var app = new Vue({
                             this.orderCreated = true;
                             this.order_result = result.order_result.data;
                             //update UI after creating order
-                            this.find_by_driver_id();
+                            this.find_by_customer_id();
                             orderMessage =
                                 `Order placed
                                         Customer Result:

@@ -38,6 +38,8 @@
     crossorigin="anonymous"></script>
 </head>
 
+<script src="https://cdn.jsdelivr.net/npm/vue@2/dist/vue.js"></script>
+
 <body>
   <div id="app">
     <!--Header-->
@@ -54,86 +56,68 @@
     <div class="container">
 
       <!--filter buttons-->
-      <div v-show="!orderPlaced">
-          <h1 class="d-inline">Your Jobs</h1>
-          <button @click="find_by_driver_id" class="btn btn-primary m-3">Refresh Job list</button>
-          <br>
-          <button @click="find_by_driver_id" class="btn btn-primary m-3">View all Jobs</button>
-          <button @click="find_by_driver_id_status('NEW')" class="btn btn-primary m-3">Filter New Jobs</button>
-          <button @click="find_by_driver_id_status('Cancelled')" class="btn btn-primary m-3">Filter Cancelled Jobs</button>
-      </div>
+      <h1 class="d-inline">Your Jobs</h1>
+      <button @click="find_by_driver_id" class="btn btn-primary m-3">Refresh Job list</button>
+      <br>
+      <button @click="find_by_driver_id" class="btn btn-primary m-3">View all Jobs</button>
+      <button @click="find_by_driver_id_status('NEW')" class="btn btn-primary m-3">Filter New Jobs</button>
+      <button @click="find_by_driver_id_status('Cancelled')" class="btn btn-primary m-3">Filter Cancelled Jobs</button>
+
         
-      <!--Job table if there-->
-      <div class="row" v-show="!orderPlaced">
-          <table class="table table-striped" v-if="hasOrders" >
-            <!-- <table class="table table-striped"> -->
-            <thead>
-                <tr>
-                    <th>Order ID</th>
-                    <th>Pickup Location</th>
-                    <th>Destination</th>
-                    <th>Status</th>
-                    <th>Action</th>
-                </tr>
-                <tr v-for="order in orders" v-show="no_order">
-                    <td>{{ order.order_id }}</td>
-                    <td>{{ order.pickup_location }}</td>
-                    <td>{{ order.destination }}</td>
-                    <td>{{ order.price }}</td>
-                    <td>{{ order.driver_name }}</td>
-                    <td>{{ order.status }}</td>
+  
+      <table class="table table-striped">
+        <!-- <table class="table table-striped"> -->
+        <thead>
+            <tr>
+                <th>Order ID</th>
+                <th>Customer ID</th>
+                <th>Pickup Location</th>
+                <th>Destination</th>
+                <th>Status</th>
+                <th>Action</th>
+            </tr>
+            <tr v-for="customer in customers" >
+                <td>{{ customer.order_id }}</td>
+                <td>{{ customer.customer_id }}</td>
+                <td>{{ customer.pickup_location }}</td>
+                <td>{{ customer.destination }}</td>
+                <td>{{ customer.status }}</td>
+            
 
-                    <!--Job Button-->
-                    <td>
-                      <button v-if="order.status == 'NEW'" class="btn btn-success mt-sm-2" @click="">Accept Order</button>
-                      <button v-else-if="order.status == 'On delivery'" class="btn btn-primary" @click="">Complete delivery</button>
-                      <button v-else-if="order.status == 'Cancelled'" class="btn btn-danger" @click="">Cancel Order</button> 
-                    </td>
-                </tr>
-            </thead>
-          </table>
+                <!--Job Button-->
+                <!--
+                <td>
+                  <button v-if="customer.status == 'NEW'" class="btn btn-success mt-sm-2" @click="">Accept Order</button>
+                  <button v-else-if="customer.status == 'On delivery'" class="btn btn-primary" @click="">Complete delivery</button>
+                  <button v-else-if="customer.status == 'Cancelled'" class="btn btn-danger" @click="">Cancel Order</button> 
+                </td>
+                -->
+            </tr>
+        </thead>
+      </table>
 
-          <!--Job message-->
-          <div class="text-danger" v-if="!hasOrders">{{ message }}</div>
-          <div class="text-danger" v-if="hasOrders">{{ message }}</div>
-      </div> <!-- row -->
+      <!--Job message-->
+      <div class="text-danger" v-if="!hasOrders">{{ message }}</div>
+      <div class="text-danger" v-if="hasOrders">{{ message }}</div>
+ 
 
-      <div id="place_order" v-show="orderPlaced">
-        <h3>Order Created</h3>
-        <table class="table table-striped" v-if="hasOrders">
-          <!-- <table class="table table-striped"> -->
-          <thead>
-              <tr>
-                  <th>Order ID</th>
-                  <th>Pickup Location</th>
-                  <th>Destination</th>
-                  <th>Price</th>
-                  <th>Driver name</th>
-                  <th>Status</th>
-              </tr>
-              <tr>
-                  <td>{{ order_result.order_id }}</td>
-                  <td>{{ order_result.pickup_location }}</td>
-                  <td>{{ order_result.destination }}</td>
-                  <td>{{ order_result.price }}</td>
-                  <td>{{ order_result.driver_name }}</td>
-                  <td>{{ order_result.status }}</td>
-              </tr>
-          </thead>
-        </table>
-        <div class="text-success" v-if="orderSuccessful">
-            The order has been successfully placed! <br>
-            <br>
-        </div>
-        <div class="text-danger" v-else>
-            There is a problem with creating this order, please check with the SnackBite for more details.<br>
-            <br>
-        </div>
-        <button @click="orderPlaced = false; orderSuccessful = false" class="btn btn-primary">Return to home
-            page</button>
-      </div> <!-- place order -->
+      
     </div> <!-- app: container -->
   </div>
+
+
+  <script src="driver_job.js"></script>
+  <!-- Optional JavaScript -->
+  <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+  <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
+      integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous">
+  </script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"
+      integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous">
+  </script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"
+      integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous">
+  </script>
 
 </body>
 
