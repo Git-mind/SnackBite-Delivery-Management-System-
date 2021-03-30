@@ -39,7 +39,102 @@
 </head>
 
 <body>
-    
+  <div id="app">
+    <!--Header-->
+    <nav class="navbar navbar-light bg-light justify-content-between">
+        <a class="navbar-brand"></a>
+        <h1>SnackBite</h1>
+        <form class="form-inline">
+            <h2 id="userName" class="mr-sm-2">Welcome back</h2>
+            <a href="./landing-page.html" class="btn btn-outline-danger ">Log Out</a>
+        </form>
+    </nav>
+
+  
+    <div class="container">
+
+      <!--filter buttons-->
+      <div v-show="!orderPlaced">
+          <h1 class="d-inline">Your Jobs</h1>
+          <button @click="find_by_driver_id" class="btn btn-primary m-3">Refresh Job list</button>
+          <br>
+          <button @click="find_by_driver_id" class="btn btn-primary m-3">View all Jobs</button>
+          <button @click="find_by_driver_id_status('NEW')" class="btn btn-primary m-3">Filter New Jobs</button>
+          <button @click="find_by_driver_id_status('Cancelled')" class="btn btn-primary m-3">Filter Cancelled Jobs</button>
+      </div>
+        
+      <!--Job table if there-->
+      <div class="row" v-show="!orderPlaced">
+          <table class="table table-striped" v-if="hasOrders" >
+            <!-- <table class="table table-striped"> -->
+            <thead>
+                <tr>
+                    <th>Order ID</th>
+                    <th>Pickup Location</th>
+                    <th>Destination</th>
+                    <th>Status</th>
+                    <th>Action</th>
+                </tr>
+                <tr v-for="order in orders" v-show="no_order">
+                    <td>{{ order.order_id }}</td>
+                    <td>{{ order.pickup_location }}</td>
+                    <td>{{ order.destination }}</td>
+                    <td>{{ order.price }}</td>
+                    <td>{{ order.driver_name }}</td>
+                    <td>{{ order.status }}</td>
+
+                    <!--Job Button-->
+                    <td>
+                      <button v-if="order.status == 'NEW'" class="btn btn-success mt-sm-2" @click="">Accept Order</button>
+                      <button v-else-if="order.status == 'On delivery'" class="btn btn-primary" @click="">Complete delivery</button>
+                      <button v-else-if="order.status == 'Cancelled'" class="btn btn-danger" @click="">Cancel Order</button> 
+                    </td>
+                </tr>
+            </thead>
+          </table>
+
+          <!--Job message-->
+          <div class="text-danger" v-if="!hasOrders">{{ message }}</div>
+          <div class="text-danger" v-if="hasOrders">{{ message }}</div>
+      </div> <!-- row -->
+
+      <div id="place_order" v-show="orderPlaced">
+        <h3>Order Created</h3>
+        <table class="table table-striped" v-if="hasOrders">
+          <!-- <table class="table table-striped"> -->
+          <thead>
+              <tr>
+                  <th>Order ID</th>
+                  <th>Pickup Location</th>
+                  <th>Destination</th>
+                  <th>Price</th>
+                  <th>Driver name</th>
+                  <th>Status</th>
+              </tr>
+              <tr>
+                  <td>{{ order_result.order_id }}</td>
+                  <td>{{ order_result.pickup_location }}</td>
+                  <td>{{ order_result.destination }}</td>
+                  <td>{{ order_result.price }}</td>
+                  <td>{{ order_result.driver_name }}</td>
+                  <td>{{ order_result.status }}</td>
+              </tr>
+          </thead>
+        </table>
+        <div class="text-success" v-if="orderSuccessful">
+            The order has been successfully placed! <br>
+            <br>
+        </div>
+        <div class="text-danger" v-else>
+            There is a problem with creating this order, please check with the SnackBite for more details.<br>
+            <br>
+        </div>
+        <button @click="orderPlaced = false; orderSuccessful = false" class="btn btn-primary">Return to home
+            page</button>
+      </div> <!-- place order -->
+    </div> <!-- app: container -->
+  </div>
+
 </body>
 
 
