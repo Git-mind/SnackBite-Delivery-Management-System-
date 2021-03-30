@@ -16,6 +16,10 @@ CORS(app)
 
 #activity_log_URL = "http://localhost:5003/activity_log"
 #error_URL = "http://localhost:5004/error"
+driver_URL = "http://localhost:5001/driver"
+customer_URL = "http://localhost:5002/customers/"
+review_URL = "http://localhost:5005/review"
+
 
 @app.route("/create_review", methods=['POST'])
 def create_review():
@@ -94,18 +98,30 @@ def processCreateReview(review):
         #     body=message)
     
         print("\Review published to RabbitMQ Exchange.\n")
-            
-        # 6. Create review using order microservice
+        # 6. Get customer name from customer microservice.
+        print('\n-----Invoking customer microservice-----')
+        customer_result = invoke_http(customer_URL + "/" + review['customer_id'], method='GET')
+        customer_name = customer_result["data"]["customer_name"]
+        print(customer_name)
+
+        print('\n-----Invoking driver microservice-----')
+        driver_result = invoke_http(driver_URL + "/" + str(review['driver_id']), method='GET')
+        print(driver_result)
+        driver_name = driver_result["data"]["driver_name"]
+        # 7. Get driver name from driver microservice.
+
+        # 8. Create review using order microservice
         # Invoke review microservice 
         print('\n-----Invoking review microservice-----')
         customer_id = order_result["data"]["customer_id"]
         driver_id = order_result["data"]["driver_id"]
         order_id = order_result["data"]["order_id"]
         feedback = review["feedback"]
-        review_URL = "http://localhost:5005/review"
         review_result = invoke_http(review_URL, method='POST', json={
             'customer_id': customer_id,
+            'customer_name': customer_name,
             'driver_id': driver_id,
+            'driver_name': driver_name,
             'order_id': order_id,
             'feedback': feedback
         })

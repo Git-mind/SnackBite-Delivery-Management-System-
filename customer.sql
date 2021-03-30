@@ -13,7 +13,6 @@ CREATE TABLE IF NOT EXISTS `customer` (
 )  ENGINE=INNODB;
 
 INSERT INTO Customer VALUES
-(1,'John','555','4242 4242 4242 4242','tele_test');
-
+(1,'John','555','4242 4242 4242 4242','@Aravind1997555');
 
 
