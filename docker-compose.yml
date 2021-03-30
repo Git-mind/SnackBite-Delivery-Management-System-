@@ -266,7 +266,6 @@ services:
       rabbit_host: rabbitmq
       rabbit_port: 5672
       order_URL: http://order:5004/order
-      order_management_URL: http://order_management:5100/order_management
       customer_URL: http://customer:5002/customer
       driver_URL: http://driver:5001/driver
       pricing_URL: http://pricing:5003/pricing
