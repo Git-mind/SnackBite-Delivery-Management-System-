@@ -46,6 +46,8 @@ var app = new Vue({
         if (this.customer_name != ""){
             userName = document.getElementById('userName')
             userName.innerHTML = 'Welcome back ' + this.customer_name + "!"
+
+            this.find_by_driver_id();
         }
      
     }

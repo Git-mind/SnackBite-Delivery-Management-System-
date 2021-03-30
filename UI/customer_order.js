@@ -287,6 +287,6 @@ var app = new Vue({
             userName = document.getElementById('userName')
             userName.innerHTML = 'Welcome back ' + this.customer_name + "!"
         }
-        this.drivercustomer_id();
+        this.find_by_customer_id();
     }
 });
