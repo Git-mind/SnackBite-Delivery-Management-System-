@@ -1,6 +1,7 @@
 var order_URL = "http://localhost:5004/order";
 var order_management_URL = "http://localhost:5100/";
-var review_management_URL = "http://localhost:5400/";
+var review_management_URL = "http://localhost:5400";
+var review_URL = "http://localhost:5005/review";
 
 
 var app = new Vue({
@@ -8,10 +9,14 @@ var app = new Vue({
     computed: {
         hasOrders: function () {
             return this.orders.length > 0;
+        },
+        hasReviews: function(){
+            return this.reviews.length > 0;
         }
     },
     data: {
         "orders": [],
+        "reviews": [],
         message: "There is a problem retrieving books data, please try again later.",
         newPrice: "",
         orderCreated: false,
@@ -33,7 +38,9 @@ var app = new Vue({
         orderUpdated: false,
         feedback: "",
         review_successful: false,
-        review_msg: "problem submitting review"
+        review_msg: "problem submitting review",
+        review_message: "",
+        no_review: ""
     },
     methods: {
         find_by_customer_id: function () {
@@ -326,7 +333,36 @@ var app = new Vue({
                 .catch(error => {
                     console.log("Problem in placing an order. " + error);
                 })
-        }
+        },
+        find_reviews_by_customer_id: function () {
+            // on Vue instance created, load the book list
+            const response =
+                // fetch(order_URL)
+                fetch(review_URL + "/customer/" + this.customer_id)
+                .then(response => response.json())
+                .then(data => {
+                    console.log(response);
+                    if (data.code === 404) {
+                        // no reviews in db
+                        this.review_message = data.message;
+                        this.no_review = false;
+                    } else {
+                        this.no_review = true;
+
+                        console.log(data)
+
+                        this.reviews = data.data.reviews;
+                        this.review_message = "You have made " + this.reviews.length + " reviews"
+                    }
+                })
+                .catch(error => {
+                    // Errors when calling the service; such as network error, 
+                    // service offline, etc
+                    console.log(this.review_message + error);
+
+                });
+
+        },
     },
     
     created: function () {
@@ -336,5 +372,6 @@ var app = new Vue({
             userName.innerHTML = 'Welcome back ' + this.customer_name + "!"
         }
         this.find_by_customer_id();
+        this.find_reviews_by_customer_id();
     }
 });

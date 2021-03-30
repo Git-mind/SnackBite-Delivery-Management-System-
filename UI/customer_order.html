@@ -26,200 +26,269 @@
             </form>
         </nav>
         <div class="container">
-            <div v-show="!orderPlaced">
-                <h1 class="d-inline">Your orders</h1>
-                <button @click="find_by_customer_id" class="btn btn-primary m-3">Refresh order list</button>
-                <br>
-                <button @click="find_by_customer_id" class="btn btn-primary m-3">View all orders</button>
-                <button @click="find_by_customer_id_status('NEW')" class="btn btn-primary m-3">Filter new</button>
-                <button @click="find_by_customer_id_status('Cancelled')" class="btn btn-primary m-3">Filter
-                    Cancelled</button>
+            <ul class="nav nav-tabs" id="myTab" role="tablist">
+                <li class="nav-item">
+                    <a class="nav-link active" id="home-tab" data-toggle="tab" href="#home" role="tab"
+                        aria-controls="home" aria-selected="true">Orders</a>
+                </li>
+
+                <li class="nav-item">
+                    <a class="nav-link" id="contact-tab" data-toggle="tab" href="#contact" role="tab"
+                        aria-controls="contact" aria-selected="false">Reviews</a>
+                </li>
+            </ul>
+            <div class="tab-content" id="myTabContent">
+                <div class="tab-pane fade show active" id="home" role="tabpanel" aria-labelledby="home-tab">
+                    <div v-show="!orderPlaced">
+                        <h1 class="d-inline">Your orders</h1>
+                        <button @click="find_by_customer_id" class="btn btn-primary m-3">Refresh order list</button>
+                        <br>
+                        <button @click="find_by_customer_id" class="btn btn-primary m-3">View all orders</button>
+                        <button @click="find_by_customer_id_status('NEW')" class="btn btn-primary m-3">Filter
+                            new</button>
+                        <button @click="find_by_customer_id_status('Cancelled')" class="btn btn-primary m-3">Filter
+                            Cancelled</button>
+                    </div>
+
+                    <div class="row" v-show="!orderPlaced">
+                        <div id="main" class="col-xl-9 col-lg-12 col-md-12">
+
+                            <table class="table table-striped" v-if="hasOrders">
+                                <!-- <table class="table table-striped"> -->
+                                <thead>
+                                    <tr>
+                                        <th>Order ID</th>
+                                        <th>Pickup Location</th>
+                                        <th>Destination</th>
+                                        <th>Price</th>
+                                        <th>Driver name</th>
+                                        <th>Status</th>
+                                        <th>Action</th>
+                                    </tr>
+                                    <tr v-for="order in orders" v-show="no_order">
+                                        <td>{{ order.order_id }}</td>
+                                        <td>{{ order.pickup_location }}</td>
+                                        <td>{{ order.destination }}</td>
+                                        <td>{{ order.price }}</td>
+                                        <td>{{ order.driver_name }}</td>
+                                        <td>{{ order.status }}</td>
+
+                                        <td>
+                                            <button v-if="order.status == 'NEW' || order.status == 'on delivery'"
+                                                class="btn btn-danger" @click="cancel_order(order.order_id);">Cancel
+                                                Order</button>
+                                            <!-- <button v-if="order.status == 'completed'" class="btn btn-success"
+                                                @click="cancel_order(order.order_id);">Review</button> -->
+                                            <!-- Chin ning use this to switch between accept order button on DRIVER UI -->
+                                            <!-- <button v-if="order.status == 'NEW'" class="btn btn-success mt-sm-2" @click="">Accept Order</button>
+                                            <button v-else-if="order.status == 'On delivery'" class="btn btn-primary" @click="">Complete delivery</button>
+                                            <button v-else-if="order.status == 'Cancelled'" class="btn btn-danger" @click="">Cancel Order</button> -->
+
+                                            <button v-if="order.status == 'completed'" type="button"
+                                                class="btn btn-success" data-toggle="modal" data-target="#exampleModal"
+                                                data-whatever="@mdo">Review</button>
+
+
+
+                                            <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog"
+                                                aria-labelledby="exampleModalLabel" aria-hidden="true">
+                                                <div class="modal-dialog " role="document">
+                                                    <div class="modal-content">
+                                                        <div class="modal-header">
+                                                            <h5 class="modal-title" id="exampleModalLabel">New review
+                                                            </h5>
+                                                            <button type="button" class="close" data-dismiss="modal"
+                                                                aria-label="Close">
+                                                                <span aria-hidden="true">&times;</span>
+                                                            </button>
+                                                        </div>
+                                                        <div class="modal-body">
+                                                            <form>
+                                                                <div class="form-group">
+                                                                    <label for="message-text"
+                                                                        class="col-form-label">Review:</label>
+                                                                    <textarea class="form-control" id="message-text"
+                                                                        v-model="feedback"></textarea>
+                                                                </div>
+                                                            </form>
+                                                        </div>
+                                                        <div class="modal-footer">
+                                                            <div class="text-success" v-if="review_successful">
+                                                                {{ review_msg }}
+                                                            </div>
+                                                            <button type="button" class="btn btn-secondary"
+                                                                data-dismiss="modal"
+                                                                @click="review_successful = false;">Close</button>
+                                                            <button type="button" class="btn btn-primary"
+                                                                @click="submit_review(order.customer_id, order.driver_id, order.order_id);">Submit
+                                                                Review</button>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </td>
+
+
+                                    </tr>
+                                </thead>
+                            </table>
+                            <div class="text-danger" v-if="!hasOrders">{{ message }}</div>
+                            <div class="text-danger" v-if="hasOrders">{{ message }}</div>
+
+                        </div> <!-- main & col -->
+                        <div class="col-xl-3 col-lg-12 col-md-12">
+                            <div>
+                                <!-- create and update tab -->
+                                <ul class="nav nav-tabs" id="myTab" role="tablist">
+                                    <li class="nav-item">
+                                        <a class="nav-link active" id="home-tab" data-toggle="tab" href="#home"
+                                            role="tab" aria-controls="home" aria-selected="true">Create</a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a class="nav-link" id="profile-tab" data-toggle="tab" href="#profile"
+                                            role="tab" aria-controls="profile" aria-selected="false">Update</a>
+                                    </li>
+                                </ul>
+
+
+                                <div class="tab-content" id="myTabContent">
+                                    <div class="tab-pane fade show active" id="home" role="tabpanel"
+                                        aria-labelledby="home-tab">
+                                        <h2>Create a order</h2>
+                                        <div class="form-group">
+                                            <label for="pickup">Pick up location</label>
+                                            <input v-model="pickup_location" type="text" class="form-control"
+                                                id="pickup" placeholder="Enter pick up location">
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="destination">Destination</label>
+                                            <input v-model="destination" type="text" class="form-control"
+                                                id="destination" placeholder="Enter destination">
+                                        </div>
+
+                                        <button @click="create_order();" class="btn btn-primary"
+                                            v-on:submit.prevent="onSubmit">Create
+                                            Order</button>
+                                        <div class="text-success" v-if="orderCreated">
+                                            The order has been successfully placed! <br>
+                                            <br>
+                                        </div>
+                                    </div>
+                                    <div class="tab-pane fade" id="profile" role="tabpanel"
+                                        aria-labelledby="profile-tab">
+                                        <h2>Update a order</h2>
+                                        <div class="form-group">
+                                            <label for="order_id">Order id</label>
+                                            <input v-model="update_order_id" type="text" class="form-control"
+                                                id="order_id" placeholder="Enter order id">
+                                            <label for="update_pickup">Pick up location</label>
+                                            <input v-model="update_pickup_location" type="text" class="form-control"
+                                                id="update_pickup" placeholder="Enter pick up location">
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="update_destination">Destination</label>
+                                            <input v-model="update_destination" type="text" class="form-control"
+                                                id="update_destination" placeholder="Enter destination">
+                                        </div>
+
+                                        <button @click="update_order();" class="btn btn-primary"
+                                            v-on:submit.prevent="onSubmit">Update
+                                            Order</button>
+                                        <div class="text-success" v-if="orderUpdated">
+                                            The order has been successfully updated! <br>
+                                            <br>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+
+                        </div> <!-- col -->
+                    </div> <!-- row -->
+
+                    <div id="place_order" v-show="orderPlaced">
+                        <h3>Order Created</h3>
+                        <table class="table table-striped" v-if="hasOrders">
+                            <!-- <table class="table table-striped"> -->
+                            <thead>
+                                <tr>
+                                    <th>Order ID</th>
+                                    <th>Pickup Location</th>
+                                    <th>Destination</th>
+                                    <th>Price</th>
+                                    <th>Driver name</th>
+                                    <th>Status</th>
+                                </tr>
+                                <tr>
+                                    <td>{{ order_result.order_id }}</td>
+                                    <td>{{ order_result.pickup_location }}</td>
+                                    <td>{{ order_result.destination }}</td>
+                                    <td>{{ order_result.price }}</td>
+                                    <td>{{ order_result.driver_name }}</td>
+                                    <td>{{ order_result.status }}</td>
+                                </tr>
+                            </thead>
+                        </table>
+                        <div class="text-success" v-if="orderSuccessful">
+                            The order has been successfully placed! <br>
+                            <br>
+                        </div>
+                        <div class="text-danger" v-else>
+                            There is a problem with creating this order, please check with the SnackBite for more
+                            details.<br>
+                            <br>
+                        </div>
+                        <button @click="orderPlaced = false; orderSuccessful = false" class="btn btn-primary">Return to
+                            home
+                            page</button>
+                    </div> <!-- place order -->
+
+                </div>
+
+                <div class="tab-pane fade" id="contact" role="tabpanel" aria-labelledby="contact-tab">
+                    <div v-show="hasReviews">
+                        <h1 class="d-inline">Your reviews</h1>
+                        <button @click="find_by_customer_id" class="btn btn-primary m-3">Refresh order list</button>
+                        <br>
+                        <button @click="find_by_customer_id" class="btn btn-primary m-3">View all orders</button>
+                        <button @click="find_by_customer_id_status('NEW')" class="btn btn-primary m-3">Filter
+                            new</button>
+                        <button @click="find_by_customer_id_status('Cancelled')" class="btn btn-primary m-3">Filter
+                            Cancelled</button>
+                    </div>
+
+                    <div class="row" >
+                        <div id="main" class="col-xl-9 col-lg-12 col-md-12">
+
+                            <table class="table table-striped" v-if="hasReviews">
+                                <!-- <table class="table table-striped"> -->
+                                <thead>
+                                    <tr>
+                                        <th>Review ID</th>
+                                        <th>Driver name</th>
+                                        <th>Customer name</th>
+                                        <th>Order ID</th>
+                                        <th>Feedback</th>
+                                    </tr>
+                                    <tr v-for="review in reviews" v-show="hasReviews">
+                                        <td>{{ review.review_id }}</td>
+                                        <td>{{ review.driver_name }}</td>
+                                        <td>{{ review.customer_name }}</td>
+                                        <td>{{ review.order_id }}</td>
+                                        <td>{{ review.feedback }}</td>
+                                    </tr>
+                                </thead>
+                            </table>
+                            <div class="text-danger" v-if="!hasReviews">{{ review_message }}</div>
+                            <div class="text-danger" v-if="hasReviews">{{ review_message }}</div>
+
+                        </div> <!-- main & col -->
+                    </div> <!-- row -->
+
+                </div>
             </div>
 
 
-
-
-
-            <div class="row" v-show="!orderPlaced">
-                <div id="main" class="col-xl-9 col-lg-12 col-md-12">
-
-                    <table class="table table-striped" v-if="hasOrders">
-                        <!-- <table class="table table-striped"> -->
-                        <thead>
-                            <tr>
-                                <th>Order ID</th>
-                                <th>Pickup Location</th>
-                                <th>Destination</th>
-                                <th>Price</th>
-                                <th>Driver name</th>
-                                <th>Status</th>
-                                <th>Action</th>
-                            </tr>
-                            <tr v-for="order in orders" v-show="no_order">
-                                <td>{{ order.order_id }}</td>
-                                <td>{{ order.pickup_location }}</td>
-                                <td>{{ order.destination }}</td>
-                                <td>{{ order.price }}</td>
-                                <td>{{ order.driver_name }}</td>
-                                <td>{{ order.status }}</td>
-
-                                <td>
-                                    <button v-if="order.status == 'NEW' || order.status == 'on delivery'"
-                                        class="btn btn-danger" @click="cancel_order(order.order_id);">Cancel
-                                        Order</button>
-                                    <!-- <button v-if="order.status == 'completed'" class="btn btn-success"
-                                        @click="cancel_order(order.order_id);">Review</button> -->
-                                    <!-- Chin ning use this to switch between accept order button on DRIVER UI -->
-                                    <!-- <button v-if="order.status == 'NEW'" class="btn btn-success mt-sm-2" @click="">Accept Order</button>
-                                    <button v-else-if="order.status == 'On delivery'" class="btn btn-primary" @click="">Complete delivery</button>
-                                    <button v-else-if="order.status == 'Cancelled'" class="btn btn-danger" @click="">Cancel Order</button> -->
-
-                                    <button v-if="order.status == 'completed'" type="button" class="btn btn-success" data-toggle="modal"
-                                        data-target="#exampleModal" data-whatever="@mdo">Review</button>
-
-                                    
-
-                                    <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog"
-                                        aria-labelledby="exampleModalLabel" aria-hidden="true">
-                                        <div class="modal-dialog " role="document">
-                                            <div class="modal-content">
-                                                <div class="modal-header">
-                                                    <h5 class="modal-title" id="exampleModalLabel">New review</h5>
-                                                    <button type="button" class="close" data-dismiss="modal"
-                                                        aria-label="Close">
-                                                        <span aria-hidden="true">&times;</span>
-                                                    </button>
-                                                </div>
-                                                <div class="modal-body">
-                                                    <form>
-                                                        <div class="form-group">
-                                                            <label for="message-text"
-                                                                class="col-form-label">Review:</label>
-                                                            <textarea class="form-control" id="message-text" v-model="feedback"></textarea>
-                                                        </div>
-                                                    </form>
-                                                </div>
-                                                <div class="modal-footer">
-                                                    <div class="text-success" v-if="review_successful">{{ review_msg }}</div>
-                                                    <button type="button" class="btn btn-secondary"
-                                                        data-dismiss="modal" @click="review_successful = false;">Close</button>
-                                                    <button type="button" class="btn btn-primary" @click="submit_review(order.customer_id, order.driver_id, order.order_id);">Submit Review</button>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </td>
-
-
-                            </tr>
-                        </thead>
-                    </table>
-                    <div class="text-danger" v-if="!hasOrders">{{ message }}</div>
-                    <div class="text-danger" v-if="hasOrders">{{ message }}</div>
-
-                </div> <!-- main & col -->
-                <div class="col-xl-3 col-lg-12 col-md-12">
-                    <div>
-                        <!-- create and update tab -->
-                        <ul class="nav nav-tabs" id="myTab" role="tablist">
-                            <li class="nav-item">
-                                <a class="nav-link active" id="home-tab" data-toggle="tab" href="#home" role="tab"
-                                    aria-controls="home" aria-selected="true">Create</a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link" id="profile-tab" data-toggle="tab" href="#profile" role="tab"
-                                    aria-controls="profile" aria-selected="false">Update</a>
-                            </li>
-                        </ul>
-
-
-                        <div class="tab-content" id="myTabContent">
-                            <div class="tab-pane fade show active" id="home" role="tabpanel" aria-labelledby="home-tab">
-                                <h2>Create a order</h2>
-                                <div class="form-group">
-                                    <label for="pickup">Pick up location</label>
-                                    <input v-model="pickup_location" type="text" class="form-control" id="pickup"
-                                        placeholder="Enter pick up location">
-                                </div>
-                                <div class="form-group">
-                                    <label for="destination">Destination</label>
-                                    <input v-model="destination" type="text" class="form-control" id="destination"
-                                        placeholder="Enter destination">
-                                </div>
-
-                                <button @click="create_order();" class="btn btn-primary"
-                                    v-on:submit.prevent="onSubmit">Create
-                                    Order</button>
-                                <div class="text-success" v-if="orderCreated">
-                                    The order has been successfully placed! <br>
-                                    <br>
-                                </div>
-                            </div>
-                            <div class="tab-pane fade" id="profile" role="tabpanel" aria-labelledby="profile-tab">
-                                <h2>Update a order</h2>
-                                <div class="form-group">
-                                    <label for="order_id">Order id</label>
-                                    <input v-model="update_order_id" type="text" class="form-control" id="order_id"
-                                        placeholder="Enter order id">
-                                    <label for="update_pickup">Pick up location</label>
-                                    <input v-model="update_pickup_location" type="text" class="form-control"
-                                        id="update_pickup" placeholder="Enter pick up location">
-                                </div>
-                                <div class="form-group">
-                                    <label for="update_destination">Destination</label>
-                                    <input v-model="update_destination" type="text" class="form-control"
-                                        id="update_destination" placeholder="Enter destination">
-                                </div>
-
-                                <button @click="update_order();" class="btn btn-primary"
-                                    v-on:submit.prevent="onSubmit">Update
-                                    Order</button>
-                                <div class="text-success" v-if="orderUpdated">
-                                    The order has been successfully updated! <br>
-                                    <br>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-
-                </div> <!-- col -->
-            </div> <!-- row -->
-
-            <div id="place_order" v-show="orderPlaced">
-                <h3>Order Created</h3>
-                <table class="table table-striped" v-if="hasOrders">
-                    <!-- <table class="table table-striped"> -->
-                    <thead>
-                        <tr>
-                            <th>Order ID</th>
-                            <th>Pickup Location</th>
-                            <th>Destination</th>
-                            <th>Price</th>
-                            <th>Driver name</th>
-                            <th>Status</th>
-                        </tr>
-                        <tr>
-                            <td>{{ order_result.order_id }}</td>
-                            <td>{{ order_result.pickup_location }}</td>
-                            <td>{{ order_result.destination }}</td>
-                            <td>{{ order_result.price }}</td>
-                            <td>{{ order_result.driver_name }}</td>
-                            <td>{{ order_result.status }}</td>
-                        </tr>
-                    </thead>
-                </table>
-                <div class="text-success" v-if="orderSuccessful">
-                    The order has been successfully placed! <br>
-                    <br>
-                </div>
-                <div class="text-danger" v-else>
-                    There is a problem with creating this order, please check with the SnackBite for more details.<br>
-                    <br>
-                </div>
-                <button @click="orderPlaced = false; orderSuccessful = false" class="btn btn-primary">Return to home
-                    page</button>
-            </div> <!-- place order -->
         </div> <!-- app: container -->
     </div>
 

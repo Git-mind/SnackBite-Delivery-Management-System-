@@ -27,7 +27,9 @@ class Review(db.Model):
 
     review_id = db.Column(db.Integer, primary_key=True)
     customer_id = db.Column(db.String(100), nullable=False)
+    customer_name = db.Column(db.String(100), nullable=False)
     driver_id = db.Column(db.Integer, nullable=False)
+    driver_name = db.Column(db.String(100), nullable=False)
     order_id = db.Column(db.Integer, nullable=False)
     feedback = db.Column(db.String(140), nullable=False)
 
@@ -35,7 +37,9 @@ class Review(db.Model):
         return {
             'review_id': self.review_id,
             'customer_id': self.customer_id,
+            'customer_name': self.customer_name,
             'driver_id': self.driver_id,
+            'driver_name': self.driver_name,
             'order_id': self.order_id,
             'feedback': self.feedback
         }
@@ -92,7 +96,7 @@ def find_by_customer_id(customer_id):
                     "reviews": [review.json() for review in reviewlist]
                 }
             }
-        )
+        ) 
     return jsonify(
         {
             "code": 404,
@@ -123,11 +127,15 @@ def find_by_driver_id(driver_id):
 @app.route("/review", methods=['POST'])
 def create_review():
     customer_id = request.json.get('customer_id')
+    customer_name = request.json.get('customer_name')
     driver_id = request.json.get('driver_id')
+    driver_name = request.json.get('driver_name')
     order_id = request.json.get('order_id')
     feedback = request.json.get('feedback')
     review = Review(customer_id=customer_id, 
+    customer_name=customer_name,
     driver_id=driver_id,
+    driver_name=driver_name,
     order_id=order_id,
     feedback=feedback)
     

@@ -19,4 +19,4 @@ CREATE TABLE IF NOT EXISTS `order` (
 
 INSERT INTO `order` (`customer_id`, `c_phone_number`, `pickup_location`, `destination`,`driver_id`, `driver_name`, `status`,
 `price`) VALUES
-(1, '555', 'SMU', 'Home', '5','eeki' ,'completed', 3.14);
+(1, '555', 'SMU', 'Home', '1','Driver guy' ,'completed', 3.14);
