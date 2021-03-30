@@ -76,7 +76,7 @@ def processCreateOrder(order):
         # amqp_setup.channel.basic_publish(exchange=amqp_setup.exchangename, routing_key="pricing.error", 
         #     body=message, properties=pika.BasicProperties(delivery_mode = 2))
 
-        print("\Pricing status ({:d}) published to the RabbitMQ Exchange:".format(
+        print("\nPricing status ({:d}) published to the RabbitMQ Exchange:".format(
             code), price_result)
 
         # 4. Return error
@@ -283,7 +283,7 @@ def processUpdateOrder(order):
         # amqp_setup.channel.basic_publish(exchange=amqp_setup.exchangename, routing_key="order.error", 
         #     body=message, properties=pika.BasicProperties(delivery_mode = 2))
 
-        print("\Order Creation status ({:d}) published to the RabbitMQ Exchange:".format(
+        print("\nOrder Creation status ({:d}) published to the RabbitMQ Exchange:".format(
             code), order_result)
 
         # 9. Return error
