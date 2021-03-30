@@ -454,7 +454,7 @@ function mainVue(uid){
                             this.review_msg = "Review submitted"
                             // update review list
                             
-                            this.find_by_customer_id();
+                            this.find_reviews_by_customer_id();
                         }
                     })
                     .catch(err => {
@@ -517,7 +517,8 @@ function mainVue(uid){
                 destination = this.destination
                 customer_id = this.customer_id
                 price = this.newPrice
-                fetch(order_management_URL, {
+                fetch(order_management_URL + "/create_order", {
+                       
                         method: "POST",
                         headers: {
                             "Content-type": "application/json"

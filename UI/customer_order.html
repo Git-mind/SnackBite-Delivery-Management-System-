@@ -14,7 +14,7 @@
     <script src="https://kit.fontawesome.com/909e473e0c.js" crossorigin="anonymous"></script>
 
     <script src="https://cdn.jsdelivr.net/npm/vue@2/dist/vue.js"></script>
-
+   
 
 </head>
 
@@ -82,7 +82,7 @@
                             <div id="main" class="col-xl-9 col-lg-12 col-md-12">
 
                                 <table class="table table-striped" v-if="hasOrders">
-                                    <!-- <table class="table table-striped"> -->
+                                    
                                     <thead>
                                         <tr>
                                             <th>Order ID</th>
@@ -105,12 +105,7 @@
                                                 <button v-if="order.status == 'NEW' || order.status == 'on delivery'"
                                                     class="btn btn-danger" @click="cancel_order(order.order_id);">Cancel
                                                     Order</button>
-                                                <!-- <button v-if="order.status == 'completed'" class="btn btn-success"
-                                                @click="cancel_order(order.order_id);">Review</button> -->
-                                                <!-- Chin ning use this to switch between accept order button on DRIVER UI -->
-                                                <!-- <button v-if="order.status == 'NEW'" class="btn btn-success mt-sm-2" @click="">Accept Order</button>
-                                            <button v-else-if="order.status == 'On delivery'" class="btn btn-primary" @click="">Complete delivery</button>
-                                            <button v-else-if="order.status == 'Cancelled'" class="btn btn-danger" @click="">Cancel Order</button> -->
+                                                
 
                                                 <button v-if="order.status == 'completed'" type="button"
                                                     class="btn btn-success" data-toggle="modal"
@@ -164,10 +159,12 @@
                                 <div class="text-danger" v-if="!hasOrders">{{ message }}</div>
                                 <div class="text-danger" v-if="hasOrders">{{ message }}</div>
 
-                            </div> <!-- main & col -->
+                            </div>
+                            <!-- error -->
+
                             <div class="col-xl-3 col-lg-12 col-md-12">
                                 <div>
-                                    <!-- create and update tab -->
+                                    
                                     <ul class="nav nav-tabs" id="myTab" role="tablist">
                                         <li class="nav-item">
                                             <a class="nav-link active" id="home-tab" data-toggle="tab" href="#home"
@@ -232,13 +229,15 @@
                                 </div>
 
 
-                            </div> <!-- col -->
-                        </div> <!-- row -->
+                            </div>
+
+                            <!-- error -->
+                        </div> 
 
                         <div id="place_order" v-show="orderPlaced">
                             <h3>Order Created</h3>
                             <table class="table table-striped" v-if="hasOrders">
-                                <!-- <table class="table table-striped"> -->
+                                
                                 <thead>
                                     <tr>
                                         <th>Order ID</th>
@@ -271,27 +270,27 @@
                                 to
                                 home
                                 page</button>
-                        </div> <!-- place order -->
+                        </div> 
 
                     </div>
 
                     <div class="tab-pane fade" id="review" role="tabpanel" aria-labelledby="review-tab">
                         <div v-show="hasReviews">
                             <h1 class="d-inline">Your reviews</h1>
-                            <button @click="find_by_customer_id" class="btn btn-primary m-3">Refresh order list</button>
-                            <br>
+                            <button @click="find_reviews_by_customer_id" class="btn btn-primary m-3">Refresh reviews list</button>
+                            <!-- <br>
                             <button @click="find_by_customer_id" class="btn btn-primary m-3">View all orders</button>
                             <button @click="find_by_customer_id_status('NEW')" class="btn btn-primary m-3">Filter
                                 new</button>
                             <button @click="find_by_customer_id_status('Cancelled')" class="btn btn-primary m-3">Filter
-                                Cancelled</button>
+                                Cancelled</button> -->
                         </div>
 
                         <div class="row">
                             <div id="main" class="col-xl-9 col-lg-12 col-md-12">
 
                                 <table class="table table-striped" v-if="hasReviews">
-                                    <!-- <table class="table table-striped"> -->
+                                
                                     <thead>
                                         <tr>
                                             <th>Review ID</th>
@@ -312,11 +311,11 @@
                                 <div class="text-danger" v-if="!hasReviews">{{ review_message }}</div>
                                 <div class="text-danger" v-if="hasReviews">{{ review_message }}</div>
 
-                            </div> <!-- main & col -->
-                        </div> <!-- row -->
+                            </div> 
+                        </div> 
 
-                    </div> <!-- place order -->
-                </div> <!-- app: container -->
+                    </div> 
+                </div> 
 
             </div>
 
@@ -397,7 +396,7 @@
     <!-- FIREBASE CONFIG DO NOT TOUCH THIS -->
 
     <!-- External Javascript file  -->
-    <script src="customer_order_copy.js"></script>
+    <script src="customer_order.js"></script>
 
     <!-- Optional JavaScript -->
     <!-- jQuery first, then Popper.js, then Bootstrap JS -->
