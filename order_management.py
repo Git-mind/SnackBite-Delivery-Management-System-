@@ -112,12 +112,14 @@ def processCreateOrder(order):
         print('\n-----Invoking order microservice-----')
         customer_id = customer_result["data"]["customer_id"]
         c_phone_number = customer_result["data"]["phone_number"]
+        customer_name = customer_result["data"]["customer_name"]
         pickup_location = price_result['data']['pickup_location']
         destination = price_result['data']['destination']
         price = price_result['data']['price']
         order_result = invoke_http(order_URL, method='POST', json={
             'customer_id': customer_id,
             'c_phone_number': c_phone_number,
+            'customer_name': customer_name,
             'pickup_location': pickup_location,
             'destination': destination,
             'price': price
