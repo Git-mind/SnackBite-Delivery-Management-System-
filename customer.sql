@@ -16,4 +16,3 @@ INSERT INTO Customer VALUES
 (1,'John','555','4242 4242 4242 4242','@Aravind1997555');
 
 
-
