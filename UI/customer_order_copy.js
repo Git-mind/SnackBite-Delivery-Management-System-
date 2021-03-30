@@ -1,6 +1,26 @@
+//PLEASE READ!!!!
+
+//GOOGLE API ERRORS ARE SHOWN VIA ALERTS 
+//CONNECTION TO CUSTOMER DATABASE ERRORS ARE SHOWN VIA INNER HTML TO THE PAGE IN RED 
+//CONNECTION TO ORDER ERRORS ARE SHOWN VIA INNER HTML TO THE PAGE IN RED 
+
+
 var order_URL = "http://localhost:5004/order";
 var order_management_URL = "http://localhost:5100/create_order";
-var cus_url='http://localhost:5002/customer'
+var cus_url='http://localhost:5002/customers'
+
+// fetch(`${cus_url}/E1tQQB7gjvWd5PyqfE1Qljb6l5H3`).then(response=>{
+//     alert(response.ok)
+    
+// })
+
+
+
+//{
+    
+        //HTML ELEMENTS
+
+//}
 
 
 //LOGIN BUTTON 
@@ -9,16 +29,12 @@ log_in=document.getElementById("log_in")
 //LOGOUT BUTTON
 log_out=document.getElementById("log_out")
 
-//ADD EVENTLISTENER TO LOG_IN BUTTON
-log_in.addEventListener('click',sign_in)
 
-//ADD EVENTLISTENER TO LOG_OUT BUTTON
-log_out.addEventListener('click',sign_out)
-
-
-//VUE STUFF
+//VUE STUFF (WRAPPER THAT WRAPS VUE ELEMENT)
 vue_stuff=document.getElementById("vue_stuff")
+//INITIALLY HIDE WRAPPER WHEN LOADED
 vue_stuff.style.display='none'
+
 
 //LOADING
 loading=document.getElementById('loading')
@@ -26,28 +42,67 @@ loading=document.getElementById('loading')
 //WELCOME MESSAGE
 welcome=document.getElementById('welcome_msg')
 
-//CHECK IF UUID IS PRESENT IN CUSTOMER DATABASE 
-error=document.getElementById('error')
-
 //ERROR DIV 
 error=document.getElementById('error')
+
+//SIGN UP OK DIV
+sign_up_ok=document.getElementById('sign_up_ok')
+
+//SIGN UP 
+sign_up=document.getElementById("sign_up")
+
+//T_ID INPUT BY CUSTOMER
+t_id=document.getElementById('t_id')
+
+//C_NUM INPUT BY CUSTOMER 
+c_num=document.getElementById('c_num')
+
+//P_NUM INPUT BY CUSTOMER 
+p_num=document.getElementById("p_num")
+
+
+
+//{
+    
+        //ADDING EVENT LISTENERS 
+
+//}
+
+
+
+//ADD EVENTLISTENER TO LOG_IN BUTTON
+log_in.addEventListener('click',sign_in)
+
+//ADD EVENTLISTENER TO LOG_OUT BUTTON
+log_out.addEventListener('click',sign_out)
+
+
+
+
+
+//{
+    
+        //FUNCTIONS
+
+//}
 
 
 //LOG_IN FUNCTION 
 function sign_in(){
     provider = new firebase.auth.GoogleAuthProvider();
     firebase.auth().signInWithRedirect(provider).then(function (result) {
-        alert("Sign_in has been successful")
-    }).catch(function (error) {
+        console.log("Sign_in has been successful")
+    }).catch(function (err) {
         // Handle Errors here.
-        var errorCode = error.code;
-        var errorMessage = error.message;
+        var errorCode = err.code;
+        var errorMessage = err.message;
         // The email of the user's account used.
-        var email = error.email;
+        var email = err.email;
         // The firebase.auth.AuthCredential type that was used.
-        var credential = error.credential;
-        // ...
-        alert(`User email ${email} could not be authenticated by ${credential} due to error : ${errorMessage}`)
+        var credential = err.credential;
+        
+        error.innerHTML=`User email ${email} could not be authenticated by ${credential} due to error : ${errorMessage}`
+
     });
 }
 
@@ -55,71 +110,165 @@ function sign_in(){
 //LOG_OUT FUNCTION 
 function sign_out(){
     firebase.auth().signOut().then(() => {
-        alert("Sign_out has been successful")
-    }).catch((error) => {
-        alert("Sign out is unsuccessful, please try again!")
+        console.log("Sign_out has been successful")
+        vue_stuff.style.display='none'
+    }).catch((err) => {
+        // alert(`Sign out is unsuccessful due to ${err}`)
+        // console.log("Sign out is unsuccessful, please try again!")
+        error.innerHTML=`Sign out is unsuccessful due to ${err}`
+        vue_stuff.style.display='none'
     });
-    location.reload();
 }
 
 
-//DO NOT TOUCH THIS (CODE TO HANDLE AUTHENTICATION)
-//THIS FUNCTION CHECKS THE SESSION AND SEE IF A USER HAS LOGGED IN OR NOT 
-firebase.auth().onAuthStateChanged(function(user) {
-if (user) {
-
-    
-    // alert(user.uid)
-    //START VUE & INSERT UID OF CUSTOMER 
-    mainVue(user.uid)
-    //DISPLAY THE WRAPPER OF THE DIV WHICH THE VUE IS ATTACHED TO 
-    vue_stuff.style.display=''
-
-    //HIDE THE LOADING GIF
-    loading.style.display='none'
-
-    //BUTTON DISABLING & ENABLING
+//LOG IN DISABLED LOG OUT ENABLED
+function inDoutE(){
     log_in.className='btn btn-success disabled'
     log_in.style='pointer-events: none'
     
     log_out.className='btn btn-danger'
-    log_out.style='pointer-events: auto'
+    log_out.style='pointer-events: auto;cursor: pointer'
+}
 
-    //ADD WELCOME MSG
-    welcome.innerHTML=`Welcome ${user.displayName}`
-} else {
-    loading.style.display='none'
-
-    //BUTTON DISABLING & ENABLING
+//LOG IN ENABLED LOG OUT DISABLED 
+function inEoutD(){
     log_out.className='btn btn-danger disabled'
     log_out.style='pointer-events: none'
 
     log_in.className='btn btn-success'
-    log_in.style='pointer-events: auto'
+    log_in.style='pointer-events: auto;cursor: pointer'
+}
+
+
+
+//THIS FUNCTION CHECKS THE SESSION AND SEE IF A USER HAS LOGGED IN OR NOT 
+firebase.auth().onAuthStateChanged(function(user) {
+if (user) {
+
+    check_cus(cus_url,user.uid,user.displayName)
+} else {
+    loading.style.display='none'
+
+    //BUTTON DISABLING & ENABLING
+    inEoutD()
 
     //ADD WELCOME MSG
     welcome.innerHTML=`Please log in`
+    
 }
 });
-//DO NOT TOUCH THIS (CODE TO HANDLE AUTHENTICATION)
+
 
 //CHECK IF CUSTOMER IS PRESENT IN THE DATABASE (IF LOGGED IN WITHOUT SIGNING UP)
-async function check_cus(cus_url,uid){
+async function check_cus(cus_url,uid,user_name){
     try{
-        response=await fetch(`${cus_url}/uid`)
-
+        response=await fetch(`${cus_url}/${uid}`)
+        
         if (!response.ok){
-            return 404
+            //SIGN OUT THE USER FROM FIREBASE 
+            sign_out()
+            error.innerHTML=`User is not found in our database, Please sign up for SnackBite`
+
+            $('#signUpModal').modal('toggle')
+
+            //ADD EVENT LISTENER TO SUBMIT BUTTON SO THAT I CAN CAPTURE UID (BAD PRACTICE , I KNOW)
+            sign_up.addEventListener('click',function(){
+                pid=p_num.value
+                credit_num=c_num.value
+                tid=t_id.value
+                alert(`${uid}`)
+                create_account(uid,user_name,pid,credit_num,tid)
+            })
+
+            //
         }
         else{
-            return 200
+            mainVue(uid)
+            //DISPLAY THE WRAPPER OF THE DIV WHICH THE VUE IS ATTACHED TO 
+            vue_stuff.style.display=''
+        
+            //HIDE THE LOADING GIF
+            loading.style.display='none'
+        
+            //BUTTON DISABLING & ENABLING
+            inDoutE()
+        
+            //ADD WELCOME MSG
+            welcome.innerHTML=`Welcome ${user_name}`
         }
     }
-    catch(error){
-        return `Error in retrieving customer data ${error}`
+    catch(err){
+        //CUSTOMER MICROSERVICE IS NOT AVAILABLE 
+        console.log(err)
+        error.innerHTML=`Error in retrieving customer data due to ${err}`
+        sign_out()
+        inEoutD()
+        loading.style.display=''
     }
+
+
 }
 
+//for testing 
+// create_account(23423,'asdasd','adasdasd',2342342,'asfasdfsdf')
+
+//CREATE ACCOUNT
+async function create_account(uid,user_name,pid,credit_num,tid){
+    try{
+        response=await fetch(`${cus_url}`,{
+            method: "POST",
+            headers: {
+                "Content-type": "application/json"
+            },
+            body: JSON.stringify(
+                {
+                    "customer_id": uid,
+                    "customer_name": user_name,
+                    "phone_number": pid,
+                    "credit_card": credit_num,
+                    'tele_id':tid
+                })
+        })
+        
+        if (!response.ok){
+            //ADD STUFF
+            $('#signUpModal').modal('hide')
+            error.innerHTML='Sign-up is not successful, please try again'
+            
+
+
+
+        }
+        else{
+            $('#signUpModal').modal('hide')
+            error.innerHTML=''
+            sign_up_ok.innerHTML='Sign-up is successful, please sign-in using your google account again'
+            
+            //ADD STUFF
+
+        }
+    }
+    catch(err){
+        //CUSTOMER MICROSERVICE IS NOT AVAILABLE 
+        $('#signUpModal').modal('hide')
+
+        console.log(err)
+        error.innerHTML=`Error in signing up due to ${err}, please try again`
+        inEoutD()
+        //ADD STUFF
+
+    }
+
+}
+
+
+
+
+//{
+    
+        //VUE (WRAPPED INSIDE A FUNCTION)
+
+//}
 
 
 function mainVue(uid){
@@ -169,10 +318,10 @@ function mainVue(uid){
                             this.message = "You have " + this.orders.length + " food orders"
                         }
                     })
-                    .catch(error => {
+                    .catch(err => {
                         // Errors when calling the service; such as network error, 
                         // service offline, etc
-                        console.log(this.message + error);
+                        error.innerHTML=this.message + err
     
                     });
     
@@ -200,10 +349,10 @@ function mainVue(uid){
                             this.message = "You have " + this.orders.length + " "+ msg + " food orders"
                         }
                     })
-                    .catch(error => {
+                    .catch(err => {
                         // Errors when calling the service; such as network error, 
                         // service offline, etc
-                        console.log(this.message + error);
+                        error.innerHTML=this.message + err
     
                     });
     
@@ -225,10 +374,10 @@ function mainVue(uid){
                             this.message = "You have " + this.orders.length + " food orders"
                         }
                     })
-                    .catch(error => {
+                    .catch(err => {
                         // Errors when calling the service; such as network error, 
                         // service offline, etc
-                        console.log(this.message + error);
+                        error.innerHTML=this.message + err
     
                     });
     
@@ -261,10 +410,10 @@ function mainVue(uid){
                             this.find_by_customer_id();
                         }
                     })
-                    .catch(error => {
+                    .catch(err => {
                         // Errors when calling the service; such as network error, 
                         // service offline, etc
-                        console.log(this.message + error);
+                        error.innerHTML=this.message + err
     
                     });
     
@@ -351,15 +500,15 @@ function mainVue(uid){
                         console.log(orderMessage);
                         this.orderPlaced = true;
                     })
-                    .catch(error => {
-                        console.log("Problem in placing an order. " + error);
+                    .catch(err => {
+                        // console.log("Problem in placing an order. " + error);
+                        error.innerHTML="Problem in placing an order. " + err
                     })
             }
             
         },
         created: function () {
             // on Vue instance created, load the book list
-            
             this.find_by_customer_id();
         }
     });
