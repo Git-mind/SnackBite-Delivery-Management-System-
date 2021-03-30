@@ -29,6 +29,7 @@ class Order(db.Model):
     customer_id = db.Column(db.String(100), nullable=False)
     c_phone_number = db.Column(db.Integer, nullable=False)
     driver_id = db.Column(db.Integer, nullable=True)
+    driver_name = db.Column(db.String(100), nullable=False)
     d_phone_number = db.Column(db.Integer, nullable=True)
     date_time = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
     pickup_location = db.Column(db.String(100), nullable=False)
@@ -42,6 +43,7 @@ class Order(db.Model):
             'customer_id': self.customer_id,
             'c_phone_number': self.c_phone_number,
             'driver_id': self.driver_id,
+            'driver_name': self.driver_name,
             'd_phone_number': self.d_phone_number,
             'date_time': self.date_time,
             'pickup_location': self.pickup_location,

@@ -17,6 +17,6 @@ CREATE TABLE IF NOT EXISTS `order` (
   CONSTRAINT order_id_pk PRIMARY KEY (`order_id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
 
-INSERT INTO `order` (`customer_id`, `c_phone_number`, `pickup_location`, `destination`,
+INSERT INTO `order` (`customer_id`, `c_phone_number`, `pickup_location`, `destination`,`driver_id`, `driver_name`, `status`,
 `price`) VALUES
-(1, '555', 'SMU', 'Home', 3.14);
+(1, '555', 'SMU', 'Home', '5','eeki' ,'completed', 3.14);

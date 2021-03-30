@@ -1,5 +1,7 @@
 var order_URL = "http://localhost:5004/order";
 var order_management_URL = "http://localhost:5100/";
+var review_management_URL = "http://localhost:5400/";
+
 
 var app = new Vue({
     el: "#app",
@@ -28,7 +30,10 @@ var app = new Vue({
         update_order_id: "",
         update_pickup_location: "",
         update_destination: "",
-        orderUpdated: false
+        orderUpdated: false,
+        feedback: "",
+        review_successful: false,
+        review_msg: "problem submitting review"
     },
     methods: {
         find_by_customer_id: function () {
@@ -149,6 +154,48 @@ var app = new Vue({
 
                 });
 
+        },
+        submit_review: function (customer_id, driver_id, order_id) {
+            // on Vue instance created, load the book list
+    
+            const response =
+                // fetch(order_URL)
+                fetch(review_management_URL + "/create_review", 
+                {
+                    method: "POST",
+                    headers: {
+                        "Content-type": "application/json"
+                    },
+                    body: JSON.stringify(
+                        {
+                            "customer_id": customer_id,
+                            "driver_id": driver_id,
+                            "order_id": order_id,
+                            "feedback": this.feedback
+                        })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    console.log(response);
+                    if (data.code === 404) {
+                        // no book in db
+                        this.message = data.message;
+                    } else {
+                        console.log(data)
+                        this.review_successful = true
+                        this.review_msg = "Review submitted"
+                        // update review list
+                        
+                        this.find_by_customer_id();
+                    }
+                })
+                .catch(error => {
+                    // Errors when calling the service; such as network error, 
+                    // service offline, etc
+                    console.log(this.message + error);
+    
+                });
+    
         },
         update_order: function () {
             // on Vue instance created, load the book list
@@ -281,6 +328,7 @@ var app = new Vue({
                 })
         }
     },
+    
     created: function () {
         // on Vue instance created, load the book list
         if (this.customer_name != ""){
