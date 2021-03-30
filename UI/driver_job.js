@@ -13,8 +13,8 @@ var app = new Vue({
         no_customer:"",
     },
     methods: {
+        //auto populate table 
         find_by_driver_id: function () {
-            // on Vue instance created, load the book list
             const response =
                 // fetch(order_URL)
                 fetch(delivery_management_URL + "display_order")
@@ -38,6 +38,15 @@ var app = new Vue({
                     console.log(this.message + error);
 
                 });
+
+        },
+
+        Accept:function(){
+            //Update driver UI status
+
+
+            //Update customer UI status 
+
 
         },
         

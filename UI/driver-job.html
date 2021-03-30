@@ -77,32 +77,30 @@
                 <th>Action</th>
             </tr>
             <tr v-for="customer in customers" >
-                <td>{{ customer.order_id }}</td>
-                <td>{{ customer.customer_id }}</td>
-                <td>{{ customer.customer_name }}</td>
-                <td>{{ customer.pickup_location }}</td>
-                <td>{{ customer.destination }}</td>
-                <td>{{ customer.status }}</td>
+              <td>{{ customer.order_id }}</td>
+              <td>{{ customer.customer_id }}</td>
+              <td>{{ customer.customer_name }}</td>
+              <td>{{ customer.pickup_location }}</td>
+              <td>{{ customer.destination }}</td>
+              <td>{{ customer.status }}</td>
             
+              <!--Job Button-->
+              
+              <td>
+                <button v-if="customer.status == 'NEW'" class="btn btn-success mt-sm-2" @click="Accept">Accept Delivery</button>
+                <button v-else-if="customer.status == 'On delivery'" class="btn btn-primary" @click="">Complete delivery</button>
+                <button v-else-if="customer.status == 'Cancelled'" class="btn btn-danger" @click="">Cancel Delivery</button> 
+              </td>
 
-                <!--Job Button-->
-                <!--
-                <td>
-                  <button v-if="customer.status == 'NEW'" class="btn btn-success mt-sm-2" @click="">Accept Order</button>
-                  <button v-else-if="customer.status == 'On delivery'" class="btn btn-primary" @click="">Complete delivery</button>
-                  <button v-else-if="customer.status == 'Cancelled'" class="btn btn-danger" @click="">Cancel Order</button> 
-                </td>
-                -->
             </tr>
         </thead>
       </table>
 
-        <!--Job message-->
-        <!--
-        <div class="text-danger" v-if="!hasOrders">{{ message }}</div>
-        <div class="text-danger" v-if="hasOrders">{{ message }}</div>
-        -->
-  
+      <!-- Number of Job message-->
+     
+      <div class="text-danger" >{{ message }}</div>
+    
+
       
     </div> <!-- app: container -->
   </div>
