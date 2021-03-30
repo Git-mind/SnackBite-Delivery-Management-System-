@@ -19,18 +19,15 @@ class Customer(db.Model):
     customer_name= db.Column(db.String(100), nullable=False)
     phone_number = db.Column(db.Integer, nullable=False)
     credit_card = db.Column(db.String(100), nullable=False)
-    tele_id = db.Column(db.String(100), nullable=False)
 
-
-    def __init__(self, customer_id, customer_name, phone_number, credit_card,tele_id ):
+    def __init__(self, customer_id, customer_name, phone_number, credit_card ):
         self.customer_id = customer_id
         self.customer_name = customer_name
         self.phone_number = phone_number
         self.credit_card=  credit_card
-        self.tele_id=tele_id
 
     def json(self):
-        return {"customer_id": self.customer_id, "customer_name": self.customer_name, "phone_number": self.phone_number, "credit_card": self.credit_card,"tele_id": self.tele_id}
+        return {"customer_id": self.customer_id, "customer_name": self.customer_name, "phone_number": self.phone_number, "credit_card": self.credit_card}
 
 
 
@@ -91,27 +88,10 @@ def get_credit_card(id):
     return jsonify(
         {
             "code": 404,
-            "message": "Customer not found."
+            "message": "Book not found."
         }
     ), 404
 
-#return the tele id of the customer 
-@app.route("/customers/get_tele_id/<string:id>", methods=['GET'])
-def get_tele_id(id):
-    c_n=Customer.query.filter_by(customer_id=id).first()
-    if c_n:
-        return jsonify(
-            {
-                "code": 200,
-                "data": c_n.json()['tele_id']
-            }
-        )
-    return jsonify(
-        {
-            "code": 404,
-            "message": "Customer not found."
-        }
-    ), 404
 
 #add customer
 @app.route("/customers", methods=['POST'])
@@ -151,7 +131,7 @@ def add_customer():
     ), 201
 
 
-#delete customer 
+#delete customer d
 @app.route("/customers/<string:id>", methods=['DELETE'])
 def delete_customers(id):
     cust=Customer.query.filter_by(customer_id=id).first()

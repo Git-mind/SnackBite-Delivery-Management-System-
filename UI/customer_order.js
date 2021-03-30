@@ -6,15 +6,10 @@
 
 
 var order_URL = "http://localhost:5004/order";
-var order_management_URL = "http://localhost:5100/create_order";
+var order_management_URL = "http://localhost:5100/";
+var review_management_URL = "http://localhost:5400";
+var review_URL = "http://localhost:5005/review";
 var cus_url='http://localhost:5002/customers'
-
-// fetch(`${cus_url}/E1tQQB7gjvWd5PyqfE1Qljb6l5H3`).then(response=>{
-//     alert(response.ok)
-    
-// })
-
-
 
 //{
     
@@ -277,10 +272,14 @@ function mainVue(uid){
         computed: {
             hasOrders: function () {
                 return this.orders.length > 0;
+            },
+            hasReviews: function(){
+                return this.reviews.length > 0;
             }
         },
         data: {
             "orders": [],
+            "reviews" : [],
             message: "There is a problem retrieving books data, please try again later.",
             newPrice: "",
             orderCreated: false,
@@ -297,6 +296,15 @@ function mainVue(uid){
             destination: "",
             order_result: "",
             no_order: "",
+            update_order_id: "",
+            update_pickup_location: "",
+            update_destination: "",
+            orderUpdated: false,
+            feedback: "",
+            review_successful: false,
+            review_msg: "problem submitting review",
+            review_message: "",
+            no_review: ""
         },
         methods: {
             find_by_customer_id: function () {
@@ -318,14 +326,11 @@ function mainVue(uid){
                             this.message = "You have " + this.orders.length + " food orders"
                         }
                     })
-                    .catch(err => {
-                        // Errors when calling the service; such as network error, 
-                        // service offline, etc
+                    .catch(err =>{
+                        // errors when calling the service; such as network error
                         error.innerHTML=this.message + err
-    
                     });
-    
-            },
+                },
             find_by_customer_id_status: function (status) {
                 // on Vue instance created, load the book list
                 const response =
@@ -418,6 +423,92 @@ function mainVue(uid){
                     });
     
             },
+            submit_review: function (customer_id, driver_id, order_id) {
+                // on Vue instance created, load the book list
+        
+                const response =
+                    // fetch(order_URL)
+                    fetch(review_management_URL + "/create_review", 
+                    {
+                        method: "POST",
+                        headers: {
+                            "Content-type": "application/json"
+                        },
+                        body: JSON.stringify(
+                            {
+                                "customer_id": customer_id,
+                                "driver_id": driver_id,
+                                "order_id": order_id,
+                                "feedback": this.feedback
+                            })
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        console.log(response);
+                        if (data.code === 404) {
+                            // no book in db
+                            this.message = data.message;
+                        } else {
+                            console.log(data)
+                            this.review_successful = true
+                            this.review_msg = "Review submitted"
+                            // update review list
+                            
+                            this.find_by_customer_id();
+                        }
+                    })
+                    .catch(err => {
+                        // Errors when calling the service; such as network error, 
+                        // service offline, etc
+                        error.innerHTML=this.message + err
+        
+                    });
+        
+            },
+        update_order: function () {
+            // on Vue instance created, load the book list
+            update_order_id = this.update_order_id
+            pickup_location = this.update_pickup_location
+            destination = this.update_destination
+            customer_id = this.customer_id
+            const response =
+                // fetch(order_URL)
+                fetch(order_management_URL + "/update_order", 
+                {
+                    method: "PUT",
+                    headers: {
+                        "Content-type": "application/json"
+                    },
+                    body: JSON.stringify(
+                        {
+                            "order_id": this.update_order_id,
+                            "pickup_location": this.update_pickup_location,
+                            "destination": this.update_destination,
+                            "customer_id": this.customer_id
+                        })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    console.log(response);
+                    if (data.code === 404) {
+                        // no book in db
+                        this.message = data.message;
+                    } else {
+                        console.log(data)
+                        this.orderUpdated = true;
+                        this.message = "You have updated order details of order id" + order_id;
+                        // update UI after cancelling order
+                        this.find_by_customer_id();
+                    }
+                })
+                .catch(err => {
+                    // Errors when calling the service; such as network error, 
+                    // service offline, etc
+                    error.innerHTML=this.message + err
+
+                });
+
+        },
             create_order: function () {
     
                 // use this to trigger an error
@@ -479,7 +570,7 @@ function mainVue(uid){
                                             ${data.message}`;
                                 break;
                             case 500:
-                                500 
+                                // 500 
                                 orderMessage =
                                     `Order placed with error:
                                             Order Result:
@@ -504,13 +595,48 @@ function mainVue(uid){
                         // console.log("Problem in placing an order. " + error);
                         error.innerHTML="Problem in placing an order. " + err
                     })
-            }
+            },
+            find_reviews_by_customer_id: function () {
+                // on Vue instance created, load the book list
+                const response =
+                    // fetch(order_URL)
+                    fetch(review_URL + "/customer/" + this.customer_id)
+                    .then(response => response.json())
+                    .then(data => {
+                        console.log(response);
+                        if (data.code === 404) {
+                            // no reviews in db
+                            this.review_message = data.message;
+                            this.no_review = false;
+                        } else {
+                            this.no_review = true;
+    
+                            console.log(data)
+    
+                            this.reviews = data.data.reviews;
+                            this.review_message = "You have made " + this.reviews.length + " reviews"
+                        }
+                    })
+                    .catch(err => {
+                        // Errors when calling the service; such as network error, 
+                        // service offline, etc
+                        error.innerHTML=this.message + err
+    
+                    });
+    
+            },
             
         },
         created: function () {
             // on Vue instance created, load the book list
+            if (this.customer_name != ""){
+                userName = document.getElementById('userName')
+                userName.innerHTML = 'Welcome back ' + this.customer_name + "!"
+            }
             this.find_by_customer_id();
+            this.find_reviews_by_customer_id();
         }
     });
-
 }
+
+

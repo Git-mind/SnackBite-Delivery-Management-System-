@@ -29,7 +29,7 @@ class Order(db.Model):
     customer_id = db.Column(db.String(100), nullable=False)
     c_phone_number = db.Column(db.Integer, nullable=False)
     driver_id = db.Column(db.Integer, nullable=True)
-    driver_name = db.Column(db.String(100), nullable=True)
+    driver_name = db.Column(db.String(100), nullable=False)
     d_phone_number = db.Column(db.Integer, nullable=True)
     date_time = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
     pickup_location = db.Column(db.String(100), nullable=False)
@@ -110,26 +110,6 @@ def find_by_order_id(order_id):
         }
     ), 404
 
-@app.route("/order/customer/<string:customer_id>")
-def find_by_customer_id(customer_id):
-    orderlist = Order.query.filter_by(customer_id=customer_id).all()
-    # orderlist = Order.query.all()
-    if len(orderlist):
-        return jsonify(
-            {
-                "code": 200,
-                "data": {
-                    "orders": [order.json() for order in orderlist]
-                }
-            }
-        )
-    return jsonify(
-        {
-            "code": 404,
-            "message": "There are no orders"
-        }
-    ), 404
-
 @app.route("/order/customer/<string:customer_id>&<string:status>")
 def find_by_customer_id_status(customer_id,status):
     orderlist = Order.query.filter_by(customer_id=customer_id, status=status).all()
@@ -150,26 +130,25 @@ def find_by_customer_id_status(customer_id,status):
         }
     ), 404
 
-# @app.route("/order/delete/<string:order_id>", methods=['GET'])
-# def delete_order(order_id): 
-#     order = Order.query.filter_by(order_id=order_id).delete()
-#     try:
-#         db.session.commit()
-#         return {
-#             "code": 200,
-#             "message": "Order id " + order_id + " has been deleted"
-#         }
-#     except Exception as e:
-#         return jsonify(
-#             {
-#                 "code": 500,
-#                 "message": "An error occurred while deleting order id ="+ str(order_id) +" "+ str(e)
-#             }
-#         ), 500
-    
-
-#     print(order)
-
+@app.route("/order/customer/<string:customer_id>")
+def find_by_customer_id(customer_id):
+    orderlist = Order.query.filter_by(customer_id=customer_id).all()
+    # orderlist = Order.query.all()
+    if len(orderlist):
+        return jsonify(
+            {
+                "code": 200,
+                "data": {
+                    "orders": [order.json() for order in orderlist]
+                }
+            }
+        )
+    return jsonify(
+        {
+            "code": 404,
+            "message": "There are no orders"
+        }
+    ), 404
 
 @app.route("/order", methods=['POST'])
 def create_order():
@@ -210,7 +189,6 @@ def create_order():
 def update_order(order_id):
     try:
         order = Order.query.filter_by(order_id=order_id).first()
-
         if not order:
             return jsonify(
                 {
@@ -223,17 +201,27 @@ def update_order(order_id):
             ), 404
         # update status
         data = request.get_json()
-        print(data)
+        # Accepted order
         if 'driver_id' in data:
             if data['driver_id']:
                 order.driver_id = data['driver_id']
-            if data['driver_name']:
-                order.driver_name = data['driver_name']
             if data['d_phone_number']:
                 order.d_phone_number = data['d_phone_number']
-        if data['status']:
+
+        if 'status' in data:
             order.status = data['status']
+
+        # Customer update details of order
+        if 'pickup_location' in data:
+            if data['pickup_location']:
+                order.pickup_location = data['pickup_location']
+            if data['destination']:
+                order.destination = data['destination']
+            if data['price']:
+                order.price = data['price']
+        
         db.session.commit()
+
         return jsonify(
             {
                 "code": 200,
@@ -246,7 +234,9 @@ def update_order(order_id):
             {
                 "code": 500,
                 "data": {
-                    "order_id": order_id
+                    "order_id": order_id,
+                    "destination": data['destination'],
+                    "price": data['price']
                 },
                 "message": "An error occurred while updating the order details. " + str(e)
             }
