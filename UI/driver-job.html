@@ -57,14 +57,13 @@
 
       <!--filter buttons-->
       <h1 class="d-inline">Your Jobs</h1>
-      <button @click="find_by_driver_id" class="btn btn-primary m-3">Refresh Job list</button>
       <br>
       <button @click="find_by_driver_id" class="btn btn-primary m-3">View all Jobs</button>
       <button @click="find_by_driver_id_status('NEW')" class="btn btn-primary m-3">Filter New Jobs</button>
       <button @click="find_by_driver_id_status('Cancelled')" class="btn btn-primary m-3">Filter Cancelled Jobs</button>
 
         
-  
+
       <table class="table table-striped">
         <!-- <table class="table table-striped"> -->
         <thead>
@@ -96,11 +95,12 @@
         </thead>
       </table>
 
-      <!--Job message-->
-      <div class="text-danger" v-if="!hasOrders">{{ message }}</div>
-      <div class="text-danger" v-if="hasOrders">{{ message }}</div>
- 
-
+        <!--Job message-->
+        <!--
+        <div class="text-danger" v-if="!hasOrders">{{ message }}</div>
+        <div class="text-danger" v-if="hasOrders">{{ message }}</div>
+        -->
+  
       
     </div> <!-- app: container -->
   </div>
