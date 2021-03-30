@@ -1,112 +1,177 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
  
 <head>
+    <title>DRIVER</title>
+    <!-- Required meta tags -->
     <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-    <meta name="viewport" content="width=device-width">
- 
-    <title>driver job</title>
- 
-    <link rel="stylesheet" href="">
-    <!--[if lt IE 9]>
-      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
-    <![endif]-->
-    <!-- Bootstrap libraries -->
-    <meta name="viewport" 
-        content="width=device-width, initial-scale=1, shrink-to-fit=no">
- 
-    <!-- Latest compiled and minified CSS -->
-    <link rel="stylesheet"
-    href="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css"
-    integrity="sha384-GJzZqFGwb1QTTN6wy59ffF1BuGJpLSa9DkKMp0DgiMDm4iYMj70gZWKYbI706tWS" 
-    crossorigin="anonymous">
- 
-    <!-- Latest compiled and minified JavaScript -->
-    <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
-    <script 
-    src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
-    
-    <script
-    src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.6/umd/popper.min.js"
-    integrity="sha384-wHAiFfRlMFy6i5SRaxvfOCifBUQy1xHdJ/yoi7FRNXMRBu5WHdZYu1hA6ZOblgut"
-    crossorigin="anonymous"></script>
-    
-    <script 
-    src="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/js/bootstrap.min.js"
-    integrity="sha384-B0UglyR+jN6CkvvICOB2joaf5I4l3gm9GU6Hc1og6Ls7i6U/mkkaduKaBhlAXv9k"
-    crossorigin="anonymous"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+        integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+
+    <script src="https://kit.fontawesome.com/909e473e0c.js" crossorigin="anonymous"></script>
+
+    <script src="https://cdn.jsdelivr.net/npm/vue@2/dist/vue.js"></script>
 </head>
 
-<script src="https://cdn.jsdelivr.net/npm/vue@2/dist/vue.js"></script>
+
 
 <body>
-  <div id="app">
-    <!--Header-->
+  <div>
     <nav class="navbar navbar-light bg-light justify-content-between">
         <a class="navbar-brand"></a>
         <h1>SnackBite</h1>
         <form class="form-inline">
-            <h2 id="userName" class="mr-sm-2">Welcome back</h2>
-            <a href="./landing-page.html" class="btn btn-outline-danger ">Log Out</a>
+            <!-- WELCOME MESSAGE RENDERS HERE -->
+            <h2 id="welcome_msg" class="mr-sm-2"></h2>
+            <a class="btn btn-success" id='log_in'>Log In via <i class="fab fa-google">oogle</i></a>
+            <a class="btn btn-danger" id='log_out'>Log Out</a>
+            <!-- <a class="btn btn-danger" id='log_out' >Log Out</a> -->
+
+
         </form>
     </nav>
+    <!-- LOADING -->
+    <div id='loading' style='padding: 10%;'>
+        <img src='iphone-spinner-2.gif' class='m-auto d-block'>
+        <p class='m-auto text font-weight-bold' style='width: fit-content;'>Loading...</p>
+    </div>
+    <!-- ERROR IN AUTHENTICATING CUSTOMER -->
+    <div style='width: fit-content;margin: auto; color: red;' id='error'>
 
-  
-    <div class="container">
+    </div>
 
-      <!--filter buttons-->
-      <h1 class="d-inline">Your Jobs</h1>
-      <br>
-      <button @click="find_by_driver_id" class="btn btn-primary m-3">View all Jobs</button>
-      <button @click="find_by_driver_id_status('NEW')" class="btn btn-primary m-3">Filter New Jobs</button>
-      <button @click="find_by_driver_id_status('Cancelled')" class="btn btn-primary m-3">Filter Cancelled Jobs</button>
 
-        
-
-      <table class="table table-striped">
-        <!-- <table class="table table-striped"> -->
-        <thead>
-            <tr>
-                <th>Order ID</th>
-                <th>Customer ID</th>
-                <th>Customer Name</th>
-                <th>Pickup Location</th>
-                <th>Destination</th>
-                <th>Status</th>
-                <th>Action</th>
-            </tr>
-            <tr v-for="customer in customers" >
-              <td>{{ customer.order_id }}</td>
-              <td>{{ customer.customer_id }}</td>
-              <td>{{ customer.customer_name }}</td>
-              <td>{{ customer.pickup_location }}</td>
-              <td>{{ customer.destination }}</td>
-              <td>{{ customer.status }}</td>
-            
-              <!--Job Button-->
-              
-              <td>
-                <button v-if="customer.status == 'NEW'" class="btn btn-success mt-sm-2" @click="Accept">Accept Delivery</button>
-                <button v-else-if="customer.status == 'On delivery'" class="btn btn-primary" @click="">Complete delivery</button>
-                <button v-else-if="customer.status == 'Cancelled'" class="btn btn-danger" @click="">Cancel Delivery</button> 
-              </td>
-
-            </tr>
-        </thead>
-      </table>
-
-      <!-- Number of Job message-->
-     
-      <div class="text-danger" >{{ message }}</div>
-    
+    <!--VUE STUFF -->
+    <div id='vue_stuff'>
+      <div class="container" id="app">
+        <!--Header-->
+        <nav class="navbar navbar-light bg-light justify-content-between">
+            <a class="navbar-brand"></a>
+            <h1>SnackBite</h1>
+            <form class="form-inline">
+                <h2 id="userName" class="mr-sm-2">Welcome back</h2>
+                <a href="./landing-page.html" class="btn btn-outline-danger ">Log Out</a>
+            </form>
+        </nav>
 
       
-    </div> <!-- app: container -->
+        <div class="container">
+
+          <!--filter buttons-->
+          <h1 class="d-inline">Your Jobs</h1>
+          <br>
+          <button @click="find_by_driver_id" class="btn btn-primary m-3">View all Jobs</button>
+          <button @click="find_by_driver_id_status('NEW')" class="btn btn-primary m-3">Filter New Jobs</button>
+          <button @click="find_by_driver_id_status('Cancelled')" class="btn btn-primary m-3">Filter Cancelled Jobs</button>
+
+            
+          <!--delivery table-->
+          <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Order ID</th>
+                    <th>Customer ID</th>
+                    <th>Customer Name</th>
+                    <th>Pickup Location</th>
+                    <th>Destination</th>
+                    <th>Status</th>
+                    <th>Action</th>
+                </tr>
+                <tr v-for="customer in customers" >
+                  <td>{{ customer.order_id }}</td>
+                  <td>{{ customer.customer_id }}</td>
+                  <td>{{ customer.customer_name }}</td>
+                  <td>{{ customer.pickup_location }}</td>
+                  <td>{{ customer.destination }}</td>
+                  <td>{{ customer.status }}</td>
+                
+                  <!--Job Button-->
+                  <td>
+                    <button v-if="customer.status == 'NEW'" class="btn btn-success mt-sm-2" @click="Accept">Accept Delivery</button>
+                    <button v-else-if="customer.status == 'On delivery'" class="btn btn-primary" @click="">Complete delivery</button>
+                    <button v-else-if="customer.status == 'Cancelled'" class="btn btn-danger" @click="">Cancel Delivery</button> 
+                  </td>
+                </tr>
+            </thead>
+          </table>
+
+          <!-- Number of Job message-->
+          <div class="text-danger" >{{ message }}</div>
+      
+        </div> <!-- end: container-->
+      </div><!-- end: app-->
+    </div><!-- end: vue stuff-->
+  </div>
+
+    <!-- MODAL FOR SIGN UP-->  
+  <div class="modal fade" id="signUpModal" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+
+          <div class="modal-content">
+
+              <div class="modal-header">
+                  <h5 class="modal-title" id="exampleModalLabel">Sign up for SnackBite</h5>
+                  <button type="button" class="close" data-dismiss="modal">
+                  </button>
+              </div>
+
+              <div class="modal-body">
+                  We have noticed you have not registered for SnackBite. Please
+                  fill in your Phone number below<br /><br />
+
+                  <div class="form-group">
+                      <label for="exampleInputPassword1">Phone Number</label>
+                      <input class="form-control" id="p_num" type="number" pattern="[0-9\s]{13,19}" maxlength="19"
+                          placeholder="Please enter your phone number">
+                  </div>
+                  <div>
+
+
+                      <div class="modal-footer">
+                          <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                          <button type="button" class="btn btn-primary" id='sign_up'>Submit</button>
+                      </div>
+
+
+                  </div>
+
+              </div>
+          </div>
+    </div>
   </div>
 
 
+  <!-- FIREBASE CONFIG DO NOT TOUCH THIS-->
+  <!-- The core Firebase JS SDK is always required and must be listed first -->
+  <script src="https://www.gstatic.com/firebasejs/8.3.1/firebase-app.js"></script>
+
+  <!-- Add Firebase products that you want to use -->
+  <script src="https://www.gstatic.com/firebasejs/8.3.1/firebase-auth.js"></script>
+
+  <script>
+      // Your web app's Firebase configuration
+      var firebaseConfig = {
+          apiKey: "AIzaSyCUs5MFQPqQV8rmg2rzy-0Rw8m5eAjoUSw",
+          authDomain: "snackbite-9355b.firebaseapp.com",
+          projectId: "snackbite-9355b",
+          storageBucket: "snackbite-9355b.appspot.com",
+          messagingSenderId: "165426704896",
+          appId: "1:165426704896:web:5bb86bb260e6552aa79ee5"
+      };
+      // Initialize Firebase
+      firebase.initializeApp(firebaseConfig);
+  </script>
+  <!-- FIREBASE CONFIG DO NOT TOUCH THIS -->  
+
+
+
+  <!-- External Javascript file  -->
   <script src="driver_job.js"></script>
+
+
   <!-- Optional JavaScript -->
   <!-- jQuery first, then Popper.js, then Bootstrap JS -->
   <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"

@@ -3,11 +3,11 @@ USE `driver`;
 
 DROP TABLE IF EXISTS `DRIVER`;
 CREATE TABLE IF NOT EXISTS `driver` (
-  `driver_id` int(11) NOT NULL AUTO_INCREMENT,
+  `driver_id` VARCHAR(100) NOT NULL,
   `driver_name` varchar(100) NOT NULL,
-  `phone_number` int NOT NULL,
-  PRIMARY KEY (`driver_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
+  `phone_number` INT NOT NULL,
+   CONSTRAINT driver_id_pk PRIMARY KEY (`driver_id`)
+) ENGINE=InnoDB;
 
-INSERT INTO driver VALUES
-(1,'Driver guy','32165487');
+INSERT INTO Driver VALUES
+(1,'bob','893323');

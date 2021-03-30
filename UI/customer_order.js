@@ -160,7 +160,7 @@ if (user) {
 async function check_cus(cus_url,uid,user_name){
     try{
         response=await fetch(`${cus_url}/${uid}`)
-        
+        //console.log(await fetch(`${cus_url}/${uid}`))
         if (!response.ok){
             //SIGN OUT THE USER FROM FIREBASE 
             sign_out()
