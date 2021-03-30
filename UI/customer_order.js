@@ -31,8 +31,10 @@ vue_stuff=document.getElementById("vue_stuff")
 vue_stuff.style.display='none'
 
 
-//LOADING
+//LOADING FOR AUTHENTICATION
 loading=document.getElementById('loading')
+
+
 
 //WELCOME MESSAGE
 welcome=document.getElementById('welcome_msg')
@@ -510,7 +512,8 @@ function mainVue(uid){
 
         },
             create_order: function () {
-    
+                //LOADING
+                loading.style.display=''
                 // use this to trigger an error
                 // "customer_id": "ERROR",
                 pickup_location = this.pickup_location
@@ -531,6 +534,8 @@ function mainVue(uid){
                     })
                     .then(response => response.json())
                     .then(data => {
+                        //LOADING
+                        loading.style.display='none'
                         console.log(data);
                         result = data.data;
                         console.log(result);
