@@ -28,6 +28,7 @@ class Order(db.Model):
     order_id = db.Column(db.Integer, primary_key=True)
     customer_id = db.Column(db.String(100), nullable=False)
     c_phone_number = db.Column(db.Integer, nullable=False)
+    customer_name= db.Column(db.String(100), nullable=False)
     driver_id = db.Column(db.Integer, nullable=True)
     d_phone_number = db.Column(db.Integer, nullable=True)
     date_time = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
@@ -41,6 +42,7 @@ class Order(db.Model):
             'order_id': self.order_id,
             'customer_id': self.customer_id,
             'c_phone_number': self.c_phone_number,
+            'customer_name': self.customer_name,
             'driver_id': self.driver_id,
             'd_phone_number': self.d_phone_number,
             'date_time': self.date_time,
@@ -152,11 +154,13 @@ def find_by_customer_id(customer_id):
 def create_order():
     customer_id = request.json.get('customer_id')
     c_phone_number = request.json.get('c_phone_number')
+    customer_name = request.json.get('customer_name')
     pickup_location = request.json.get('pickup_location')
     destination = request.json.get('destination')
     price = request.json.get('price')
     order = Order(customer_id=customer_id, 
     c_phone_number=c_phone_number,
+    customer_name=customer_name,
     pickup_location=pickup_location,
     destination=destination,
     price=price)
@@ -187,7 +191,6 @@ def create_order():
 def update_order(order_id):
     try:
         order = Order.query.filter_by(order_id=order_id).first()
-        print(order)
         if not order:
             return jsonify(
                 {
