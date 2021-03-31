@@ -114,14 +114,13 @@ services:
     build:
       context: ./
       dockerfile: activity_log.Dockerfile
-    image: javieryw/activity_log:snackbite
+    image: feelg8d/activity_log:snackbite
     restart: always
     depends_on:
       - rabbitmq
     environment:
       rabbit_host: rabbitmq
       rabbit_port: 5672
-      dbURL: mysql+mysqlconnector://is213@host.docker.internal:3306/activity 
       PYTHONUNBUFFERED: 1
 
 
@@ -133,7 +132,7 @@ services:
     build:
       context: ./
       dockerfile: error.Dockerfile
-    image: javieryw/error:snackbite
+    image: feelg8d/error:snackbite
     restart: always
     depends_on:
       - rabbitmq
@@ -211,7 +210,7 @@ services:
     build:
       context: ./
       dockerfile: order_management.Dockerfile
-    image: javieryw/order_management:snackbite
+    image: feelg8d/order_management:snackbite
     restart: always
     depends_on:
       - order
@@ -234,7 +233,7 @@ services:
     build:
       context: ./
       dockerfile: payment_management.Dockerfile
-    image: javieryw/payment_management:snackbite
+    image: feelg8d/payment_management:snackbite
     restart: always
     depends_on:
       - order
@@ -259,7 +258,7 @@ services:
     build:
       context: ./
       dockerfile: delivery_management.Dockerfile
-    image: javieryw/delivery_management:snackbite
+    image: feelg8d/delivery_management:snackbite
     restart: always
     depends_on:
       - order

@@ -35,7 +35,7 @@ def get_credit_card():
 #add customer 
 def add_customer():
     new_url=url
-    j={"customer_id": 2, "customer_name": 'Cortana', "phone_number": 343, "credit_card": '4242 4242 4242 4242'}
+    j={"customer_id": 2, "customer_name": 'Cortana', "phone_number": 343, "credit_card": '4242 4242 4242 4242',"tele_id":'test'}
     results=invoke_http(new_url,method="POST",json=j)
     print(results)
 
@@ -46,4 +46,4 @@ def delete_customer():
     results=invoke_http(new_url,method='DELETE')
     print(results)
 
-print(find_by_customer_id(1))
+
