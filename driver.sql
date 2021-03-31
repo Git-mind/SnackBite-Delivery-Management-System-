@@ -1,6 +1,7 @@
 CREATE DATABASE IF NOT EXISTS `driver`; 
 USE `driver`;
 
+/*Added by chin ning*/
 DROP TABLE IF EXISTS `DRIVER`;
 CREATE TABLE IF NOT EXISTS `driver` (
   `driver_id` VARCHAR(100) NOT NULL,

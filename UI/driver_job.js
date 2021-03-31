@@ -2,7 +2,6 @@ var delivery_management_URL = "http://localhost:5200/";
 var order_management_URL = "http://localhost:5100/";
 var driver_url="http://localhost:5001/driver"
 var order_URL = "http://localhost:5004/order";
-var order_management_URL = "http://localhost:5100/";
 
 //{
     
@@ -321,12 +320,12 @@ function mainVue(uid){
                     })
                     .then(response => response.json())
                     .then(data => {
-                        console.log(response);
+                        //console.log(response);
                         if (data.code === 404) {
                             // no order in db
                             this.message = data.message;
                         } else {
-                            console.log(data)
+                    
                             this.message = "You have accepted order id " + order_id;
                             // update UI after accepting order
                             this.find_by_driver_id();

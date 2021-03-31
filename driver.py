@@ -79,6 +79,7 @@ def find_by_driver_id(driver_id):
         }
     ), 404
 
+#added by chin ning
 #add driver
 @app.route("/driver", methods=['POST'])
 def add_driver():

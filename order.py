@@ -9,7 +9,7 @@ from flask_cors import CORS
 
 from datetime import datetime
 import json
-
+from sqlalchemy import or_
 from datetime import datetime
 
 app = Flask(__name__)
@@ -72,7 +72,9 @@ def get_all():
             "message": "There are no orders"
         }
     ), 404
+filter(or_(status == 'NEW', status == 'On Deliver')).all()
 
+#changed by chin ning 
 @app.route("/order/get_available_orders")
 def get_available_orders():
     orderlist=Order.query.filter_by(status="NEW").all()
