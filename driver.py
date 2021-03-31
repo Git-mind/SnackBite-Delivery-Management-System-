@@ -80,7 +80,7 @@ def find_by_driver_id(driver_id):
     ), 404
 
 #add driver
-@app.route("/drivers", methods=['POST'])
+@app.route("/driver", methods=['POST'])
 def add_driver():
     data = request.get_json()
     driver = Driver(**data)

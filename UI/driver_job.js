@@ -1,7 +1,8 @@
 var delivery_management_URL = "http://localhost:5200/";
 var order_management_URL = "http://localhost:5100/";
-var driver_url="http://localhost:5001/drivers"
-
+var driver_url="http://localhost:5001/driver"
+var order_URL = "http://localhost:5004/order";
+var order_management_URL = "http://localhost:5100/";
 
 //{
     
@@ -130,6 +131,10 @@ firebase.auth().onAuthStateChanged(function(user) {
 if (user) {
 
     check_cus(driver_url,user.uid,user.displayName)
+    //console.log(driver_url)
+    //console.log(user.id)
+    //console.log(user.displayName)
+  
 } else {
     loading.style.display='none'
 
@@ -146,6 +151,7 @@ if (user) {
 //CHECK IF DRIVER IS PRESENT IN THE DATABASE (IF LOGGED IN WITHOUT SIGNING UP)
 async function check_cus(driver_url,uid,user_name){
     try{
+        console.log(uid)
         response=await fetch(`${driver_url}/${uid}`)
         console.log(await fetch(`${driver_url}/${uid}`))
         if (!response.ok){
@@ -261,11 +267,11 @@ function mainVue(uid){
 
         },
         data: {
-            "customers": [],
+            "orders": [],
             message: "There is a problem retrieving books data, please try again later.",
-            customer_id: "1",
-            customer_name: "John",
-            no_customer:"",
+            driver_id: "1",
+            no_order:"",
+            driver_name:"",
         },
         methods: {
             //auto populate table 
@@ -279,12 +285,12 @@ function mainVue(uid){
                         if (data.code === 404) {
                             // no order in db
                             this.message = data.message;
-                            this.no_customer = false;
+                            this.no_order = false;
                         } else {
                             console.log(data)
-                            this.no_customer = true;
-                            this.customers = data.data.order_result.data.customers;
-                            this.message = "You have " + this.customers.length + " food orders"
+                            this.no_order = true;
+                            this.orders = data.data.order_result.data.customers;
+                            this.message = "You have " + this.orders.length + " food orders"
                         }
                     })
                     .catch(error => {
@@ -293,26 +299,70 @@ function mainVue(uid){
                         console.log(this.message + error);
 
                     });
+ 
 
             },
 
+
+            
             Accept:function(){
-                //Update driver UI status
+                // on Vue instance created, load the book list
+                update_order_id = this.update_order_id
+                pickup_location = this.update_pickup_location
+                destination = this.update_destination
+                customer_id = this.customer_id
 
+                const response =
+                // fetch(order_URL)
+                fetch(order_management_URL + "/update_order", 
+                {
+                    method: "PUT",
+                    headers: {
+                        "Content-type": "application/json"
+                    },
+                    body: JSON.stringify(
+                        {
+                            "order_id": this.update_order_id,
+                            "pickup_location": this.update_pickup_location,
+                            "destination": this.update_destination,
+                            "customer_id": this.customer_id
+                        })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    console.log(response);
+                    if (data.code === 404) {
+                        // no book in db
+                        this.message = data.message;
+                    } else {
+                        console.log(data)
+                        this.orderUpdated = true;
+                        this.message = "You have updated order details of order id" + order_id;
+                        // update UI after cancelling order
+                        this.find_by_customer_id();
+                    }
+                })
+                .catch(err => {
+                    // Errors when calling the service; such as network error, 
+                    // service offline, etc
+                    error.innerHTML=this.message + err
 
-                //Update customer UI status 
+                });
+
 
 
             },
+
             
         },
         created: function () {
-            if (this.customer_name != ""){
+           
+            if (this.driver_name != ""){
                 userName = document.getElementById('userName')
-                userName.innerHTML = 'Welcome back ' + this.customer_name + "!"
-
-                this.find_by_driver_id();
+                userName.innerHTML = 'Welcome back ' + this.driver_name + "!"
+        
             }
+            this.find_by_driver_id();
         
         }
     });
