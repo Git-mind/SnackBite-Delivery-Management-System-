@@ -80,7 +80,7 @@
                 
                   <!--Job Button-->
                   <td>
-                    <button v-if="order.status == 'NEW'" class="btn btn-success mt-sm-2" @click="Accept">Accept Delivery</button>
+                    <button v-if="order.status == 'NEW'" class="btn btn-success mt-sm-2" @click="accept_order(order.order_id)">Accept Delivery</button>
                     <button v-else-if="order.status == 'On Delivery'" class="btn btn-primary" @click="">Complete delivery</button>
                     <button v-else-if="order.status == 'Cancelled'" class="btn btn-danger" @click="">Cancel Delivery</button> 
                   </td>

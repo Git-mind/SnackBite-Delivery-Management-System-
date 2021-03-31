@@ -274,7 +274,7 @@ function mainVue(uid){
             driver_name:"",
         },
         methods: {
-            //auto populate table 
+            //auto populate table/ polling
             find_by_driver_id: function () {
                 const response =
                     // fetch(order_URL)
@@ -304,52 +304,40 @@ function mainVue(uid){
             },
 
 
-            
-            Accept:function(){
-                // on Vue instance created, load the book list
-                update_order_id = this.update_order_id
-                pickup_location = this.update_pickup_location
-                destination = this.update_destination
-                customer_id = this.customer_id
-
+            //driver accepts order
+            accept_order:function(order_id){
                 const response =
-                // fetch(order_URL)
-                fetch(order_management_URL + "/update_order", 
-                {
-                    method: "PUT",
-                    headers: {
-                        "Content-type": "application/json"
-                    },
-                    body: JSON.stringify(
-                        {
-                            "order_id": this.update_order_id,
-                            "pickup_location": this.update_pickup_location,
-                            "destination": this.update_destination,
-                            "customer_id": this.customer_id
-                        })
-                })
-                .then(response => response.json())
-                .then(data => {
-                    console.log(response);
-                    if (data.code === 404) {
-                        // no book in db
-                        this.message = data.message;
-                    } else {
-                        console.log(data)
-                        this.orderUpdated = true;
-                        this.message = "You have updated order details of order id" + order_id;
-                        // update UI after cancelling order
-                        this.find_by_customer_id();
-                    }
-                })
-                .catch(err => {
-                    // Errors when calling the service; such as network error, 
-                    // service offline, etc
-                    error.innerHTML=this.message + err
-
-                });
-
-
+                    // fetch(order_URL)
+                    fetch(order_URL + "/" + order_id, 
+                    {
+                        method: "PUT",
+                        headers: {
+                            "Content-type": "application/json"
+                        },
+                        body: JSON.stringify(
+                            {
+                                "status": "On Delivery"
+                            })
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        console.log(response);
+                        if (data.code === 404) {
+                            // no order in db
+                            this.message = data.message;
+                        } else {
+                            console.log(data)
+                            this.message = "You have accepted order id " + order_id;
+                            // update UI after accepting order
+                            this.find_by_driver_id();
+                        }
+                    })
+                    .catch(err => {
+                        // Errors when calling the service; such as network error, 
+                        // service offline, etc
+                        error.innerHTML=this.message + err
+    
+                    });
 
             },
 
