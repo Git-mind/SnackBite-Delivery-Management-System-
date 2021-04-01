@@ -173,22 +173,23 @@
 
               <div class="modal-body">
                   We have noticed you have not registered for SnackBite. Please
-                  fill in your Phone number below<br /><br />
-
+                  fill in your Telegram ID and Phone number below<br /><br />
+                  <div class="form-group">
+                    <label for="exampleInputEmail1">Telegram ID</label>
+                    <input type="email" class="form-control" id="t_id" placeholder="Enter Telegram id">
+                    <small id="emailHelp" class="form-text text-muted">We'll never share your id with anyone
+                        else.</small>
+                  </div>
                   <div class="form-group">
                       <label for="exampleInputPassword1">Phone Number</label>
                       <input class="form-control" id="p_num" type="number" pattern="[0-9\s]{13,19}" maxlength="19"
                           placeholder="Please enter your phone number">
                   </div>
                   <div>
-
-
                       <div class="modal-footer">
                           <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
                           <button type="button" class="btn btn-primary" id='sign_up'>Submit</button>
                       </div>
-
-
                   </div>
 
               </div>

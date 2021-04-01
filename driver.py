@@ -23,19 +23,22 @@ class Driver(db.Model):
     driver_id = db.Column(db.String(100), primary_key=True)
     driver_name = db.Column(db.String(100), nullable=False)
     phone_number = db.Column(db.Integer, nullable=False)
+    tele_id = db.Column(db.String(100), nullable=False)
 
-
-    def __init__(self, driver_id, driver_name, phone_number):
+    def __init__(self, driver_id, driver_name, phone_number,tele_id):
         self.driver_id = driver_id
         self.driver_name = driver_name
         self.phone_number = phone_number
+        self.tele_id = tele_id
     
 
     def json(self):
         return {
             'driver_id': self.driver_id,
             'driver_name': self.driver_name,
-            'phone_number': self.phone_number
+            'phone_number': self.phone_number,
+            'tele_id': self.tele_id
+
         }
 
 #get all driver
@@ -117,6 +120,25 @@ def add_driver():
         }
     ), 201
 
+
+
+# return the tele id of delivery guy
+@app.route("/driver/get_tele_id/<string:id>", methods=['GET'])
+def get_tele_id(id):
+    c_n = Driver.query.filter_by(driver_id=id).first()
+    if c_n:
+        return jsonify(
+            {
+                "code": 200,
+                "data": c_n.json()['tele_id']
+            }
+        )
+    return jsonify(
+        {
+            "code": 404,
+            "message": "Driver not found."
+        }
+    ), 404
 
 
 # delete driver
