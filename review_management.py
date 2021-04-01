@@ -16,9 +16,10 @@ CORS(app)
 
 #activity_log_URL = "http://localhost:5003/activity_log"
 #error_URL = "http://localhost:5004/error"
-driver_URL = "http://localhost:5001/driver"
-customer_URL = "http://localhost:5002/customers/"
-review_URL = "http://localhost:5005/review"
+driver_URL = environ.get('driver_URL') or "http://localhost:5001/driver"
+customer_URL = environ.get('customer_URL') or "http://localhost:5002/customers/"
+review_URL = environ.get('review_URL') or  "http://localhost:5005/review"
+order_URL= environ.get('order_URL') or  "http://localhost:5004/order"
 
 
 @app.route("/create_review", methods=['POST'])
@@ -60,8 +61,8 @@ def processCreateReview(review):
     # Invoke the pricing microservice
 
     print('\n-----Invoking order microservice-----')
-    order_URL = f"http://localhost:5004/order/{review['order_id']}" 
-    order_result = invoke_http(order_URL, method='GET')
+
+    order_result = invoke_http(order_URL + "/" + review['order_id'] , method='GET')
     print('order_result:', order_result)
 
     # 3. Check the price result; if a failure, send it to the error microservice.
