@@ -6,14 +6,92 @@ volumes:
   pgdata: 
   kongadata:
 
-
 networks:
   kong-net:
     driver: bridge
 
-
 services:
 
+
+  #######################################
+  # Postgres: The database used by Kong
+  #######################################
+  kong-database:
+    image: postgres:9.6
+    restart: always
+    networks:
+      - kong-net
+    environment:
+      POSTGRES_DB: kong
+      POSTGRES_USER: kong
+      POSTGRES_PASSWORD: password
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "kong"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+  #######################################
+  # Kong database migration
+  #######################################
+  kong-migration:
+    image: kong:2.0.4
+    command: "kong migrations bootstrap"
+    restart: on-failure
+    networks:
+      - kong-net
+    environment:
+      KONG_DATABASE: postgres
+      KONG_PG_HOST: kong-database
+      KONG_PG_USER: kong
+      KONG_PG_PASSWORD: password
+    depends_on:
+      - kong-database
+
+  #######################################
+  # Kong: The API Gateway
+  #######################################
+  kong:
+    image: kong:2.0.4
+    restart: always
+    networks:
+      - kong-net
+    environment:
+      KONG_DATABASE: postgres
+      KONG_PG_HOST: kong-database
+      KONG_PG_USER: kong
+      KONG_PG_PASSWORD: password
+      KONG_PROXY_LISTEN: 0.0.0.0:8000
+      KONG_ADMIN_LISTEN: 0.0.0.0:8001
+    depends_on:
+      - kong-migration
+    ports:
+      - "8000:8000"
+  
+  #######################################
+  # Konga: Kong GUI
+  #######################################
+  konga:
+    image: pantsel/konga
+    restart: always
+    networks:
+        - kong-net
+    environment:
+      DB_ADAPTER: postgres
+      DB_HOST: kong-database
+      DB_USER: kong
+      DB_PASSWORD: password
+      DB_DATABASE: konga_db
+    depends_on:
+      - kong
+    ports:
+      - "1337:1337"
+    volumes:
+      - kongadata:/app/kongadata
 
 ####################################
 # RabbitMQ: The messaging broker   
@@ -28,6 +106,7 @@ services:
     volumes: 
       - rabbitmq_data:/var/lib/rabbitmq
 
+
   #################################################
   # Activity Log: The Activity Log microservice
   #################################################
@@ -35,7 +114,7 @@ services:
     build:
       context: ./
       dockerfile: activity_log.Dockerfile
-    image: javieryw/activity_log:snackbite
+    image: feelg8d/activity_log:snackbite
     restart: always
     depends_on:
       - rabbitmq
@@ -53,7 +132,7 @@ services:
     build:
       context: ./
       dockerfile: error.Dockerfile
-    image: javieryw/error:snackbite
+    image: feelg8d/error:snackbite
     restart: always
     depends_on:
       - rabbitmq
@@ -62,7 +141,6 @@ services:
       rabbit_port: 5672
       dbURL: mysql+mysqlconnector://is213@host.docker.internal:3306/error
       PYTHONUNBUFFERED: 1 
-
 
 ###################################
 # Order: The Order microservice
@@ -109,9 +187,8 @@ services:
         - "5002:5002"
 
 
-
 ##################################
-# Driver: The Driver microservice
+# Drive: The Driver microservice
 ##################################
   driver:
     build:
@@ -124,49 +201,30 @@ services:
       PYTHONUNBUFFERED: 1 
     ports:
       - "5001:5001"
-
-
-
-##################################
-# Review: The Review microservice
-##################################
-  review:
-    build:
-      context: ./
-      dockerfile: review.Dockerfile
-    image: javieryw/review:snackbite
-    restart: always
-    environment:
-      dbURL: mysql+mysqlconnector://is213@host.docker.internal:3306/review
-      PYTHONUNBUFFERED: 1 
-    ports:
-      - "5005:5005"
     
 
-###############################################
+ ###############################################
   # Order Management microservice
   ###############################################
   order_management:
     build:
       context: ./
       dockerfile: order_management.Dockerfile
-    image: javieryw/order_management:snackbite
+    image: feelg8d/order_management:snackbite
     restart: always
     depends_on:
       - order
-      - customer 
+      - driver
       - pricing
     environment:
       rabbit_host: rabbitmq
       rabbit_port: 5672
       order_URL: http://order:5004/order
-      customer_URL: http://customer:5002/customers
+      driver_URL: http://driver:5001/driver
       pricing_URL: http://pricing:5003/pricing
       PYTHONUNBUFFERED: 1
     ports:
       - "5100:5100"
-
-
 
   ###############################################
   # Payment Management microservice
@@ -175,7 +233,7 @@ services:
     build:
       context: ./
       dockerfile: payment_management.Dockerfile
-    image: javieryw/payment_management:snackbite
+    image: feelg8d/payment_management:snackbite
     restart: always
     depends_on:
       - order
@@ -187,41 +245,11 @@ services:
       rabbit_host: rabbitmq
       rabbit_port: 5672
       order_URL: http://order:5004/order
-      customer_URL: http://customer:5002/customers
+      customer_URL: http://customer:5002/customer
       PYTHONUNBUFFERED: 1
     ports:
       - "5300:5300"
 
-
-
-
-  ###############################################
-  # Review Management microservice
-  ###############################################
-  review_management:
-    build:
-      context: ./
-      dockerfile: review_management.Dockerfile
-    image: javieryw/review_management:snackbite
-    restart: always
-    depends_on:
-      - order
-      - driver
-      - customer
-      - review 
-      - activity_log
-      - error
-      - rabbitmq
-    environment:
-      rabbit_host: rabbitmq
-      rabbit_port: 5672
-      order_URL: http://order:5004/order
-      driver_URL: http://driver:5001/driver
-      customer_URL: http://customer:5002/customers
-      review_URL: http://review:5005/review
-      PYTHONUNBUFFERED: 1
-    ports:
-      - "5400:5400"
 
   ###############################################
   # Delivery Management microservice
@@ -230,13 +258,11 @@ services:
     build:
       context: ./
       dockerfile: delivery_management.Dockerfile
-    image: javieryw/delivery_management:snackbite
+    image: feelg8d/delivery_management:snackbite
     restart: always
     depends_on:
       - order
       - driver
-      - customer
-      - review 
       - activity_log
       - error
       - rabbitmq
@@ -245,17 +271,9 @@ services:
       rabbit_port: 5672
       order_URL: http://order:5004/order
       driver_URL: http://driver:5001/driver
-      customer_URL: http://customer:5002/customers
-      review_URL: http://review:5005/review
       PYTHONUNBUFFERED: 1
     ports:
       - "5200:5200"
-
-
-
-
-
-
 
 
 

@@ -14,8 +14,8 @@ import json
 app = Flask(__name__)
 CORS(app)
 
-order_URL = environ.get('order_URL') or "http://localhost:5004/order"
-customer_URL = environ.get('customer_URL') or "http://localhost:5002/customers/"
+order_URL = "http://localhost:5004/order"
+customer_URL = "http://localhost:5002/customers/"
 # payment_URL = 
 
 @app.route("/order_completed", methods=['POST'])
@@ -99,7 +99,9 @@ def processOrderCompleted(order):
         # Invoke customer microservice
         
         print('\n-----Invoking customer microservice-----')
-        customer_result = invoke_http(customer_URL + "/" + str(order_result['data']['customer_id'], method='GET'))
+        customer_URL = "http://localhost:5002/customers/" + str(order_result['data']['customer_id'])
+        customer_result = invoke_http(customer_URL, method='GET')
+
         print('customer_result:', customer_result)
         
         # 5. Create order using payment microservice

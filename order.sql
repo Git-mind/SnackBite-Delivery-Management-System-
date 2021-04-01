@@ -1,4 +1,3 @@
-
 CREATE DATABASE IF NOT EXISTS `order`;
 USE `order`;
 
@@ -19,6 +18,6 @@ CREATE TABLE IF NOT EXISTS `order` (
   CONSTRAINT order_id_pk PRIMARY KEY (`order_id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
 
-INSERT INTO `order` (`customer_id`, `c_phone_number`, `customer_name`, `pickup_location`, `destination`, `driver_id`, `driver_name`, `status`,
+INSERT INTO `order` (`customer_id`, `c_phone_number`, `customer_name`, `pickup_location`, `destination`, `driver_id`, `driver_name`, `status`
 `price`) VALUES
 (1, '555', 'Testing_guy', 'SMU', 'Home', '1','Driver guy' ,'completed', 3.14);
