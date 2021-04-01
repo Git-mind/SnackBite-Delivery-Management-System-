@@ -13,6 +13,9 @@ from flask_cors import CORS
 from datetime import datetime
 import json
 
+
+#everything need
+
 app = Flask(__name__)
 # 3308 port used here, please alter to 3306 if necessary 
 app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+mysqlconnector://root@localhost:3306/driver'
@@ -103,7 +106,7 @@ def add_driver():
         }
     ), 201
 
-
+#need
 @app.route("/driver/<string:driver_id>", methods=['PUT'])
 def update_driver(driver_id):
     try:

@@ -55,6 +55,7 @@ class Order(db.Model):
             'price': self.price
         }
 
+
 @app.route("/order")
 def get_all():
     orderlist = Order.query.all()
@@ -73,7 +74,7 @@ def get_all():
             "message": "There are no orders"
         }
     ), 404
-
+#drivers need
 @app.route("/order/get_available_orders")
 def get_available_orders():
     orderlist=Order.query.filter_by(status="NEW").all()
@@ -93,6 +94,7 @@ def get_available_orders():
         }
     ),404
 
+#need
 @app.route("/order/<string:order_id>")
 def find_by_order_id(order_id):
     order = Order.query.filter_by(order_id=order_id).first()
@@ -113,6 +115,7 @@ def find_by_order_id(order_id):
         }
     ), 404
 
+#using 
 @app.route("/order/customer/<string:customer_id>&<string:status>")
 def find_by_customer_id_status(customer_id,status):
     orderlist = Order.query.filter_by(customer_id=customer_id, status=status).all()
@@ -132,7 +135,7 @@ def find_by_customer_id_status(customer_id,status):
             "message": "There are no orders"
         }
     ), 404
-
+#need
 @app.route("/order/customer/<string:customer_id>")
 def find_by_customer_id(customer_id):
     orderlist = Order.query.filter_by(customer_id=customer_id).all()
@@ -153,6 +156,7 @@ def find_by_customer_id(customer_id):
         }
     ), 404
 
+#need
 @app.route("/order", methods=['POST'])
 def create_order():
     customer_id = request.json.get('customer_id')
@@ -189,7 +193,7 @@ def create_order():
         }
     ), 201
 
-
+#need
 @app.route("/order/<string:order_id>", methods=['PUT'])
 def update_order(order_id):
     try:
