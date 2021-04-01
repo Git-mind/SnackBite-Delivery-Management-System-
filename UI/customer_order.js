@@ -267,7 +267,6 @@ async function create_account(uid,user_name,pid,credit_num,tid){
 
 //}
 
-
 function mainVue(uid){
     var app = new Vue({
         el: "#app",

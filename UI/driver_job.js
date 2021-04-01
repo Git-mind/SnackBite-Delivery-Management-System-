@@ -267,29 +267,87 @@ function mainVue(uid){
         },
         data: {
             "orders": [],
+            "on_delivery":[],
+            "completed_delivery":[],
             message: "There is a problem retrieving books data, please try again later.",
-            driver_id: "1",
-            no_order:"",
+            driver_id: "",
             driver_name:"",
+            no_order:"",
+            no_on_delivery:"",
+            no_completed_delivery:"",
+            show_completed:"",
+            show_new:true,
+            new_button:true,
+            completed_button:true,
+            reload_button:"",
         },
         methods: {
-            //auto populate table/ polling
+
+            reload: function(){
+                window.location.reload()
+
+            },
+
+            //auto populate table/ polling new orders
             find_by_driver_id: function () {
+         
+                
                 const response =
                     // fetch(order_URL)
                     fetch(delivery_management_URL + "display_order")
                     .then(response => response.json())
                     .then(data => {
-                        console.log(response);
-                        if (data.code === 404) {
+                        console.log(data.code);
+                        if (data.code === 404 || data.code === 500 ) {
                             // no order in db
                             this.message = data.message;
                             this.no_order = false;
+                            
                         } else {
                             console.log(data)
                             this.no_order = true;
                             this.orders = data.data.order_result.data.customers;
-                            this.message = "You have " + this.orders.length + " food orders"
+                            this.show_completed="";
+                            this.show_new=true;
+                            this.find_by_driver_id_on_delivery();
+                           
+                        }
+                    })
+                    .catch(error => {
+                        // Errors when calling the service; such as network error, 
+                        // service offline, etc
+                        console.log(this.message + error);
+
+                    });
+                    
+
+            },
+
+
+            //auto populate table/ polling on delivery orders
+            find_by_driver_id_on_delivery: function () {
+                const response =
+                    // fetch(order_URL)
+                    fetch(delivery_management_URL + "display_on_delivery")
+                    .then(response => response.json())
+                    .then(data => {
+                        console.log(response);
+                        if (data.code === 404) {
+                            // no order in db
+                            //console.log(data)
+                            this.message = data.message;
+                            this.no_on_delivery = false;
+                            
+                            //handle button 
+                            this.new_button=false;
+                            this.completed_button=true;
+                            this.reload_button=false;
+
+                        } else {
+                            console.log(data)
+                            this.no_on_delivery = true;
+                            this.on_delivery = data.data.order_result.data.customers;
+                        
                         }
                     })
                     .catch(error => {
@@ -301,6 +359,42 @@ function mainVue(uid){
  
 
             },
+
+            //auto populate table/ polling on completed delivery orders
+            find_by_driver_id_completed: function () {
+                const response =
+                    // fetch(order_URL)
+                    fetch(delivery_management_URL + "display_completed_delivery")
+                    .then(response => response.json())
+                    .then(data => {
+                        console.log(response);
+                        if (data.code === 404) {
+                            // no order in db
+                            this.message = data.message;
+                            this.no_completed_delivery = false;
+                        } else {
+                            this.no_completed_delivery = true;
+                            this.completed_delivery = data.data.order_result.data.customers;
+
+                            this.show_completed=true;
+                            this.show_new=false;
+
+                            //handle button 
+                            this.new_button=false;
+                            this.completed_button=false;
+                            this.reload_button=true;
+                        }
+                    })
+                    .catch(error => {
+                        // Errors when calling the service; such as network error, 
+                        // service offline, etc
+                        console.log(this.message + error);
+
+                    });
+ 
+
+            },
+
 
 
             //driver accepts order
@@ -324,11 +418,17 @@ function mainVue(uid){
                         if (data.code === 404) {
                             // no order in db
                             this.message = data.message;
+                        
                         } else {
                     
                             this.message = "You have accepted order id " + order_id;
-                            // update UI after accepting order
+                           
+                            // update current order table after accepting order
+                            this.find_by_driver_id_on_delivery();
+                            // update new order table after accepting order
                             this.find_by_driver_id();
+                            //prevent driver from accepting another order
+                            this.new_button=false;
                         }
                     })
                     .catch(err => {
@@ -340,6 +440,54 @@ function mainVue(uid){
 
             },
 
+
+            complete_delivery:function(order_id){
+                const response =
+                    // fetch(order_URL)
+                    fetch(order_URL + "/" + order_id, 
+                    {
+                        method: "PUT",
+                        headers: {
+                            "Content-type": "application/json"
+                        },
+                        body: JSON.stringify(
+                            {
+                                "status": "Completed"
+                            })
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        //console.log(response);
+                        if (data.code === 404) {
+                            // no order in db
+                            this.message = data.message;
+                        } else {
+                    
+                            this.message = "You have dropped off Order " + order_id;
+                           
+                            // update current order table after accepting order
+                            this.find_by_driver_id_on_delivery();
+                          
+                            //update completed order table
+                            this.find_by_driver_id_completed();
+
+                            //reload the webpage and direct driver back to main
+                            this.reload_button=true;
+                            //hide completed button
+                            this.completed_button=false;
+                           
+                        }
+                    })
+                    .catch(err => {
+                        // Errors when calling the service; such as network error, 
+                        // service offline, etc
+                        error.innerHTML=this.message + err
+    
+                    });
+
+            },
+
+
             
         },
         created: function () {
@@ -350,6 +498,7 @@ function mainVue(uid){
         
             }
             this.find_by_driver_id();
+            this.find_by_driver_id_on_delivery();
         
         }
     });
