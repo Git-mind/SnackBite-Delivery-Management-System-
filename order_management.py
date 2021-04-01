@@ -14,10 +14,10 @@ import json
 app = Flask(__name__)
 CORS(app)
 
-driver_URL = "http://localhost:5001/driver"
-# customer_URL = "http://localhost:5002/customers/"
-pricing_URL = "http://localhost:5003/pricing" 
-order_URL = "http://localhost:5004/order" 
+driver_URL = environ.get('driver_URL') or "http://localhost:5001/driver"
+customer_URL = environ.get('customer_URL') or "http://localhost:5002/customers/"
+pricing_URL =  environ.get('pricing_URL') or "http://localhost:5003/pricing" 
+order_URL = environ.get('order_URL') or "http://localhost:5004/order" 
 #activity_log_URL = "http://localhost:5003/activity_log"
 #error_URL = "http://localhost:5004/error"
 
@@ -58,6 +58,7 @@ def create_order():
 def processCreateOrder(order):
     # 2. Get pricing for delivery using pricing microservice
     # Invoke the pricing microservice
+    print(order)
 
     print('\n-----Invoking pricing microservice-----')
     price_result = invoke_http(pricing_URL, method='POST', json=order)
@@ -102,8 +103,7 @@ def processCreateOrder(order):
         # Invoke customer microservice
         
         print('\n-----Invoking customer microservice-----')
-        customer_URL = "http://localhost:5002/customers/" + str(price_result['data']['customer_id'])
-        customer_result = invoke_http(customer_URL, method='GET')
+        customer_result = invoke_http(customer_URL + f"/{price_result['data']['customer_id']}", method='GET')
 
         print('customer_result:', customer_result)
             
@@ -262,8 +262,7 @@ def processUpdateOrder(order):
         pickup_location = price_result['data']['pickup_location']
         destination = price_result['data']['destination']
         price = price_result['data']['price']
-        order_URL = f"http://localhost:5004/order/{order_id}"
-        order_result = invoke_http(order_URL, method='PUT', json={
+        order_result = invoke_http(order_URL + f"/{order_id}", method='PUT', json={
             'pickup_location': pickup_location,
             'destination': destination,
             'price': price,

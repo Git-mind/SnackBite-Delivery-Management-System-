@@ -14,17 +14,17 @@ import json
 app = Flask(__name__)
 CORS(app)
 
-driver_URL = "http://localhost:5001/driver"
+driver_URL = environ.get('driver_URL') or "http://localhost:5001/driver"
+order_URL = environ.get('order_URL') or  "http://localhost:5004/order"
 #activity_log_URL = "http://localhost:5003/activity_log"
-#error_URL = "http://localhost:5004/error
+#error_URL =  "http://localhost:5004/error
 
 @app.route("/display_order", methods=['GET'])
 def display_orders():
     # 1. Get order info {customer_id, pickup_location, destination}
-    order_URL = "http://localhost:5004/order/get_available_orders"
     # Invoke the order microservice
     print('\n-----Invoking order microservice-----')
-    order_result = invoke_http(order_URL, method='GET')
+    order_result = invoke_http(order_URL + "/get_available_orders" , method='GET')
     print('order_result:', order_result)
 
     # 2. Check the order result; if a failure, send it to the error microservice.
@@ -72,8 +72,7 @@ def update_order():
             # do the actual work# 
             # 1. Update the order details using order microservice
             # Invoke the order microservice
-            order_URL = f"http://localhost:5004/order/{order_accept['order_id']}"
-            result = invoke_http(order_URL, method='PUT', json=order_accept)
+            result = invoke_http(order_URL + "/" + order_accept['order_id'] , method='PUT', json=order_accept)
             
             # 2. Check the order update result; if a failure, send it to the error microservice.
             code = result["code"]

@@ -68,10 +68,10 @@ def processPricing(order):
 		return {
 			'code': code,
 			'data': {
-			'price': total_price,
-			'pickup_location': order['pickup_location'],
-			'destination': order['destination'],
-			'customer_id': order['customer_id']
+				'price': total_price,
+				'pickup_location': order['pickup_location'],
+				'destination': order['destination'],
+				'customer_id': order['customer_id']
 			} 
 		}
 	else:
