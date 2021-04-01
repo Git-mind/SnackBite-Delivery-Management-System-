@@ -19,8 +19,8 @@ db = SQLAlchemy(app)
 class Activity(db.Model):
     __tablename__ = 'activity'
     id = db.Column(db.Integer, primary_key=True)
-    activityDatetime = db.Column(db.DateTime, nullable=False)
-    activityType = db.Column(db.String(300), nullable=False)
+    activity_date_time = db.Column(db.DateTime, nullable=False)
+    activity_type = db.Column(db.String(300), nullable=False)
     activity_name = db.Column(db.String(100), nullable=False)
     customer_id = db.Column(db.String(32), nullable=False)
     info = db.Column(db.String(1000), nullable=False)
@@ -44,12 +44,12 @@ def processOrderLog(order):
     print("Recording an activity log:")
     print(order)
 
-    activityDatetime = datetime.now()
-    activityType = order['type']
+    activity_date_time = datetime.now()
+    activity_type = order['type']
     activity_name = order['activity_name']
     customer_id = order['data']['customer_id']
     info = "successful"
-    activity = Activity(activityDatetime=activityDatetime,activityType=activityType,activity_name=activity_name,customer_id=customer_id, info=info)
+    activity = Activity(activity_date_time=activity_date_time,activity_type=activity_type,activity_name=activity_name,customer_id=customer_id, info=info)
     db.session.add(activity)
     db.session.commit()
 

@@ -114,7 +114,7 @@
                     <td>{{ delivery.status }}</td>
                     <!--Job Button-->
                     <td>
-                      <button v-if="delivery.status == 'On Deliver'" class="btn btn-primary" @click="complete_delivery(delivery.order_id)">Complete delivery</button>
+                      <button v-if="delivery.status == 'On Delivery'" class="btn btn-primary" @click="complete_delivery(delivery.order_id)">Complete delivery</button>
                     </td>
                   </tr>
               </thead>
