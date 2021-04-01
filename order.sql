@@ -14,7 +14,7 @@ CREATE TABLE IF NOT EXISTS `order` (
   `date_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `pickup_location` varchar(100) NOT NULL,
   `destination` varchar(100) NOT NULL,
-  `status` varchar(20) NOT NULL DEFAULT 'NEW', /*Added by chin ning*/
+  `status` varchar(10) NOT NULL DEFAULT 'NEW',
   `price` float(2) NOT NULL,
   CONSTRAINT order_id_pk PRIMARY KEY (`order_id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
