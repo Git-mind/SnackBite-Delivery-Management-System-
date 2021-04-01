@@ -26,15 +26,17 @@ CORS(app)
 class Driver(db.Model):
     __tablename__ = 'driver'
 
-    driver_id = db.Column(db.Integer, primary_key=True)
+    driver_id = db.Column(db.String(100), primary_key=True)
     driver_name = db.Column(db.String(100), nullable=False)
     phone_number = db.Column(db.Integer, nullable=False)
+    tele_id = db.Column(db.String(100), nullable=False)
 
     def json(self):
         return {
             'driver_id': self.driver_id,
             'driver_name': self.driver_name,
-            'phone_number': self.phone_number
+            'phone_number': self.phone_number,
+            'tele_id': self.tele_id
         }
 
 @app.route("/driver")
@@ -53,6 +55,23 @@ def get_all():
         {
             "code": 404,
             "message": "There are no drivers"
+        }
+    ), 404
+
+@app.route("/customers/get_tele_id/<string:id>", methods=['GET'])
+def get_tele_id(id):
+    d_n = Driver.query.filter_by(driver_id=id).first()
+    if d_n:
+        return jsonify(
+            {
+                "code": 200,
+                "data": d_n.json()['tele_id']
+            }
+        )
+    return jsonify(
+        {
+            "code": 404,
+            "message": "Driver not found."
         }
     ), 404
 
@@ -78,10 +97,22 @@ def find_by_driver_id(driver_id):
 
 @app.route("/driver", methods=['POST'])
 def add_driver():
-    driver_name = request.json.get('driver_name')
-    phone_number = request.json.get('phone_number')
-    driver = Driver(driver_name=driver_name, phone_number=phone_number)
-    
+    data = request.get_json()
+    driver = Driver(**data)
+    id = driver.driver_id
+
+    # check if the customer has already signed up
+    if (Driver.query.filter_by(driver_id=id).first()):
+        return jsonify(
+            {
+                "code": 400,
+                "data": {
+                    "driver_id": id
+                },
+                "message": "Driver has already signed up."
+            }
+        ), 400
+
     try:
         db.session.add(driver)
         db.session.commit()

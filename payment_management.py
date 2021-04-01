@@ -18,7 +18,7 @@ order_URL = "http://localhost:5004/order"
 customer_URL = "http://localhost:5002/customers/"
 # payment_URL = 
 
-@app.route("/order_completed", methods=['POST'])
+@app.route("/order_completed", methods=['PUT'])
 def order_completed():
     # Simple check of input format and data of the request are JSON
     if request.is_json:
@@ -116,62 +116,63 @@ def processOrderCompleted(order):
         print(c_name)
         print(credit_card)
 
+        payment_URL = "http://localhost:5006/payment"
+        payment_result = invoke_http(payment_URL, method='POST', json={
+            'customer_id': customer_id,
+            # 'credit_card': credit_card,
+            'credit_card': 4242424242424242,
+            'price': order_result['data']['price']
+        })
+        print('payment_result:', payment_result)
 
-        #check for method = "POST" / "GET"
-        # payment_result = invoke_http(payment_URL, method='POST', json={
-        #     'customer_id': customer_id,
-        #     'c_phone_number': c_phone_number,
-        # })
-        # print('payment_result:', payment_result)
 
+        # Check the payment result;
+        # if a failure, send it to the error microservice.
+        code = payment_result['code']
+        message = json.dumps(payment_result)
+        if code not in range(200, 300):
+            # Inform the error microservice
+            #print('\n\n-----Invoking error microservice as payment fails-----')
+            print('\n\n-----Publishing the (payment error) message with routing_key=payment.error-----')
 
-        # # Check the order result;
-        # # if a failure, send it to the error microservice.
-        # code = order_result['code']
-        # message = json.dumps(order_result)
-        # if code not in range(200, 300):
-        #     # Inform the error microservice
-        #     #print('\n\n-----Invoking error microservice as order creation fails-----')
-        #     print('\n\n-----Publishing the (order error) message with routing_key=order.error-----')
+            # invoke_http(error_URL, method="POST", json=order_result)
+            amqp_setup.channel.basic_publish(exchange=amqp_setup.exchangename, routing_key="payment.error", 
+                body=message, properties=pika.BasicProperties(delivery_mode = 2))
 
-        #     # invoke_http(error_URL, method="POST", json=order_result)
-        #     amqp_setup.channel.basic_publish(exchange=amqp_setup.exchangename, routing_key="order.error", 
-        #         body=message, properties=pika.BasicProperties(delivery_mode = 2))
+            print("\Payment status ({:d}) published to the RabbitMQ Exchange:".format(
+                code), payment_result)
 
-        #     print("\nShipping status ({:d}) published to the RabbitMQ Exchange:".format(
-        #         code), order_result)
+            # 7. Return error
+            return {
+                "code": 400,
+                "data": {
+                    "payment_result": payment_result
+                },
+                "message": "Simulated payment record error sent for error handling."
+            }
+        else:
+            # 6. Record new payment
+            # record the activity log anyway
+            #print('\n\n-----Invoking activity_log microservice-----')
+            print('\n\n-----Publishing the (payment info) message with routing_key=payment.info-----')        
 
-        #     # 7. Return error
-        #     return {
-        #         "code": 400,
-        #         "data": {
-        #             "order_result": order_result
-        #         },
-        #         "message": "Simulated order creation record error sent for error handling."
-        #     }
-        # else:
-        #     # 6. Record new order
-        #     # record the activity log anyway
-        #     #print('\n\n-----Invoking activity_log microservice-----')
-        #     print('\n\n-----Publishing the (order info) message with routing_key=order.info-----')        
-
-        #     # invoke_http(activity_log_URL, method="POST", json=order_result)            
-        #     amqp_setup.channel.basic_publish(exchange=amqp_setup.exchangename, routing_key="order.info", 
-        #         body=message)
+            # invoke_http(activity_log_URL, method="POST", json=payment_result)            
+            amqp_setup.channel.basic_publish(exchange=amqp_setup.exchangename, routing_key="payment.info", 
+                body=message)
         
-        # print("\nOrder published to RabbitMQ Exchange.\n")
-        # # - reply from the invocation is not used;
-        # # continue even if this invocation fails
+        print("\Payment published to RabbitMQ Exchange.\n")
+        # - reply from the invocation is not used;
+        # continue even if this invocation fails
 
-        # # 7. Return created order
-        # return {
-        #     "code": 201,
-        #     "data": {
-        #         "order_result": order_result,
-        #         "price_result": price_result,
-        #         "customer_result": customer_result
-        #     }
-        # }
+        # 7. Completed process
+        return {
+            "code": 201,
+            "data": {
+                "order_result": order_result,
+                "customer_result": customer_result,
+                "payment_result": payment_result
+            }
+        }
 
 # Execute this program if it is run as a main script (not by 'import')
 if __name__ == "__main__":

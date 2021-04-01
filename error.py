@@ -19,8 +19,8 @@ db = SQLAlchemy(app)
 class Error(db.Model):
     __tablename__ = 'error'
     id = db.Column(db.Integer, primary_key=True)
-    errorDatetime = db.Column(db.DateTime, nullable=False)
-    errorType = db.Column(db.String(300), nullable=False)
+    error_date_time = db.Column(db.DateTime, nullable=False)
+    error_type = db.Column(db.String(300), nullable=False)
     activity_name = db.Column(db.String(100), nullable=False)
     info = db.Column(db.String(1000), nullable=False)
 
@@ -49,11 +49,11 @@ def processError(errorMsg):
         print("Recording an error log:")
         print(errorMsg)
         # ADD Error log into Error DB
-        errorDatetime = datetime.now()
-        errorType = error['type']
+        error_date_time = datetime.now()
+        error_type = error['type']
         activity_name = error['activity_name']
         info = error['message']
-        error_log = Error(errorDatetime=errorDatetime,errorType=errorType,activity_name=activity_name, info=info)
+        error_log = Error(error_date_time=error_date_time,error_type=error_type,activity_name=activity_name, info=info)
         db.session.add(error_log)
         db.session.commit()
     except Exception as e:

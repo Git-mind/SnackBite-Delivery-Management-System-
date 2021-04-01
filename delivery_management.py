@@ -55,15 +55,13 @@ def display_orders():
         }
 
     else:
-    # 3. Get all drivers using driver microservice
-    # Invoke driver microservice
         return {
             "code": 201,
             "data": {
             "order_result": order_result
             }
         }
-@app.route("/update_order", methods=['POST'])
+@app.route("/update_order", methods=['PUT'])
 def update_order():
     if request.is_json:
         try:
