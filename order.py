@@ -96,7 +96,7 @@ def get_available_orders():
 #added by chin ning (on deiivery)
 @app.route("/order/get_on_delivery")
 def get_on_delivery_orders():
-    orderlist=Order.query.filter_by(status="On Deliver").all()
+    orderlist=Order.query.filter_by(status="On Delivery").all()
     if len(orderlist):
         return jsonify(
             {
