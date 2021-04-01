@@ -73,6 +73,8 @@ def get_all():
         }
     ), 404
 
+
+#changed by chin ning 
 @app.route("/order/get_available_orders")
 def get_available_orders():
     orderlist=Order.query.filter_by(status="NEW").all()

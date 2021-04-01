@@ -59,6 +59,7 @@ def processPricing(order):
 	# by default driving mode considered 
 	# print the value of distance
 	new_list= x["rows"]
+	print(new_list)
 	if new_list[0]["elements"][0]["status"] == "OK":
 		distance= math.ceil(new_list[0]["elements"][0]["distance"]["value"]/1000)
 		flat_rate= 3

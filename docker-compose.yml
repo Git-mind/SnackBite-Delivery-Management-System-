@@ -12,6 +12,7 @@ networks:
 
 services:
 
+
   #######################################
   # Postgres: The database used by Kong
   #######################################
@@ -91,63 +92,10 @@ services:
       - "1337:1337"
     volumes:
       - kongadata:/app/kongadata
- 
-  ###################################
-  # Order: The Order microservice
-  ###################################
-  order:
-    build:
-      context: ./
-      dockerfile: order.Dockerfile
-    image: feelg8d/order:snackbite
-    restart: always
-    environment:
-      dbURL: mysql+mysqlconnector://is213@host.docker.internal:3306/order
-      PYTHONUNBUFFERED: 1 
 
-  ###################################
-  # Pricing: The Pricing microservice
-  ###################################
-  pricing:
-    build:
-      context: ./
-      dockerfile: pricing.Dockerfile
-    image: feelg8d/pricing:snackbite
-    restart: always
-    environment:
-      PYTHONUNBUFFERED: 1 
-
-  ###################################
-  # Drive: The Driver microservice
-  ###################################
-  driver:
-    build:
-      context: ./
-      dockerfile: driver.Dockerfile
-    image: feelg8d/driver:snackbite
-    restart: always
-    environment:
-      dbURL: mysql+mysqlconnector://is213@host.docker.internal:3306/driver
-      PYTHONUNBUFFERED: 1 
-
-  ###################################
-  # Customer: The Customer microservice
-  ###################################
-  customer:
-    build:
-      context: ./
-      dockerfile: customer.Dockerfile
-    image: feelg8d/customer:snackbite
-    restart: always
-    environment:
-      dbURL: mysql+mysqlconnector://is213@host.docker.internal:3306/customer
-      PYTHONUNBUFFERED: 1 
-
-
-
-  ####################################
-  # RabbitMQ: The messaging broker   
-  ####################################
+####################################
+# RabbitMQ: The messaging broker   
+####################################
   rabbitmq:
     image: rabbitmq:3-management
     hostname: snackbite-rabbit
@@ -157,7 +105,8 @@ services:
       - "15672:15672"
     volumes: 
       - rabbitmq_data:/var/lib/rabbitmq
-      
+
+
   #################################################
   # Activity Log: The Activity Log microservice
   #################################################
@@ -174,6 +123,8 @@ services:
       rabbit_port: 5672
       PYTHONUNBUFFERED: 1
 
+
+
   ###################################
   # Error: The Error microservice
   ###################################
@@ -188,11 +139,71 @@ services:
     environment:
       rabbit_host: rabbitmq
       rabbit_port: 5672
+      dbURL: mysql+mysqlconnector://is213@host.docker.internal:3306/error
       PYTHONUNBUFFERED: 1 
 
+###################################
+# Order: The Order microservice
+###################################
+  order:
+    build:
+      context: ./
+      dockerfile: order.Dockerfile
+    image: javieryw/order:snackbite
+    restart: always
+    environment:
+      dbURL: mysql+mysqlconnector://is213@host.docker.internal:3306/order
+      PYTHONUNBUFFERED: 1 
+    ports:
+      - "5004:5004"
+
+  ###################################
+  # Pricing: The Pricing microservice
+  ###################################
+  pricing:
+    build:
+      context: ./
+      dockerfile: pricing.Dockerfile
+    image: javieryw/pricing:snackbite
+    restart: always
+    environment:
+      PYTHONUNBUFFERED: 1 
+    ports:
+      - "5003:5003"
+
+###################################
+# Customer: The Customer microservice
+###################################
+  customer:
+    build:
+      context: ./
+      dockerfile: customer.Dockerfile
+    image: javieryw/customer:snackbite
+    restart: always
+    environment:
+      dbURL: mysql+mysqlconnector://is213@host.docker.internal:3306/customer
+      PYTHONUNBUFFERED: 1 
+    ports:
+        - "5002:5002"
 
 
-  ###############################################
+##################################
+# Drive: The Driver microservice
+##################################
+  driver:
+    build:
+      context: ./
+      dockerfile: driver.Dockerfile
+    image: javieryw/driver:snackbite
+    restart: always
+    environment:
+      dbURL: mysql+mysqlconnector://is213@host.docker.internal:3306/driver
+      PYTHONUNBUFFERED: 1 
+    ports:
+      - "5001:5001"
+    
+
+ ###############################################
   # Order Management microservice
   ###############################################
   order_management:
@@ -203,17 +214,12 @@ services:
     restart: always
     depends_on:
       - order
-      - customer
       - driver
       - pricing
-      - activity_log
-      - error
-      - rabbitmq
     environment:
       rabbit_host: rabbitmq
       rabbit_port: 5672
       order_URL: http://order:5004/order
-      customer_URL: http://customer:5002/customer
       driver_URL: http://driver:5001/driver
       pricing_URL: http://pricing:5003/pricing
       PYTHONUNBUFFERED: 1
@@ -240,8 +246,6 @@ services:
       rabbit_port: 5672
       order_URL: http://order:5004/order
       customer_URL: http://customer:5002/customer
-      driver_URL: http://driver:5001/driver
-      pricing_URL: http://pricing:5003/pricing
       PYTHONUNBUFFERED: 1
     ports:
       - "5300:5300"
@@ -258,7 +262,7 @@ services:
     restart: always
     depends_on:
       - order
-      - order_management
+      - driver
       - activity_log
       - error
       - rabbitmq
@@ -266,13 +270,10 @@ services:
       rabbit_host: rabbitmq
       rabbit_port: 5672
       order_URL: http://order:5004/order
-      customer_URL: http://customer:5002/customer
       driver_URL: http://driver:5001/driver
-      pricing_URL: http://pricing:5003/pricing
       PYTHONUNBUFFERED: 1
     ports:
       - "5200:5200"
-
 
 
 
