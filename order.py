@@ -240,9 +240,7 @@ def update_order(order_id):
             {
                 "code": 500,
                 "data": {
-                    "order_id": order_id,
-                    "destination": data['destination'],
-                    "price": data['price']
+                    "order_id": order_id
                 },
                 "message": "An error occurred while updating the order details. " + str(e)
             }

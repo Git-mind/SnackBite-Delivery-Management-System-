@@ -42,7 +42,7 @@ def processPayment(details):
 	a = stripe.Token.create(card={"number":details["credit_card"],"exp_month":4,"exp_year":2022,"cvc":"314"})
 
     # `source` is obtained with Stripe.js; see https://stripe.com/docs/payments/accept-a-payment-charges#web-create-token
-	r = stripe.Charge.create(amount=price*100, currency="sgd", api_key=stripe.api_key, source=a["id"])
+	r = stripe.Charge.create(amount=int(price*100), currency="sgd", api_key=stripe.api_key, source=a["id"])
 
 	# json method of response object 
 	# return python dict from json object 

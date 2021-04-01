@@ -28,7 +28,7 @@ def order_completed():
             print("\nReceived an order in JSON:", order)
 
             # do the actual work
-            # 1. Send order info {customer_id, pickup_location, destination}
+            # 1. Send order info {order_id, status="completed"}
             result = processOrderCompleted(order)
             print('\n------------------------')
             print('\nresult: ', result)
@@ -58,7 +58,7 @@ def processOrderCompleted(order):
     order_id = order['order_id']
     print(order_id)
     print('\n-----Invoking order microservice-----')
-    order_result = invoke_http(order_URL + "/" + order_id, method='PUT', json=order)
+    order_result = invoke_http(order_URL + "/" + str(order_id), method='PUT', json=order)
     print('order_result:', order_result)
 
     # 3. Check the order result; if a failure, send it to the error microservice.
@@ -113,7 +113,7 @@ def processOrderCompleted(order):
         credit_card = customer_result["data"]["credit_card"]
         print(customer_id)
         print(c_phone_number)
-        print(c_name)
+        print(order_result['data']['price'])
         print(credit_card)
 
         payment_URL = "http://localhost:5006/payment"
@@ -136,8 +136,8 @@ def processOrderCompleted(order):
             print('\n\n-----Publishing the (payment error) message with routing_key=payment.error-----')
 
             # invoke_http(error_URL, method="POST", json=order_result)
-            amqp_setup.channel.basic_publish(exchange=amqp_setup.exchangename, routing_key="payment.error", 
-                body=message, properties=pika.BasicProperties(delivery_mode = 2))
+            # amqp_setup.channel.basic_publish(exchange=amqp_setup.exchangename, routing_key="payment.error", 
+            #     body=message, properties=pika.BasicProperties(delivery_mode = 2))
 
             print("\Payment status ({:d}) published to the RabbitMQ Exchange:".format(
                 code), payment_result)
@@ -157,8 +157,8 @@ def processOrderCompleted(order):
             print('\n\n-----Publishing the (payment info) message with routing_key=payment.info-----')        
 
             # invoke_http(activity_log_URL, method="POST", json=payment_result)            
-            amqp_setup.channel.basic_publish(exchange=amqp_setup.exchangename, routing_key="payment.info", 
-                body=message)
+            # amqp_setup.channel.basic_publish(exchange=amqp_setup.exchangename, routing_key="payment.info", 
+            #     body=message)
         
         print("\Payment published to RabbitMQ Exchange.\n")
         # - reply from the invocation is not used;
