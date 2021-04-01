@@ -1,7 +1,6 @@
 CREATE DATABASE IF NOT EXISTS `customer`; 
 USE `customer`;
 
-
 DROP TABLE IF EXISTS `CUSTOMER`;
 CREATE TABLE IF NOT EXISTS `customer` (
     `customer_id` VARCHAR(100) NOT NULL,

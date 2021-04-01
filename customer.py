@@ -119,8 +119,6 @@ def get_tele_id(id):
     ), 404
 
 # add customer
-
-
 @app.route("/customers", methods=['POST'])
 def add_customer():
     data = request.get_json()

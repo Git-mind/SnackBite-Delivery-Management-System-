@@ -62,7 +62,7 @@ def processCreateReview(review):
 
     print('\n-----Invoking order microservice-----')
 
-    order_result = invoke_http(order_URL + "/" + review['order_id'] , method='GET')
+    order_result = invoke_http(order_URL + "/" + str(review['order_id']) , method='GET')
     print('order_result:', order_result)
 
     # 3. Check the price result; if a failure, send it to the error microservice.
