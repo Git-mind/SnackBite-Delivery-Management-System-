@@ -1,7 +1,6 @@
 CREATE DATABASE IF NOT EXISTS `customer`; 
 USE `customer`;
 
-
 DROP TABLE IF EXISTS `CUSTOMER`;
 CREATE TABLE IF NOT EXISTS `customer` (
     `customer_id` VARCHAR(100) NOT NULL,
@@ -13,6 +12,6 @@ CREATE TABLE IF NOT EXISTS `customer` (
 )  ENGINE=INNODB;
 
 INSERT INTO Customer VALUES
-(1,'John','555','4242 4242 4242 4242','@Aravind1997555');
+(1,'John','555','4242424242424242','@Aravind1997555');
 
 

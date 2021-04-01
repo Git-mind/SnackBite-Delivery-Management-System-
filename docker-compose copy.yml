@@ -6,11 +6,9 @@ volumes:
   pgdata: 
   kongadata:
 
-
 networks:
   kong-net:
     driver: bridge
-
 
 services:
 
@@ -27,6 +25,7 @@ services:
       - "15672:15672"
     volumes: 
       - rabbitmq_data:/var/lib/rabbitmq
+
 
   #################################################
   # Activity Log: The Activity Log microservice
@@ -62,7 +61,6 @@ services:
       rabbit_port: 5672
       dbURL: mysql+mysqlconnector://is213@host.docker.internal:3306/error
       PYTHONUNBUFFERED: 1 
-
 
 ###################################
 # Order: The Order microservice
@@ -109,9 +107,8 @@ services:
         - "5002:5002"
 
 
-
 ##################################
-# Driver: The Driver microservice
+# Drive: The Driver microservice
 ##################################
   driver:
     build:
@@ -124,8 +121,6 @@ services:
       PYTHONUNBUFFERED: 1 
     ports:
       - "5001:5001"
-
-
 
 ##################################
 # Review: The Review microservice
@@ -154,19 +149,19 @@ services:
     restart: always
     depends_on:
       - order
+      - driver
       - customer 
       - pricing
     environment:
       rabbit_host: rabbitmq
       rabbit_port: 5672
       order_URL: http://order:5004/order
+      driver_URL: http://driver:5001/driver
       customer_URL: http://customer:5002/customers
       pricing_URL: http://pricing:5003/pricing
       PYTHONUNBUFFERED: 1
     ports:
       - "5100:5100"
-
-
 
   ###############################################
   # Payment Management microservice
@@ -250,8 +245,6 @@ services:
       PYTHONUNBUFFERED: 1
     ports:
       - "5200:5200"
-
-
 
 
 

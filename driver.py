@@ -1,11 +1,5 @@
-#!/usr/bin/env python3
-# The above shebang (#!) operator tells Unix-like environments
-# to run this file as a python3 script
-
-# This microservice receives request for driver id from delivery management system and returns driver information
-# MySQL Database is Driver (Driver ID, Name, phoneNo)
-
 import os
+from os import environ
 from flask import Flask, request, jsonify
 from flask_sqlalchemy import SQLAlchemy
 from flask_cors import CORS
@@ -15,12 +9,12 @@ import json
 
 app = Flask(__name__)
 # 3308 port used here, please alter to 3306 if necessary 
-app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+mysqlconnector://root@localhost:3306/driver'
+app.config['SQLALCHEMY_DATABASE_URI'] = environ.get(
+    'dbURL') or 'mysql+mysqlconnector://root@localhost:3306/driver'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['SQLALCHEMY_ENGINE_OPTIONS'] = {'pool_recycle': 299}
 
 db = SQLAlchemy(app)
-
 CORS(app)  
 
 class Driver(db.Model):
@@ -31,6 +25,13 @@ class Driver(db.Model):
     phone_number = db.Column(db.Integer, nullable=False)
     tele_id = db.Column(db.String(100), nullable=False)
 
+
+    def __init__(self, driver_id, driver_name, phone_number):
+        self.driver_id = driver_id
+        self.driver_name = driver_name
+        self.phone_number = phone_number
+    
+
     def json(self):
         return {
             'driver_id': self.driver_id,
@@ -39,7 +40,8 @@ class Driver(db.Model):
             'tele_id': self.tele_id
         }
 
-@app.route("/driver")
+#get all driver
+@app.route("/driver/get_all_drivers", methods=['GET'])
 def get_all():
     driverlist = Driver.query.all()
     if len(driverlist):
@@ -95,13 +97,15 @@ def find_by_driver_id(driver_id):
         }
     ), 404
 
+#added by chin ning
+#add driver
 @app.route("/driver", methods=['POST'])
 def add_driver():
     data = request.get_json()
     driver = Driver(**data)
     id = driver.driver_id
 
-    # check if the customer has already signed up
+    # check if the driver has already signed up
     if (Driver.query.filter_by(driver_id=id).first()):
         return jsonify(
             {
@@ -120,12 +124,9 @@ def add_driver():
         return jsonify(
             {
                 "code": 500,
-                "message": "An error occurred while adding new driver. " + str(e)
+                "message": "An error occurred creating a driver record." + str(e)
             }
         ), 500
-    
-    print(json.dumps(driver.json(), default=str))
-    print()
 
     return jsonify(
         {
@@ -135,6 +136,37 @@ def add_driver():
     ), 201
 
 
+
+# delete driver
+@app.route("/driver/<string:id>", methods=['DELETE'])
+def delete_driver(id):
+    driv = Driver.query.filter_by(driver_id=id).first()
+    if driv:
+        db.session.delete(driv)
+        db.session.commit()
+        return jsonify(
+            {
+                "code": 200,
+                "data": {
+                    "driver_id": id
+                }
+            }
+        )
+
+    return jsonify(
+        {
+            "code": 404,
+            "data": {
+                "driver_id": id
+            },
+            "message": "Driver is not found."
+        }
+    ), 404
+
+
+
+
+#update driver
 @app.route("/driver/<string:driver_id>", methods=['PUT'])
 def update_driver(driver_id):
     try:

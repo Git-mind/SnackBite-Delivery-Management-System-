@@ -20,6 +20,7 @@
 
 
 <body>
+   
     <div>
         <nav class="navbar navbar-light bg-light justify-content-between">
             <a class="navbar-brand"></a>
@@ -142,7 +143,7 @@
                                                                 </div>
                                                                 <button type="button" class="btn btn-secondary"
                                                                     data-dismiss="modal"
-                                                                    @click="review_successful = false;">Close</button>
+                                                                    @click="review_successful = false; feedback = '' ">Close</button>
                                                                 <button type="button" class="btn btn-primary"
                                                                     @click="submit_review(order.customer_id, order.driver_id, order.order_id);">Submit
                                                                     Review</button>

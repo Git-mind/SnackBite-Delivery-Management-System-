@@ -5,8 +5,7 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_cors import CORS
 
 app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = environ.get(
-    'dbURL') or 'mysql+mysqlconnector://root@localhost:3306/customer'
+app.config['SQLALCHEMY_DATABASE_URI'] = environ.get('dbURL') or 'mysql+mysqlconnector://root@localhost:3306/customer'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['SQLALCHEMY_ENGINE_OPTIONS'] = {'pool_recycle': 299}
 
@@ -59,7 +58,7 @@ def getAllCustomers():
 # returns false if cust has not signed up
 
 
-@app.route("/customers/<string:customer_id>")
+@app.route("/customers/<string:customer_id>", methods=['GET'])
 def find_by_customer_id(customer_id):
     customer = Customer.query.filter_by(customer_id=customer_id).first()
     if customer:
@@ -120,8 +119,6 @@ def get_tele_id(id):
     ), 404
 
 # add customer
-
-
 @app.route("/customers", methods=['POST'])
 def add_customer():
     data = request.get_json()
