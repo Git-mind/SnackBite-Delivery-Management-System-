@@ -44,6 +44,9 @@ sign_up=document.getElementById("sign_up")
 //P_NUM INPUT BY DRIVER
 p_num=document.getElementById("p_num")
 
+//t_id INPUT BY DRIVER
+t_id=document.getElementById('t_id')
+
 
 
 //{
@@ -163,9 +166,9 @@ async function check_cus(driver_url,uid,user_name){
             //ADD EVENT LISTENER TO SUBMIT BUTTON SO THAT I CAN CAPTURE UID (BAD PRACTICE , I KNOW)
             sign_up.addEventListener('click',function(){
                 pid=p_num.value
-                console.log("hello")
+                tid=t_id.value
                 alert(`${uid}`)
-                create_account(uid,user_name,pid)
+                create_account(uid,user_name,pid,tid)
             })
 
             //
@@ -201,7 +204,7 @@ async function check_cus(driver_url,uid,user_name){
 // create_account(23423,'asdasd','adasdasd',2342342,'asfasdfsdf')
 
 //CREATE ACCOUNT
-async function create_account(uid,user_name,pid){
+async function create_account(uid,user_name,pid,tid){
     try{
         response=await fetch(`${driver_url}`,{
             method: "POST",
@@ -213,7 +216,7 @@ async function create_account(uid,user_name,pid){
                     "driver_id": uid,
                     "driver_name": user_name,
                     "phone_number": pid,
-
+                    'tele_id':tid
                 })
         })
 
