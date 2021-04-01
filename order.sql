@@ -14,11 +14,17 @@ CREATE TABLE IF NOT EXISTS `order` (
   `date_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `pickup_location` varchar(100) NOT NULL,
   `destination` varchar(100) NOT NULL,
-  `status` varchar(20) NOT NULL DEFAULT 'NEW', /*Added by chin ning*/
+  `status` varchar(100) NOT NULL DEFAULT 'NEW', /*Added by chin ning*/
   `price` float(2) NOT NULL,
   CONSTRAINT order_id_pk PRIMARY KEY (`order_id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
 
+<<<<<<< HEAD
 INSERT INTO `order` (`customer_id`, `c_phone_number`, `customer_name`, `pickup_location`, `destination`, `driver_id`, `driver_name`, `status`,
 `price`) VALUES
 (1, '555', 'Testing_guy', 'SMU', 'Home', '1','Driver guy' ,'completed', 3.14);
+=======
+INSERT INTO `order` (`customer_id`, `c_phone_number`, `customer_name`, `pickup_location`, `destination`,
+`price`) VALUES
+(1, '555', 'Testing_guy', 'SMU', 'Home', 3.14);
+>>>>>>> chin-ning_branch
