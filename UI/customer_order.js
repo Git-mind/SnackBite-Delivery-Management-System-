@@ -281,7 +281,7 @@ function mainVue(uid){
         data: {
             "orders": [],
             "reviews" : [],
-            message: "There is a problem retrieving books data, please try again later.",
+            message: "There is a problem retrieving orders data, please try again later.",
             newPrice: "",
             orderCreated: false,
             orderedBook: "",
@@ -494,9 +494,16 @@ function mainVue(uid){
                     if (data.code === 404) {
                         // no book in db
                         this.message = data.message;
+                    } 
+                    else if (data.code === 400) {
+                        this.message = data.message;
+                        error.innerHTML= this.message
+                        this.orderUpdated = false;
+                        
                     } else {
                         console.log(data)
                         this.orderUpdated = true;
+                        error.innerHTML = ""
                         this.message = "You have updated order details of order id" + order_id;
                         // update UI after cancelling order
                         this.find_by_customer_id();
@@ -545,6 +552,7 @@ function mainVue(uid){
                                 // 201
                                 this.orderSuccessful = true;
                                 this.orderCreated = true;
+                                error.innerHTML = "";
                                 this.order_result = result.order_result.data;
                                 //update UI after creating order
                                 this.find_by_customer_id();
@@ -598,6 +606,7 @@ function mainVue(uid){
                     })
                     .catch(err => {
                         // console.log("Problem in placing an order. " + error);
+                        this.orderCreated = false
                         error.innerHTML="Problem in placing an order. " + err
                     })
             },

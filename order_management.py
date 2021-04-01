@@ -86,7 +86,7 @@ def processCreateOrder(order):
             "data": {
                 "price_result": price_result
             },
-            "message": "Simulated pricing error sent for error handling."
+            "message": "There is an error with pick up location / destination"
         }
     else:
         # 5. Record price result
@@ -239,7 +239,7 @@ def processUpdateOrder(order):
             "data": {
                 "price_result": price_result
             },
-            "message": "Simulated pricing error sent for error handling."
+            "message": "There is an error with pick up location / destination."
         }
     else:
         # 5. Record price result
