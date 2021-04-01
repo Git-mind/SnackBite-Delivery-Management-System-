@@ -3,18 +3,19 @@
 # to run this file as a python3 script
 
 import os
+from os import environ
 from flask import Flask, request, jsonify
 from flask_sqlalchemy import SQLAlchemy
 from flask_cors import CORS
 
 from datetime import datetime
 import json
-
+from sqlalchemy import or_
 from datetime import datetime
 
 app = Flask(__name__)
 # 3308 port used here, please alter to 3306 if necessary 
-app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+mysqlconnector://root@localhost:3306/order'
+app.config['SQLALCHEMY_DATABASE_URI'] = environ.get('dbURL') or 'mysql+mysqlconnector://root@localhost:3306/order'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['SQLALCHEMY_ENGINE_OPTIONS'] = {'pool_recycle': 299}
 
@@ -28,6 +29,7 @@ class Order(db.Model):
     order_id = db.Column(db.Integer, primary_key=True)
     customer_id = db.Column(db.String(100), nullable=False)
     c_phone_number = db.Column(db.Integer, nullable=False)
+    customer_name= db.Column(db.String(100), nullable=False)
     driver_id = db.Column(db.Integer, nullable=True)
     driver_name = db.Column(db.String(100), nullable=False)
     d_phone_number = db.Column(db.Integer, nullable=True)
@@ -42,6 +44,7 @@ class Order(db.Model):
             'order_id': self.order_id,
             'customer_id': self.customer_id,
             'c_phone_number': self.c_phone_number,
+            'customer_name': self.customer_name,
             'driver_id': self.driver_id,
             'driver_name': self.driver_name,
             'd_phone_number': self.d_phone_number,
@@ -89,6 +92,49 @@ def get_available_orders():
             "message":"There are no available orders"
         }
     ),404
+
+#added by chin ning (on deiivery)
+@app.route("/order/get_on_delivery")
+def get_on_delivery_orders():
+    orderlist=Order.query.filter_by(status="On Deliver").all()
+    if len(orderlist):
+        return jsonify(
+            {
+                "code":200,
+                "data":{
+                    "customers":[order.json() for order in orderlist]
+                }
+            }
+        )
+    return jsonify(
+        {
+            "code":404,
+            "message":"There are no available orders"
+        }
+    ),404
+
+
+
+#added by chin ning (completed deiivery)
+@app.route("/order/get_completed_delivery")
+def get_completed_delivery_orders():
+    orderlist=Order.query.filter_by(status="Completed").all()
+    if len(orderlist):
+        return jsonify(
+            {
+                "code":200,
+                "data":{
+                    "customers":[order.json() for order in orderlist]
+                }
+            }
+        )
+    return jsonify(
+        {
+            "code":404,
+            "message":"There are no available orders"
+        }
+    ),404
+
 
 @app.route("/order/<string:order_id>")
 def find_by_order_id(order_id):
@@ -154,11 +200,13 @@ def find_by_customer_id(customer_id):
 def create_order():
     customer_id = request.json.get('customer_id')
     c_phone_number = request.json.get('c_phone_number')
+    customer_name = request.json.get('customer_name')
     pickup_location = request.json.get('pickup_location')
     destination = request.json.get('destination')
     price = request.json.get('price')
     order = Order(customer_id=customer_id, 
     c_phone_number=c_phone_number,
+    customer_name=customer_name,
     pickup_location=pickup_location,
     destination=destination,
     price=price)

@@ -31,8 +31,10 @@ vue_stuff=document.getElementById("vue_stuff")
 vue_stuff.style.display='none'
 
 
-//LOADING
+//LOADING FOR AUTHENTICATION
 loading=document.getElementById('loading')
+
+
 
 //WELCOME MESSAGE
 welcome=document.getElementById('welcome_msg')
@@ -158,7 +160,7 @@ if (user) {
 async function check_cus(cus_url,uid,user_name){
     try{
         response=await fetch(`${cus_url}/${uid}`)
-        
+        //console.log(await fetch(`${cus_url}/${uid}`))
         if (!response.ok){
             //SIGN OUT THE USER FROM FIREBASE 
             sign_out()
@@ -264,7 +266,6 @@ async function create_account(uid,user_name,pid,credit_num,tid){
         //VUE (WRAPPED INSIDE A FUNCTION)
 
 //}
-
 
 function mainVue(uid){
     var app = new Vue({
@@ -510,7 +511,8 @@ function mainVue(uid){
 
         },
             create_order: function () {
-    
+                //LOADING
+                loading.style.display=''
                 // use this to trigger an error
                 // "customer_id": "ERROR",
                 pickup_location = this.pickup_location
@@ -531,6 +533,8 @@ function mainVue(uid){
                     })
                     .then(response => response.json())
                     .then(data => {
+                        //LOADING
+                        loading.style.display='none'
                         console.log(data);
                         result = data.data;
                         console.log(result);
