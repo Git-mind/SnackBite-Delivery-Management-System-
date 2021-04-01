@@ -10,7 +10,7 @@ from flask_cors import CORS
 
 from datetime import datetime
 import json
-
+from sqlalchemy import or_
 from datetime import datetime
 
 app = Flask(__name__)
@@ -92,6 +92,49 @@ def get_available_orders():
             "message":"There are no available orders"
         }
     ),404
+
+#added by chin ning (on deiivery)
+@app.route("/order/get_on_delivery")
+def get_on_delivery_orders():
+    orderlist=Order.query.filter_by(status="On Deliver").all()
+    if len(orderlist):
+        return jsonify(
+            {
+                "code":200,
+                "data":{
+                    "customers":[order.json() for order in orderlist]
+                }
+            }
+        )
+    return jsonify(
+        {
+            "code":404,
+            "message":"There are no available orders"
+        }
+    ),404
+
+
+
+#added by chin ning (completed deiivery)
+@app.route("/order/get_completed_delivery")
+def get_completed_delivery_orders():
+    orderlist=Order.query.filter_by(status="Completed").all()
+    if len(orderlist):
+        return jsonify(
+            {
+                "code":200,
+                "data":{
+                    "customers":[order.json() for order in orderlist]
+                }
+            }
+        )
+    return jsonify(
+        {
+            "code":404,
+            "message":"There are no available orders"
+        }
+    ),404
+
 
 @app.route("/order/<string:order_id>")
 def find_by_order_id(order_id):
