@@ -21,7 +21,7 @@ class Driver(db.Model):
     __tablename__ = 'driver'
 
     driver_id = db.Column(db.String(100), primary_key=True)
-    driver_name = db.Column(db.String(100), nullable=False)
+    driver_name = db.Column(db.String(100), nullable=True)
     phone_number = db.Column(db.Integer, nullable=False)
     tele_id = db.Column(db.String(100), nullable=False)
 
