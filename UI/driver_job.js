@@ -1,7 +1,7 @@
 var delivery_management_URL = "http://localhost:5200/";
-var order_management_URL = "http://localhost:5100/";
-var driver_url="http://localhost:5001/driver"
-var order_URL = "http://localhost:5004/order";
+var driver_url="http://localhost:5001/driver";
+var payment_management_URL = "http://localhost:5300/";
+var review_URL = "http://localhost:5005/review";
 
 //{
     
@@ -266,12 +266,15 @@ function mainVue(uid){
     var app = new Vue({
         el: "#app",
         computed: {
-
+            hasReviews: function(){
+                return this.reviews.length > 0;
+            }
         },
         data: {
             "orders": [],
             "on_delivery":[],
             "completed_delivery":[],
+            "reviews" : [],
             message: "There is a problem retrieving books data, please try again later.",
             driver_id: uid,
             driver_name:"",
@@ -285,6 +288,8 @@ function mainVue(uid){
             reload_button:"",
             error_new:"",
             error_completed:"",
+            review_message: "",
+            no_review: ""
         },
         methods: {
 
@@ -418,7 +423,8 @@ function mainVue(uid){
                         body: JSON.stringify(
                             {
                                 'driver_id': this.driver_id,
-                                'order_id': order_id
+                                'order_id': order_id,
+                                "status": "On Delivery"
                             })
                     })
                     .then(response => response.json())
@@ -438,6 +444,7 @@ function mainVue(uid){
                             this.find_by_driver_id();
                             //prevent driver from accepting another order
                             this.new_button=false;
+                            this.error_new=false;
                         }
                     })
                     .catch(err => {
@@ -453,7 +460,7 @@ function mainVue(uid){
             complete_delivery:function(order_id){
                 const response =
                     // fetch(order_URL)
-                    fetch(order_URL + "/" + order_id, 
+                    fetch(payment_management_URL + "order_completed", 
                     {
                         method: "PUT",
                         headers: {
@@ -461,7 +468,8 @@ function mainVue(uid){
                         },
                         body: JSON.stringify(
                             {
-                                "status": "Completed"
+                                'order_id': order_id,
+                                "status": "completed"
                             })
                     })
                     .then(response => response.json())
@@ -496,6 +504,36 @@ function mainVue(uid){
 
             },
 
+            find_reviews_by_driver_id: function () {
+                // on Vue instance created, load the book list
+                const response =
+                    // fetch(order_URL)
+                    fetch(review_URL + "/driver/" + this.driver_id)
+                    .then(response => response.json())
+                    .then(data => {
+                        console.log(response);
+                        if (data.code === 404) {
+                            // no reviews in db
+                            this.review_message = data.message;
+                            this.no_review = false;
+                        } else {
+                            this.no_review = true;
+    
+                            console.log(data)
+    
+                            this.reviews = data.data.reviews;
+                            this.review_message = "You have made " + this.reviews.length + " reviews"
+                        }
+                    })
+                    .catch(err => {
+                        // Errors when calling the service; such as network error, 
+                        // service offline, etc
+                        error.innerHTML=this.message + err
+    
+                    });
+    
+            },
+
 
             
         },
@@ -508,7 +546,7 @@ function mainVue(uid){
             }
             this.find_by_driver_id();
             this.find_by_driver_id_on_delivery();
-        
+            this.find_reviews_by_driver_id();
         }
     });
 
