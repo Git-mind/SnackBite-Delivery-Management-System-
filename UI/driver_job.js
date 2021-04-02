@@ -273,7 +273,7 @@ function mainVue(uid){
             "on_delivery":[],
             "completed_delivery":[],
             message: "There is a problem retrieving books data, please try again later.",
-            driver_id: "",
+            driver_id: uid,
             driver_name:"",
             no_order:"",
             no_on_delivery:"",
@@ -283,6 +283,8 @@ function mainVue(uid){
             new_button:true,
             completed_button:true,
             reload_button:"",
+            error_new:"",
+            error_completed:"",
         },
         methods: {
 
@@ -305,6 +307,7 @@ function mainVue(uid){
                             // no order in db
                             this.message = data.message;
                             this.no_order = false;
+                            this.error_new= true;
                             
                         } else {
                             console.log(data)
@@ -371,10 +374,12 @@ function mainVue(uid){
                     .then(response => response.json())
                     .then(data => {
                         console.log(response);
-                        if (data.code === 404) {
+                        if (data.code === 404 || data.code === 500 ){
                             // no order in db
                             this.message = data.message;
                             this.no_completed_delivery = false;
+                            this.error_completed= true;
+                            this.error_new=false;
                         } else {
                             this.no_completed_delivery = true;
                             this.completed_delivery = data.data.order_result.data.customers;
@@ -403,8 +408,8 @@ function mainVue(uid){
             //driver accepts order
             accept_order:function(order_id){
                 const response =
-                    // fetch(order_URL)
-                    fetch(order_URL + "/" + order_id, 
+                
+                    fetch(delivery_management_URL + "update_order", 
                     {
                         method: "PUT",
                         headers: {
@@ -412,7 +417,8 @@ function mainVue(uid){
                         },
                         body: JSON.stringify(
                             {
-                                "status": "On Delivery"
+                                'driver_id': this.driver_id,
+                                'order_id': order_id
                             })
                     })
                     .then(response => response.json())

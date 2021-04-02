@@ -55,9 +55,10 @@
           <button v-show="new_button" @click="find_by_driver_id()" class="btn btn-primary m-3">View New Jobs</button>
           <button v-show="completed_button" @click="find_by_driver_id_completed()" class="btn btn-primary m-3">View Completed Jobs</button>
           <button v-show="reload_button" @click="reload()" class="btn btn-primary m-3">Back to Job Page</button>
-          <!--
-          <button @click="find_by_driver_id_status('Cancelled')" class="btn btn-primary m-3">View Cancelled Jobs</button>
-          -->
+          
+          <div v-show="error_new" class="text-danger">You have no new orders</div>
+          <div v-show="error_completed" class="text-danger">You have no completed orders</div>
+
           <div v-show="show_new">
             <h1 class="d-inline">New Jobs</h1>
             <br>
@@ -150,6 +151,8 @@
               </thead>
             </table>
           </div>
+
+         
 
 
 

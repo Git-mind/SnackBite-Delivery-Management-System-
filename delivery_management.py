@@ -64,14 +64,13 @@ def display_orders():
             }
         }
 
-#added by chin ning (on deiivery)
+#added by chin ning (on delivery)
 @app.route("/display_on_delivery", methods=['GET'])
 def display_on_delivery():
     # 1. Get order info {customer_id, pickup_location, destination}
-    order_URL = "http://localhost:5004/order/get_on_delivery"
     # Invoke the order microservice
     print('\n-----Invoking order microservice-----')
-    order_result = invoke_http(order_URL, method='GET')
+    order_result = invoke_http(order_URL + "/get_on_delivery" , method='GET')
     print('order_result:', order_result)
 
     # 2. Check the order result; if a failure, send it to the error microservice.
@@ -98,7 +97,7 @@ def display_on_delivery():
         return {
             "code": 500,
             "data": {"order_result": order_result},
-            "message": "Retrieval of new orders failure sent for error handling."
+            "message": "Retrieval of on delivery orders failure sent for error handling."
         }
 
     else:
@@ -115,10 +114,9 @@ def display_on_delivery():
 @app.route("/display_completed_delivery", methods=['GET'])
 def display_completed_delivery():
     # 1. Get order info {customer_id, pickup_location, destination}
-    order_URL = "http://localhost:5004/order/get_completed_delivery"
     # Invoke the order microservice
     print('\n-----Invoking order microservice-----')
-    order_result = invoke_http(order_URL, method='GET')
+    order_result = invoke_http(order_URL + "/get_completed_delivery" , method='GET')
     print('order_result:', order_result)
 
     # 2. Check the order result; if a failure, send it to the error microservice.
@@ -145,7 +143,7 @@ def display_completed_delivery():
         return {
             "code": 500,
             "data": {"order_result": order_result},
-            "message": "Retrieval of new orders failure sent for error handling."
+            "message": "Retrieval of completed orders failure sent for error handling."
         }
 
     else:
@@ -168,12 +166,12 @@ def update_order():
             print(driver_result)
             order_accept['driver_name'] = driver_result["data"]["driver_name"]
             order_accept['d_phone_number'] = driver_result["data"]["phone_number"]
-            # order_accept['driver_tele_id'] = driver_result["data"]["tele_id"]
+            order_accept['driver_tele_id'] = driver_result["data"]["tele_id"]
 
             # 2. Update the order details using order microservice
             # Invoke the order microservice
             result = invoke_http(order_URL + "/" + str(order_accept['order_id']) , method='PUT', json=order_accept)
-            
+           
             # 2. Check the order update result; if a failure, send it to the error microservice.
             code = result["code"]
             if code not in range(200, 300): 
