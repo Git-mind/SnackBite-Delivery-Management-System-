@@ -255,6 +255,8 @@ def update_order(order_id):
                 order.driver_id = data['driver_id']
             if data['d_phone_number']:
                 order.d_phone_number = data['d_phone_number']
+            if data['driver_name']:
+                order.driver_name = data['driver_name']
 
         if 'status' in data:
             order.status = data['status']

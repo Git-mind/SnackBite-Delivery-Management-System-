@@ -57,8 +57,8 @@ def create_review():
 
 
 def processCreateReview(review):
-    # 2. Get pricing for delivery using pricing microservice
-    # Invoke the pricing microservice
+    # 2. Get order details from order microservice
+    # Invoke the order microservice
 
     print('\n-----Invoking order microservice-----')
 
@@ -105,11 +105,11 @@ def processCreateReview(review):
         customer_name = customer_result["data"]["customer_name"]
         print(customer_name)
 
+        # 7. Get driver name from driver microservice.
         print('\n-----Invoking driver microservice-----')
         driver_result = invoke_http(driver_URL + "/" + str(review['driver_id']), method='GET')
         print(driver_result)
         driver_name = driver_result["data"]["driver_name"]
-        # 7. Get driver name from driver microservice.
 
         # 8. Create review using order microservice
         # Invoke review microservice 

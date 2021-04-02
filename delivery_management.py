@@ -162,9 +162,17 @@ def update_order():
             order_accept = request.get_json()
             print("\nOrder accepted, received order id and driver details in JSON:", order_accept)
             # do the actual work# 
-            # 1. Update the order details using order microservice
+            # 1. Get driver details from driver microservice.
+            print('\n-----Invoking driver microservice-----')
+            driver_result = invoke_http(driver_URL + "/" + str(order_accept['driver_id']), method='GET')
+            print(driver_result)
+            order_accept['driver_name'] = driver_result["data"]["driver_name"]
+            order_accept['d_phone_number'] = driver_result["data"]["phone_number"]
+            # order_accept['driver_tele_id'] = driver_result["data"]["tele_id"]
+
+            # 2. Update the order details using order microservice
             # Invoke the order microservice
-            result = invoke_http(order_URL + "/" + order_accept['order_id'] , method='PUT', json=order_accept)
+            result = invoke_http(order_URL + "/" + str(order_accept['order_id']) , method='PUT', json=order_accept)
             
             # 2. Check the order update result; if a failure, send it to the error microservice.
             code = result["code"]

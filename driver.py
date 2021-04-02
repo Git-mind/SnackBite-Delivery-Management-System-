@@ -23,7 +23,7 @@ class Driver(db.Model):
     driver_id = db.Column(db.String(100), primary_key=True)
     driver_name = db.Column(db.String(100), nullable=False)
     phone_number = db.Column(db.Integer, nullable=False)
-    tele_id = db.Column(db.String(100), nullable=False)
+    # tele_id = db.Column(db.String(100), nullable=False)
 
 
     def __init__(self, driver_id, driver_name, phone_number):
@@ -36,8 +36,8 @@ class Driver(db.Model):
         return {
             'driver_id': self.driver_id,
             'driver_name': self.driver_name,
-            'phone_number': self.phone_number,
-            'tele_id': self.tele_id
+            'phone_number': self.phone_number
+            # 'tele_id': self.tele_id
         }
 
 #get all driver
