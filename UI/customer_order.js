@@ -10,6 +10,7 @@ var order_management_URL = "http://localhost:5100/";
 var review_management_URL = "http://localhost:5400";
 var review_URL = "http://localhost:5005/review";
 var cus_url='http://localhost:5002/customers'
+var driver_url='http://localhost:5001/driver'
 
 //{
     
@@ -180,7 +181,8 @@ async function check_cus(cus_url,uid,user_name){
             //
         }
         else{
-            mainVue(uid)
+            console.log(user_name)
+            mainVue(uid,user_name)
             //DISPLAY THE WRAPPER OF THE DIV WHICH THE VUE IS ATTACHED TO 
             vue_stuff.style.display=''
         
@@ -267,7 +269,8 @@ async function create_account(uid,user_name,pid,credit_num,tid){
 
 //}
 
-function mainVue(uid){
+function mainVue(uid,u_n){
+    console.log(u_n)
     var app = new Vue({
         el: "#app",
         computed: {
@@ -279,6 +282,7 @@ function mainVue(uid){
             }
         },
         data: {
+            'u_n':u_n,
             "orders": [],
             "reviews" : [],
             message: "There is a problem retrieving orders data, please try again later.",
@@ -288,7 +292,7 @@ function mainVue(uid){
             orderPlaced: false,
             orderSuccessful: false,
             customer_id: uid,
-            customer_name: "",
+            customer_name: u_n,
             //add status columns in customer.sql to see which customer has logged in. Maybe i dk if got any other methods to check which user logged in (workaround solution).
             //I think should be outside of this vue
             //assuming customer login 
@@ -639,14 +643,66 @@ function mainVue(uid){
                     });
     
             },
+            alert_drivers:async function(){
+                try{
+                    const response = 
+                        await fetch(
+                            driver_url+'/get_all_tele_id',{method:'GET'});
+                    //responded but there is an error
+                    if (!response.ok){
+                        err=await response.json()['message']
+                        error.innerHTML+=`<br/>${err}`
+
+                    }
+                    else{
+                        const driver_tele_ids=await response.json() 
+                        console.log(driver_tele_ids)
+                        this.alert_call_me(driver_tele_ids)
+                        // return  driver_tele_ids
+                    }
+                }
+                //no response , weird error that caused the service to crash etc.
+                catch (err){
+                    error.innerHTML+=`<br/>${err}`
+                }
+
+
+            },
+
+            alert_call_me:async function(driver_tele_ids){
+                driver_tele_ids=driver_tele_ids.data
+                users=''
+                if (driver_tele_ids.length>0){
+                    for (i=0;i<driver_tele_ids.length;i++){
+                        if (i==driver_tele_ids.length-1){
+                            users+=`${driver_tele_ids[i]}`
+                            break
+                        }
+                        users+=`${driver_tele_ids[i]}|`
+
+                    }
+                }
+                pickup_location = this.pickup_location
+                destination = this.destination
+                customer_id = this.customer_id
+                price = this.newPrice
+                customer_name=this.customer_name
+                msg=`NEW JOB \n Pick Up \:${pickup_location} \n Destination \:${destination} \n Customer Name \:${customer_name} \n Price \:${price}`
+                console.log(msg)
+                msg=encodeURIComponent(msg)
+
+                // response = await fetch(`https://green-shadow-bc6f.gowthamaravindfaiz.workers.dev?https://api.callmebot.com/text.php?user=${users}&text=${msg}&html=yes`,{method:'GET'})
+                response = await fetch(`https://green-shadow-bc6f.gowthamaravindfaiz.workers.dev?https://api.callmebot.com/text.php?user=@Aravind1997555&text=${msg}&html=yes`,{method:'GET'})
+            }
             
         },
         created: function () {
             // on Vue instance created, load the book list
-            if (this.customer_name != ""){
-                userName = document.getElementById('userName')
-                userName.innerHTML = 'Welcome back ' + this.customer_name + "!"
-            }
+            // if (this.customer_name != ""){
+            //     userName = document.getElementById('userName')
+            //     // userName.innerHTML = 'Welcome back ' + this.customer_name + "!"
+                
+            // }
             this.find_by_customer_id();
             this.find_reviews_by_customer_id();
         }
