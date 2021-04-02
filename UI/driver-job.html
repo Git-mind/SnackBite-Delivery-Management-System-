@@ -101,7 +101,7 @@
                       
                         <!--Job Button-->
                         <td>
-                          <button v-if="order.status == 'NEW'" class="btn btn-success mt-sm-2" @click="accept_order(order.order_id)">Accept Delivery</button>
+                          <button v-if="order.status == 'NEW'" class="btn btn-success mt-sm-2" @click="accept_order(order.order_id,order.status)">Accept Delivery</button>
                         </td>
                       </tr>
                   </thead>
