@@ -30,7 +30,7 @@ class Driver(db.Model):
         self.driver_id = driver_id
         self.driver_name = driver_name
         self.phone_number = phone_number
-        self.tele_id = tele_id
+        self.tele_id=tele_id
     
 
     def json(self):
@@ -61,7 +61,9 @@ def get_all():
         }
     ), 404
 
-@app.route("/drivers/get_tele_id/<string:id>", methods=['GET'])
+
+#get driver tele id
+@app.route("/driver/get_tele_id/<string:id>", methods=['GET'])
 def get_tele_id(id):
     d_n = Driver.query.filter_by(driver_id=id).first()
     if d_n:
@@ -78,6 +80,7 @@ def get_tele_id(id):
         }
     ), 404
 
+#find driver by id
 @app.route("/driver/<string:driver_id>")
 def find_by_driver_id(driver_id):
     driver = Driver.query.filter_by(driver_id=driver_id).first()
@@ -204,6 +207,34 @@ def update_driver(driver_id):
                 "message": "An error occurred while updating the driver details. " + str(e)
             }
         ), 500
+
+#get all driver tele ids
+@app.route("/driver/get_all_tele_id", methods=['GET'])
+def get_all_tele_id():
+    driverlist = Driver.query.all()
+    if len(driverlist):
+        return jsonify(
+            {
+                "code": 200,
+                "data": [driver.json()['tele_id'] for driver in driverlist]
+            }
+        )
+    return jsonify(
+        {
+            "code": 404,
+            "message": "Drivers are not found."
+        }
+    ), 404
+
+
+
+
+
+
+
+
+
+
 
 if __name__ == '__main__':
     print("This is flask for " + os.path.basename(__file__) + ": manage drivers ...")

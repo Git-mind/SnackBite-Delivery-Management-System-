@@ -192,8 +192,8 @@
                                                 <input v-model="destination" type="text" class="form-control"
                                                     id="destination" placeholder="Enter destination">
                                             </div>
-
-                                            <button @click="create_order();" class="btn btn-primary"
+                                
+                                            <button @click="create_order()" class="btn btn-primary"
                                                 v-on:submit.prevent="onSubmit">Create
                                                 Order</button>
                                             <div class="text-success" v-if="orderCreated">
