@@ -209,7 +209,7 @@ def update_driver(driver_id):
 
 #get all driver tele ids
 @app.route("/driver/get_all_tele_id", methods=['GET'])
-def get_tele_id():
+def get_all_tele_id():
     driverlist = Driver.query.all()
     if len(driverlist):
         return jsonify(
