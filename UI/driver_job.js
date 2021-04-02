@@ -206,6 +206,7 @@ async function check_cus(driver_url,uid,user_name){
 //CREATE ACCOUNT
 async function create_account(uid,user_name,pid,tid){
     try{
+        console.log(response)
         response=await fetch(`${driver_url}`,{
             method: "POST",
             headers: {
