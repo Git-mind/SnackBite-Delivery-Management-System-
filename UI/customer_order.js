@@ -570,6 +570,12 @@ function mainVue(uid,u_n){
     
                                             Price Result:
                                             ${result.price_result.code}:${result.price_result.data.price}`;
+                                // alert(result.price_result.data.price)
+                                
+                                // GET THE PRICE 
+                                // CALL THE CALLMEBOT FUNCTION  
+                                this.newPrice=result.price_result.data.price
+                                this.alert_drivers()
                                 break;
     
                             case 400:
@@ -672,6 +678,7 @@ function mainVue(uid,u_n){
             alert_call_me:async function(driver_tele_ids){
                 driver_tele_ids=driver_tele_ids.data
                 users=''
+                // Need to delimit tele ids by '|'
                 if (driver_tele_ids.length>0){
                     for (i=0;i<driver_tele_ids.length;i++){
                         if (i==driver_tele_ids.length-1){
@@ -682,17 +689,21 @@ function mainVue(uid,u_n){
 
                     }
                 }
+
+                // Get data for delivery msg 
                 pickup_location = this.pickup_location
                 destination = this.destination
                 customer_id = this.customer_id
                 price = this.newPrice
                 customer_name=this.customer_name
+
+
                 msg=`NEW JOB \n Pick Up \:${pickup_location} \n Destination \:${destination} \n Customer Name \:${customer_name} \n Price \:${price}`
                 console.log(msg)
                 msg=encodeURIComponent(msg)
 
-                // response = await fetch(`https://green-shadow-bc6f.gowthamaravindfaiz.workers.dev?https://api.callmebot.com/text.php?user=${users}&text=${msg}&html=yes`,{method:'GET'})
-                response = await fetch(`https://green-shadow-bc6f.gowthamaravindfaiz.workers.dev?https://api.callmebot.com/text.php?user=@Aravind1997555&text=${msg}&html=yes`,{method:'GET'})
+                response = await fetch(`https://green-shadow-bc6f.gowthamaravindfaiz.workers.dev?https://api.callmebot.com/text.php?user=${users}&text=${msg}&html=yes`,{method:'GET'})
+                
             }
             
         },
