@@ -491,7 +491,7 @@ function mainVue(uid,u_n){
                             "destination": this.update_destination,
                             "customer_id": this.customer_id
                         })
-                })
+                }) 
                 .then(response => response.json())
                 .then(data => {
                     console.log(response);

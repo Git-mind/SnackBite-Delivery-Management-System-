@@ -94,9 +94,9 @@ def get_available_orders():
     ),404
 
 #added by chin ning (on deiivery)
-@app.route("/order/get_on_delivery")
-def get_on_delivery_orders():
-    orderlist=Order.query.filter_by(status="On Delivery").all()
+@app.route("/order/get_on_delivery/<string:driver_id>")
+def get_on_delivery_orders(driver_id):
+    orderlist=Order.query.filter_by(driver_id=driver_id, status="On Delivery").all()
     if len(orderlist):
         return jsonify(
             {
@@ -116,9 +116,9 @@ def get_on_delivery_orders():
 
 
 #added by chin ning (completed deiivery)
-@app.route("/order/get_completed_delivery")
-def get_completed_delivery_orders():
-    orderlist=Order.query.filter_by(status="Completed").all()
+@app.route("/order/get_completed_delivery/<string:driver_id>")
+def get_completed_delivery_orders(driver_id):
+    orderlist=Order.query.filter_by(driver_id=driver_id, status="Completed").all()
     if len(orderlist):
         return jsonify(
             {

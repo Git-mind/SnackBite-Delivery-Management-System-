@@ -7,7 +7,7 @@ from os import environ
 import requests
 from invokes import invoke_http
 
-# import amqp_setup
+import amqp_setup
 import pika
 import json
 
@@ -16,6 +16,7 @@ CORS(app)
 
 order_URL = environ.get('order_URL') or "http://localhost:5004/order"
 customer_URL = environ.get('customer_URL') or "http://localhost:5002/customers/"
+payment_URL = "http://localhost:5006/payment"
 # payment_URL = 
 
 @app.route("/order_completed", methods=['PUT'])
@@ -63,16 +64,18 @@ def processOrderCompleted(order):
 
     # 3. Check the order result; if a failure, send it to the error microservice.
     code = order_result["code"]
+    order_result['type'] = "delivery"
+    order_result['activity_name'] = "complete_delivery"
+    message = json.dumps(order_result)
 
     if code not in range(200, 300):
         # Inform the error microservice
         #print('\n\n-----Invoking error microservice as order update fails-----')
-        print('\n\n-----Publishing the (order update error) message with routing_key=order.error-----')
+        print('\n\n-----Publishing the (order update error) message with routing_key=delivery.error-----')
 
         # invoke_http(error_URL, method="POST", json=order_result)
-        message = json.dumps(order_result)
-        # amqp_setup.channel.basic_publish(exchange=amqp_setup.exchangename, routing_key="order.error", 
-        #     body=message, properties=pika.BasicProperties(delivery_mode = 2)) 
+        amqp_setup.channel.basic_publish(exchange=amqp_setup.exchangename, routing_key="delivery.error", 
+            body=message, properties=pika.BasicProperties(delivery_mode = 2)) 
 
         # make message persistent within the matching queues until it is received by some receiver 
         # (the matching queues have to exist and be durable and bound to the exchange)
@@ -95,11 +98,18 @@ def processOrderCompleted(order):
     # # and a message sent to “Error” queue can be received by “Activity Log” too.
 
     else:
+        print('\n\n-----Publishing the (delivery info) message with routing_key=delivery.info-----')        
+    
+        amqp_setup.channel.basic_publish(exchange=amqp_setup.exchangename, routing_key="delivery.info", 
+            body=message)
+    
+        print("\nOrder update published to RabbitMQ Exchange.\n")
+
         # 4. Get c_phone_number for order using customer microservice
         # Invoke customer microservice
         
         print('\n-----Invoking customer microservice-----')
-        customer_result = invoke_http(customer_URL + "/" + str(order_result['data']['customer_id'], method='GET'))
+        customer_result = invoke_http(customer_URL + "/" + str(order_result['data']['customer_id']), method='GET')
         print('customer_result:', customer_result)
         
         # 5. Create order using payment microservice
@@ -114,11 +124,10 @@ def processOrderCompleted(order):
         print(order_result['data']['price'])
         print(credit_card)
 
-        payment_URL = "http://localhost:5006/payment"
         payment_result = invoke_http(payment_URL, method='POST', json={
             'customer_id': customer_id,
             # 'credit_card': credit_card,
-            'credit_card': 4242424242424242,
+            'credit_card': credit_card,
             'price': order_result['data']['price']
         })
         print('payment_result:', payment_result)
@@ -127,6 +136,8 @@ def processOrderCompleted(order):
         # Check the payment result;
         # if a failure, send it to the error microservice.
         code = payment_result['code']
+        payment_result['type'] = "payment"
+        payment_result['activity_name'] = "payment"
         message = json.dumps(payment_result)
         if code not in range(200, 300):
             # Inform the error microservice
@@ -134,8 +145,8 @@ def processOrderCompleted(order):
             print('\n\n-----Publishing the (payment error) message with routing_key=payment.error-----')
 
             # invoke_http(error_URL, method="POST", json=order_result)
-            # amqp_setup.channel.basic_publish(exchange=amqp_setup.exchangename, routing_key="payment.error", 
-            #     body=message, properties=pika.BasicProperties(delivery_mode = 2))
+            amqp_setup.channel.basic_publish(exchange=amqp_setup.exchangename, routing_key="payment.error", 
+                body=message, properties=pika.BasicProperties(delivery_mode = 2))
 
             print("\Payment status ({:d}) published to the RabbitMQ Exchange:".format(
                 code), payment_result)
@@ -155,10 +166,10 @@ def processOrderCompleted(order):
             print('\n\n-----Publishing the (payment info) message with routing_key=payment.info-----')        
 
             # invoke_http(activity_log_URL, method="POST", json=payment_result)            
-            # amqp_setup.channel.basic_publish(exchange=amqp_setup.exchangename, routing_key="payment.info", 
-            #     body=message)
+            amqp_setup.channel.basic_publish(exchange=amqp_setup.exchangename, routing_key="payment.info", 
+                body=message)
         
-        print("\Payment published to RabbitMQ Exchange.\n")
+            print("\Payment published to RabbitMQ Exchange.\n")
         # - reply from the invocation is not used;
         # continue even if this invocation fails
 

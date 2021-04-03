@@ -3,6 +3,8 @@ var driver_url="http://localhost:5001/driver";
 var payment_management_URL = "http://localhost:5300/";
 var review_URL = "http://localhost:5005/review";
 var customer_url='http://localhost:5002/customers'
+var order_URL = "http://localhost:5004/order";
+
 
 //{
     
@@ -307,11 +309,11 @@ function mainVue(uid,u_n){
 
             //auto populate table/ polling new orders
             find_by_driver_id: function () {
-         
+          
                 
                 const response =
                     // fetch(order_URL)
-                    fetch(delivery_management_URL + "display_order")
+                    fetch(order_URL + "/get_available_orders")
                     .then(response => response.json())
                     .then(data => {
                         console.log(data.code);
@@ -324,7 +326,8 @@ function mainVue(uid,u_n){
                         } else {
                             console.log(data)
                             this.no_order = true;
-                            this.orders = data.data.order_result.data.customers;
+                            this.orders = data.data.customers;
+                            console.log(this.orders)
                             this.show_completed="";
                             this.show_new=true;
                             this.find_by_driver_id_on_delivery();
@@ -346,7 +349,7 @@ function mainVue(uid,u_n){
             find_by_driver_id_on_delivery: function () {
                 const response =
                     // fetch(order_URL)
-                    fetch(delivery_management_URL + "display_on_delivery")
+                    fetch(order_URL + "/get_on_delivery/" + this.driver_id)
                     .then(response => response.json())
                     .then(data => {
                         console.log(response);
@@ -364,7 +367,7 @@ function mainVue(uid,u_n){
                         } else {
                             console.log(data)
                             this.no_on_delivery = true;
-                            this.on_delivery = data.data.order_result.data.customers;
+                            this.on_delivery = data.data.customers;
                         
                         }
                     })
@@ -382,7 +385,7 @@ function mainVue(uid,u_n){
             find_by_driver_id_completed: function () {
                 const response =
                     // fetch(order_URL)
-                    fetch(delivery_management_URL + "display_completed_delivery")
+                    fetch(order_URL + "/get_completed_delivery/" + this.driver_id)
                     .then(response => response.json())
                     .then(data => {
                         console.log(response);
@@ -394,7 +397,7 @@ function mainVue(uid,u_n){
                             this.error_new=false;
                         } else {
                             this.no_completed_delivery = true;
-                            this.completed_delivery = data.data.order_result.data.customers;
+                            this.completed_delivery = data.data.customers;
 
                             this.show_completed=true;
                             this.show_new=false;
@@ -613,15 +616,17 @@ function mainVue(uid,u_n){
             
         },
         created: function () {
-           
+            this.find_by_driver_id();
+            this.find_by_driver_id_on_delivery();
+            this.find_reviews_by_driver_id();
+
             if (this.driver_name != ""){
                 userName = document.getElementById('userName')
                 userName.innerHTML = 'Welcome back ' + this.driver_name + "!"
         
             }
-            this.find_by_driver_id();
-            this.find_by_driver_id_on_delivery();
-            this.find_reviews_by_driver_id();
+            
+            
         }
     });
 
