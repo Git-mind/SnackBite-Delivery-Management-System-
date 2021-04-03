@@ -99,7 +99,7 @@ def processOrderCompleted(order):
         # Invoke customer microservice
         
         print('\n-----Invoking customer microservice-----')
-        customer_result = invoke_http(customer_URL + "/" + str(order_result['data']['customer_id'], method='GET'))
+        customer_result = invoke_http(customer_URL + "/" + str((order_result['data']['customer_id'])), method='GET')
         print('customer_result:', customer_result)
         
         # 5. Create order using payment microservice
