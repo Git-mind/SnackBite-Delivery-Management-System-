@@ -88,7 +88,7 @@
                   <thead>
                       <tr>
                           <th>Order ID</th>
-                          <th>Customer ID</th>
+                          <!-- <th>Customer ID</th> -->
                           <th>Customer Name</th>
                           <th>Pickup Location</th>
                           <th>Destination</th>
@@ -97,7 +97,7 @@
                       </tr>
                       <tr v-for="order in orders" v-show="no_order" >
                         <td>{{ order.order_id }}</td>
-                        <td>{{ order.customer_id }}</td>
+                        <!-- <td>{{ order.customer_id }}</td> -->
                         <td>{{ order.customer_name }}</td>
                         <td>{{ order.pickup_location }}</td>
                         <td>{{ order.destination }}</td>
@@ -105,7 +105,7 @@
                       
                         <!--Job Button-->
                         <td>
-                          <button v-if="order.status == 'NEW'" class="btn btn-success mt-sm-2" @click="accept_order(order.order_id,order.status)">Accept Delivery</button>
+                          <button v-if="order.status == 'NEW'" class="btn btn-success mt-sm-2" @click="accept_order(order.order_id,order.status, order.customer_id)">Accept Delivery</button>
                         </td>
                       </tr>
                   </thead>
@@ -120,23 +120,29 @@
                   <thead>
                       <tr>
                           <th>Order ID</th>
-                          <th>Customer ID</th>
+                          <!-- <th>Customer ID</th> -->
                           <th>Customer Name</th>
                           <th>Pickup Location</th>
                           <th>Destination</th>
                           <th>Status</th>
                           <th>Action</th>
+                          <th>Get Directions</th>
+
+
                       </tr>
                       <tr v-for="delivery in on_delivery" v-show="no_on_delivery" >
                         <td>{{ delivery.order_id }}</td>
-                        <td>{{ delivery.customer_id }}</td>
+                        <!-- <td>{{ delivery.customer_id }}</td> -->
                         <td>{{ delivery.customer_name }}</td>
                         <td>{{ delivery.pickup_location }}</td>
                         <td>{{ delivery.destination }}</td>
                         <td>{{ delivery.status }}</td>
                         <!--Job Button-->
                         <td>
-                          <button v-if="delivery.status == 'On Delivery'" class="btn btn-primary" @click="complete_delivery(delivery.order_id)">Complete delivery</button>
+                          <button v-if="delivery.status == 'On Delivery'" class="btn btn-primary" @click="complete_delivery(delivery.order_id, delivery.customer_id)">Complete delivery</button>
+                        </td>
+                        <td>
+                          <button class="btn btn-primary" @click="getDirection(delivery.pickup_location, delivery.destination)">Get Directions</button>
                         </td>
                       </tr>
                   </thead>
@@ -270,17 +276,17 @@
   <script src="https://www.gstatic.com/firebasejs/8.3.1/firebase-auth.js"></script>
 
   <script>
-      // Your web app's Firebase configuration
-      var firebaseConfig = {
-          apiKey: "AIzaSyCUs5MFQPqQV8rmg2rzy-0Rw8m5eAjoUSw",
-          authDomain: "snackbite-9355b.firebaseapp.com",
-          projectId: "snackbite-9355b",
-          storageBucket: "snackbite-9355b.appspot.com",
-          messagingSenderId: "165426704896",
-          appId: "1:165426704896:web:5bb86bb260e6552aa79ee5"
-      };
-      // Initialize Firebase
-      firebase.initializeApp(firebaseConfig);
+    // Your web app's Firebase configuration
+    var firebaseConfig = {
+      apiKey: "AIzaSyC7yJ9phdPSExUttCLfQQ3HdmyfRZ20V-A",
+      authDomain: "snackbite-delivery.firebaseapp.com",
+      projectId: "snackbite-delivery",
+      storageBucket: "snackbite-delivery.appspot.com",
+      messagingSenderId: "353142822574",
+      appId: "1:353142822574:web:0049e1f1c3a89f246e7f3f"
+    };
+    // Initialize Firebase
+    firebase.initializeApp(firebaseConfig);
   </script>
   <!-- FIREBASE CONFIG DO NOT TOUCH THIS -->  
 
