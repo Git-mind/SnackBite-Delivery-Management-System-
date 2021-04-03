@@ -15,7 +15,7 @@ app = Flask(__name__)
 CORS(app)
 
 order_URL = environ.get('order_URL') or "http://localhost:5004/order"
-customer_URL = environ.get('customer_URL') or "http://localhost:5002/customers"
+customer_URL = environ.get('customer_URL') or "http://localhost:5002/customers/"
 # payment_URL = 
 
 @app.route("/order_completed", methods=['PUT'])
@@ -56,7 +56,7 @@ def processOrderCompleted(order):
     # 2. Updating the order status using order microservice
     # Invoke the order microservice
     order_id = order['order_id']
-    print(order_id) 
+    print(order_id)
     print('\n-----Invoking order microservice-----')
     order_result = invoke_http(order_URL + "/" + str(order_id), method='PUT', json=order)
     print('order_result:', order_result)
@@ -99,7 +99,7 @@ def processOrderCompleted(order):
         # Invoke customer microservice
         
         print('\n-----Invoking customer microservice-----')
-        customer_result = invoke_http(customer_URL + "/" + str(order_result['data']['customer_id']), method='GET')
+        customer_result = invoke_http(customer_URL + "/" + str((order_result['data']['customer_id'])), method='GET')
         print('customer_result:', customer_result)
         
         # 5. Create order using payment microservice
