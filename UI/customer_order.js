@@ -11,7 +11,7 @@ var review_management_URL = "http://localhost:5400";
 var review_URL = "http://localhost:5005/review";
 var cus_url='http://localhost:5002/customers'
 var driver_url='http://localhost:5001/driver'
-var account_url='http://localhost:5500/account_management'
+var account_url='http://localhost:5500/'
 //{
     
         //HTML ELEMENTS
