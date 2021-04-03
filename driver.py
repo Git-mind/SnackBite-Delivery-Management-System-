@@ -7,6 +7,9 @@ from flask_cors import CORS
 from datetime import datetime
 import json
 
+
+#everything need
+
 app = Flask(__name__)
 # 3308 port used here, please alter to 3306 if necessary 
 app.config['SQLALCHEMY_DATABASE_URI'] = environ.get(
