@@ -118,6 +118,26 @@ def get_tele_id(id):
         }
     ), 404
 
+
+
+#get all customer tele ids
+@app.route("/customers/get_all_tele_id", methods=['GET'])
+def get_all_tele_id():
+    customerlist = Customer.query.all()
+    if len(customerlist):
+        return jsonify(
+            {
+                "code": 200,
+                "data": [customer.json()['tele_id'] for customer in customerlist]
+            }
+        )
+    return jsonify(
+        {
+            "code": 404,
+            "message": "Customers are not found."
+        }
+    ), 404
+
 # add customer
 @app.route("/customers", methods=['POST'])
 def add_customer():
@@ -181,6 +201,16 @@ def delete_customers(id):
             "message": "Customer is not found."
         }
     ), 404
+
+
+
+
+
+
+
+
+
+
 
 
 if __name__ == '__main__':

@@ -1,7 +1,8 @@
 var delivery_management_URL = "http://localhost:5200/";
-var order_management_URL = "http://localhost:5100/";
-var driver_url="http://localhost:5001/driver"
-var order_URL = "http://localhost:5004/order";
+var driver_url="http://localhost:5001/driver";
+var payment_management_URL = "http://localhost:5300/";
+var review_URL = "http://localhost:5005/review";
+var customer_url='http://localhost:5002/customers'
 
 //{
     
@@ -174,7 +175,8 @@ async function check_cus(driver_url,uid,user_name){
             //
         }
         else{
-            mainVue(uid)
+            console.log(user_name)
+            mainVue(uid,user_name)
             //DISPLAY THE WRAPPER OF THE DIV WHICH THE VUE IS ATTACHED TO 
             vue_stuff.style.display=''
         
@@ -206,6 +208,7 @@ async function check_cus(driver_url,uid,user_name){
 //CREATE ACCOUNT
 async function create_account(uid,user_name,pid,tid){
     try{
+        console.log(response)
         response=await fetch(`${driver_url}`,{
             method: "POST",
             headers: {
@@ -262,19 +265,24 @@ async function create_account(uid,user_name,pid,tid){
 
 //}
 
-function mainVue(uid){
+function mainVue(uid,u_n){
+    console.log(u_n)
     var app = new Vue({
         el: "#app",
         computed: {
-
+            hasReviews: function(){
+                return this.reviews.length > 0;
+            }
         },
         data: {
+            'u_n':u_n,
             "orders": [],
             "on_delivery":[],
             "completed_delivery":[],
+            "reviews" : [],
             message: "There is a problem retrieving books data, please try again later.",
-            driver_id: "",
-            driver_name:"",
+            driver_id: uid,
+            driver_name: u_n,
             no_order:"",
             no_on_delivery:"",
             no_completed_delivery:"",
@@ -283,6 +291,12 @@ function mainVue(uid){
             new_button:true,
             completed_button:true,
             reload_button:"",
+            error_new:"",
+            error_completed:"",
+            review_message: "",
+            no_review: "",
+            order_status:"",
+            ORDERID:"",
         },
         methods: {
 
@@ -305,6 +319,7 @@ function mainVue(uid){
                             // no order in db
                             this.message = data.message;
                             this.no_order = false;
+                            this.error_new= true;
                             
                         } else {
                             console.log(data)
@@ -371,10 +386,12 @@ function mainVue(uid){
                     .then(response => response.json())
                     .then(data => {
                         console.log(response);
-                        if (data.code === 404) {
+                        if (data.code === 404 || data.code === 500 ){
                             // no order in db
                             this.message = data.message;
                             this.no_completed_delivery = false;
+                            this.error_completed= true;
+                            this.error_new=false;
                         } else {
                             this.no_completed_delivery = true;
                             this.completed_delivery = data.data.order_result.data.customers;
@@ -401,10 +418,10 @@ function mainVue(uid){
 
 
             //driver accepts order
-            accept_order:function(order_id){
+            accept_order:function(order_id,status){
                 const response =
-                    // fetch(order_URL)
-                    fetch(order_URL + "/" + order_id, 
+                
+                    fetch(delivery_management_URL + "update_order", 
                     {
                         method: "PUT",
                         headers: {
@@ -412,6 +429,8 @@ function mainVue(uid){
                         },
                         body: JSON.stringify(
                             {
+                                'driver_id': this.driver_id,
+                                'order_id': order_id,
                                 "status": "On Delivery"
                             })
                     })
@@ -432,6 +451,13 @@ function mainVue(uid){
                             this.find_by_driver_id();
                             //prevent driver from accepting another order
                             this.new_button=false;
+                            this.error_new=false;
+
+                
+                            //callmebot
+                            this.ORDERID = order_id;
+                            this.order_status = "On Delivery";
+                            this.alert_customers()
                         }
                     })
                     .catch(err => {
@@ -444,10 +470,10 @@ function mainVue(uid){
             },
 
 
-            complete_delivery:function(order_id){
+            complete_delivery:function(order_id,status){
                 const response =
                     // fetch(order_URL)
-                    fetch(order_URL + "/" + order_id, 
+                    fetch(payment_management_URL + "order_completed", 
                     {
                         method: "PUT",
                         headers: {
@@ -455,7 +481,8 @@ function mainVue(uid){
                         },
                         body: JSON.stringify(
                             {
-                                "status": "Completed"
+                                'order_id': order_id,
+                                "status": "completed"
                             })
                     })
                     .then(response => response.json())
@@ -478,6 +505,12 @@ function mainVue(uid){
                             this.reload_button=true;
                             //hide completed button
                             this.completed_button=false;
+
+
+                            //callmebot
+                            this.ORDERID = order_id;
+                            this.order_status = "Completed";
+                            this.alert_customers()
                            
                         }
                     })
@@ -489,6 +522,92 @@ function mainVue(uid){
                     });
 
             },
+
+            find_reviews_by_driver_id: function () {
+                // on Vue instance created, load the book list
+                const response =
+                    // fetch(order_URL)
+                    fetch(review_URL + "/driver/" + this.driver_id)
+                    .then(response => response.json())
+                    .then(data => {
+                        console.log(response);
+                        if (data.code === 404) {
+                            // no reviews in db
+                            this.review_message = data.message;
+                            this.no_review = false;
+                        } else {
+                            this.no_review = true;
+    
+                            console.log(data)
+    
+                            this.reviews = data.data.reviews;
+                            this.review_message = "You have " + this.reviews.length + " review(s)."
+                        }
+                    })
+                    .catch(err => {
+                        // Errors when calling the service; such as network error, 
+                        // service offline, etc
+                        error.innerHTML=this.message + err
+    
+                    });
+    
+            },
+
+            alert_customers:async function(){
+                try{
+                    const response = 
+                        await fetch(
+                            customer_url+'/get_all_tele_id',{method:'GET'});
+                    //responded but there is an error
+                    if (!response.ok){
+                        err=await response.json()['message']
+                        error.innerHTML+=`<br/>${err}`
+
+                    }
+                    else{
+                        const customer_tele_ids=await response.json() 
+                        console.log(customer_tele_ids)
+                        this.alert_call_me(customer_tele_ids)
+                        // return  customer_tele_ids
+                    }
+                }
+                //no response , weird error that caused the service to crash etc.
+                catch (err){
+                    error.innerHTML+=`<br/>${err}`
+                }
+
+
+            },
+
+            alert_call_me:async function(customer_tele_ids){
+                customer_tele_ids=customer_tele_ids.data
+                users=''
+                // Need to delimit tele ids by '|'
+                if (customer_tele_ids.length>0){
+                    for (i=0;i<customer_tele_ids.length;i++){
+                        if (i==customer_tele_ids.length-1){
+                            users+=`${customer_tele_ids[i]}`
+                            break
+                        }
+                        users+=`${customer_tele_ids[i]}|`
+
+                    }
+                }
+
+                // Get data for delivery msg 
+                orderID = this.ORDERID;
+                driverName = this.driver_name; 
+                orderStatus = this.order_status;             
+                var current = new Date();
+                current_time = current.toLocaleTimeString();
+
+                msg=`ORDER ID \: ${orderID} \n Driver \: ${driverName} \n Status \: ${orderStatus} \n Time: ${current_time}`             
+                console.log(msg)
+                msg=encodeURIComponent(msg)
+
+                response = await fetch(`https://green-shadow-bc6f.gowthamaravindfaiz.workers.dev?https://api.callmebot.com/text.php?user=${users}&text=${msg}&html=yes`,{method:'GET'})
+                
+            }
 
 
             
@@ -502,7 +621,7 @@ function mainVue(uid){
             }
             this.find_by_driver_id();
             this.find_by_driver_id_on_delivery();
-        
+            this.find_reviews_by_driver_id();
         }
     });
 
