@@ -102,6 +102,8 @@ services:
     image: rabbitmq:3-management
     hostname: snackbite-rabbit
     restart: always
+    networks:
+      - kong-net
     ports:
       - "5672:5672"
       - "15672:15672"
@@ -117,6 +119,8 @@ services:
       dockerfile: activity_log.Dockerfile
     image: javieryw/activity_log:snackbite
     restart: always
+    networks:
+      - kong-net
     depends_on:
       - rabbitmq
     environment:
@@ -136,6 +140,8 @@ services:
       dockerfile: error.Dockerfile
     image: javieryw/error:snackbite
     restart: always
+    networks:
+      - kong-net
     depends_on:
       - rabbitmq
     environment:
@@ -154,7 +160,7 @@ services:
       dockerfile: order.Dockerfile
     image: javieryw/order:snackbite
     restart: always
-    networks: 
+    networks:
       - kong-net
     environment:
       dbURL: mysql+mysqlconnector://is213@host.docker.internal:3306/order
@@ -395,14 +401,4 @@ services:
       PYTHONUNBUFFERED: 1
     ports:
       - "5500:5500"
-
-
-
-
-
-
-
-
-
-
-
+      
