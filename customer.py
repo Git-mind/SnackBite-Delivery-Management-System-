@@ -176,31 +176,31 @@ def add_customer():
     ), 201
 
 
-# # delete customer
-# @app.route("/customers/<string:id>", methods=['DELETE'])
-# def delete_customers(id):
-#     cust = Customer.query.filter_by(customer_id=id).first()
-#     if cust:
-#         db.session.delete(cust)
-#         db.session.commit()
-#         return jsonify(
-#             {
-#                 "code": 200,
-#                 "data": {
-#                     "customer_id": id
-#                 }
-#             }
-#         )
+# delete customer
+@app.route("/customers/<string:id>", methods=['DELETE'])
+def delete_customers(id):
+    cust = Customer.query.filter_by(customer_id=id).first()
+    if cust:
+        db.session.delete(cust)
+        db.session.commit()
+        return jsonify(
+            {
+                "code": 200,
+                "data": {
+                    "customer_id": id
+                }
+            }
+        )
 
-#     return jsonify(
-#         {
-#             "code": 404,
-#             "data": {
-#                 "customer_id": id
-#             },
-#             "message": "Customer is not found."
-#         }
-#     ), 404
+    return jsonify(
+        {
+            "code": 404,
+            "data": {
+                "customer_id": id
+            },
+            "message": "Customer is not found."
+        }
+    ), 404
 
 
 

@@ -85,6 +85,7 @@ def find_by_review_id(review_id):
         }
     ), 404
 
+#need
 @app.route("/review/customer/<string:customer_id>")
 def find_by_customer_id(customer_id):
     reviewlist = Review.query.filter_by(customer_id=customer_id).all()

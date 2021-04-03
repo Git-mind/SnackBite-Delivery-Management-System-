@@ -16,6 +16,7 @@ results = invoke_http("http://localhost:5004/order/1", method='PUT', json={
 	'status': 'Delivering'
 })
 
+
 # results = invoke_http("http://localhost:5004/order/get_available_orders", method='GET')
 
 print( type(results) )

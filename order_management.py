@@ -15,12 +15,13 @@ app = Flask(__name__)
 CORS(app)
 
 driver_URL = environ.get('driver_URL') or "http://localhost:5001/driver"
-customer_URL = environ.get('customer_URL') or "http://localhost:5002/customers/"
+customer_URL = environ.get('customer_URL') or "http://localhost:5002/customers"
 pricing_URL =  environ.get('pricing_URL') or "http://localhost:5003/pricing" 
 order_URL = environ.get('order_URL') or "http://localhost:5004/order" 
 #activity_log_URL = "http://localhost:5003/activity_log"
 #error_URL = "http://localhost:5004/error"
 
+#need
 @app.route("/create_order", methods=['POST'])
 def create_order():
     # Simple check of input format and data of the request are JSON
@@ -174,7 +175,7 @@ def processCreateOrder(order):
         }
     }
 
-
+#need
 @app.route("/update_order", methods=['PUT'])
 def update_order():
     # Simple check of input format and data of the request are JSON

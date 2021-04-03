@@ -30,8 +30,8 @@ class Order(db.Model):
     customer_id = db.Column(db.String(100), nullable=False)
     c_phone_number = db.Column(db.Integer, nullable=False)
     customer_name= db.Column(db.String(100), nullable=False)
-    driver_id = db.Column(db.Integer, nullable=True)
-    driver_name = db.Column(db.String(100), nullable=False)
+    driver_id = db.Column(db.String(100), nullable=True)
+    driver_name = db.Column(db.String(100), nullable=True)
     d_phone_number = db.Column(db.Integer, nullable=True)
     date_time = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
     pickup_location = db.Column(db.String(100), nullable=False)
@@ -55,6 +55,7 @@ class Order(db.Model):
             'price': self.price
         }
 
+
 @app.route("/order")
 def get_all():
     orderlist = Order.query.all()
@@ -73,7 +74,7 @@ def get_all():
             "message": "There are no orders"
         }
     ), 404
-
+#drivers need
 @app.route("/order/get_available_orders")
 def get_available_orders():
     orderlist=Order.query.filter_by(status="NEW").all()
@@ -156,6 +157,7 @@ def find_by_order_id(order_id):
         }
     ), 404
 
+#using 
 @app.route("/order/customer/<string:customer_id>&<string:status>")
 def find_by_customer_id_status(customer_id,status):
     orderlist = Order.query.filter_by(customer_id=customer_id, status=status).all()
@@ -175,7 +177,7 @@ def find_by_customer_id_status(customer_id,status):
             "message": "There are no orders"
         }
     ), 404
-
+#need
 @app.route("/order/customer/<string:customer_id>")
 def find_by_customer_id(customer_id):
     orderlist = Order.query.filter_by(customer_id=customer_id).all()
@@ -187,6 +189,54 @@ def find_by_customer_id(customer_id):
                 "data": {
                     "orders": [order.json() for order in orderlist]
                 }
+            }
+        )
+    return jsonify(
+        {
+            "code": 404,
+            "message": "There are no orders"
+        }
+    ), 404
+
+# # Delete order
+# @app.route("/order/<string:order_id>", methods=['DELETE'])
+# def delete_order(order_id):
+#     order = Order.query.filter_by(order_id=order_id).first()
+#     if order:
+#         db.session.delete(order)
+#         db.session.commit()
+#         return jsonify(
+#             {
+#                 "code": 200,
+#                 "data": {
+#                     "order_id": order_id
+#                 }
+#             }
+#         )
+
+#     return jsonify(
+#         {
+#             "code": 404,
+#             "data": {
+#                 "order_id": order_id
+#             },
+#             "message": "Order is not found."
+#         }
+#     ), 404
+
+# Delete all orders when customer delete account
+@app.route("/order/customer_delete/<string:customer_id>", methods=['DELETE'])
+def delete_by_customer_id(customer_id):
+    orderlist = Order.query.filter_by(customer_id=customer_id).all()
+    # orderlist = Order.query.all()
+    if len(orderlist):
+        for order in orderlist:
+            db.session.delete(order)
+        db.session.commit()
+        return jsonify(
+            {
+                "code": 200,
+                "message": "Orders deleted"
             }
         )
     return jsonify(
@@ -232,7 +282,7 @@ def create_order():
         }
     ), 201
 
-
+#need
 @app.route("/order/<string:order_id>", methods=['PUT'])
 def update_order(order_id):
     try:

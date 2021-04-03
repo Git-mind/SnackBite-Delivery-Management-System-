@@ -134,7 +134,7 @@ function inEoutD(){
 //THIS FUNCTION CHECKS THE SESSION AND SEE IF A USER HAS LOGGED IN OR NOT 
 firebase.auth().onAuthStateChanged(function(user) {
 if (user) {
-
+    console.log("hello")
     check_cus(driver_url,user.uid,user.displayName)
     //console.log(driver_url)
     //console.log(user.id)
@@ -239,6 +239,7 @@ async function create_account(uid,user_name,pid,tid){
         else{
             $('#signUpModal').modal('hide')
             error.innerHTML=''
+            console.log(sign_up_ok)
             sign_up_ok.innerHTML='Sign-up is successful, please sign-in using your google account again'
             
             //ADD STUFF
