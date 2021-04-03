@@ -132,7 +132,7 @@ function inEoutD(){
 //THIS FUNCTION CHECKS THE SESSION AND SEE IF A USER HAS LOGGED IN OR NOT 
 firebase.auth().onAuthStateChanged(function(user) {
 if (user) {
-
+    console.log("hello")
     check_cus(driver_url,user.uid,user.displayName)
     //console.log(driver_url)
     //console.log(user.id)
