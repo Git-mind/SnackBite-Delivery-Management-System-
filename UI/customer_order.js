@@ -308,6 +308,7 @@ async function delete_acc(uid){
             $('#del_acc_modal').modal('hide')
             error.innerHTML=''
             sign_up_ok.innerHTML='Account deletion is successful'
+            vue_stuff.style.display='none'
             
             //ADD STUFF
 
