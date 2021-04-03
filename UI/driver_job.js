@@ -237,6 +237,7 @@ async function create_account(uid,user_name,pid,tid){
         else{
             $('#signUpModal').modal('hide')
             error.innerHTML=''
+            console.log(sign_up_ok)
             sign_up_ok.innerHTML='Sign-up is successful, please sign-in using your google account again'
             
             //ADD STUFF
