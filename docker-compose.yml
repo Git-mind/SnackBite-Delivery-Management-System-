@@ -162,6 +162,22 @@ services:
       - "5004:5004"
 
   ###################################
+  # Payment: The Payment microservice
+  ###################################
+  payment:
+    build:
+      context: ./
+      dockerfile: payment.Dockerfile
+    image: javieryw/payment:snackbite
+    restart: always
+    networks:
+      - kong-net
+    environment:
+      PYTHONUNBUFFERED: 1 
+    ports:
+      - "5006:5006"
+
+  ###################################
   # Pricing: The Pricing microservice
   ###################################
   pricing:
@@ -233,21 +249,7 @@ services:
       - "5005:5005"
 
 
-##################################
-# Payment: The Payment microservice
-##################################
-payment:
-  build:
-    context: ./
-    dockerfile: payment.Dockerfile
-  image: javieryw/payment:snackbite
-  restart: always
-  networks:
-    - kong-net
-  environment:
-    PYTHONUNBUFFERED: 1 
-  ports:
-    - "5006:5006"
+
     
 
 ###############################################
