@@ -11,7 +11,7 @@ var review_management_URL = "http://localhost:5400";
 var review_URL = "http://localhost:5005/review";
 var cus_url='http://localhost:5002/customers'
 var driver_url='http://localhost:5001/driver'
-
+var account_url='http://localhost:5500/'
 //{
     
         //HTML ELEMENTS
@@ -25,17 +25,13 @@ log_in=document.getElementById("log_in")
 //LOGOUT BUTTON
 log_out=document.getElementById("log_out")
 
-
 //VUE STUFF (WRAPPER THAT WRAPS VUE ELEMENT)
 vue_stuff=document.getElementById("vue_stuff")
 //INITIALLY HIDE WRAPPER WHEN LOADED
 vue_stuff.style.display='none'
 
-
 //LOADING FOR AUTHENTICATION
 loading=document.getElementById('loading')
-
-
 
 //WELCOME MESSAGE
 welcome=document.getElementById('welcome_msg')
@@ -58,6 +54,15 @@ c_num=document.getElementById('c_num')
 //P_NUM INPUT BY CUSTOMER 
 p_num=document.getElementById("p_num")
 
+//DELETE ACCOUNT
+d_acc=document.getElementById('d_acc')
+// console.log(d_acc)
+
+//CONFIRM REMOVE BUTTON 
+con_re=document.getElementById('confirm_remove')
+
+
+
 
 
 //{
@@ -75,7 +80,10 @@ log_in.addEventListener('click',sign_in)
 log_out.addEventListener('click',sign_out)
 
 
-
+//TRIGGER MODAL WHEN DELETE ACCOUNT IS CLICKED 
+d_acc.addEventListener('click',function(){
+    $('#del_acc_modal').modal('toggle')
+})
 
 
 //{
@@ -123,15 +131,22 @@ function sign_out(){
 function inDoutE(){
     log_in.className='btn btn-success disabled'
     log_in.style='pointer-events: none'
+
+    d_acc.className='btn btn-danger'
+    d_acc.style='pointer-events: auto;cursor: pointer'
     
-    log_out.className='btn btn-danger'
+    
+    log_out.className='btn btn-info'
     log_out.style='pointer-events: auto;cursor: pointer'
 }
 
 //LOG IN ENABLED LOG OUT DISABLED 
 function inEoutD(){
-    log_out.className='btn btn-danger disabled'
+    log_out.className='btn btn-info disabled'
     log_out.style='pointer-events: none'
+
+    d_acc.className='btn btn-danger disabled'
+    d_acc.style='pointer-events: none'
 
     log_in.className='btn btn-success'
     log_in.style='pointer-events: auto;cursor: pointer'
@@ -144,6 +159,12 @@ firebase.auth().onAuthStateChanged(function(user) {
 if (user) {
 
     check_cus(cus_url,user.uid,user.displayName)
+
+    //ADDING EVENT LISTENER TO CONFIRM DELETE BUTTON
+    con_re.addEventListener('click',function(){
+        uid=user.uid
+        delete_acc(uid)
+    })
 } else {
     loading.style.display='none'
 
@@ -253,15 +274,58 @@ async function create_account(uid,user_name,pid,credit_num,tid){
 
         console.log(err)
         error.innerHTML=`Error in signing up due to ${err}, please try again`
-        inEoutD()
+        // inEoutD()
         //ADD STUFF
 
     }
 
 }
 
+//DELETE ACCOUNT 
+async function delete_acc(uid){
+    try{
+        response=await fetch(`${account_url}/delete_customer`,{
+            method: "POST",
+            headers: {
+                "Content-type": "application/json"
+            },
+            body: JSON.stringify(
+                {
+                    "customer_id": uid
+                })
+        })
+        
+        if (!response.ok){
+            //ADD STUFF
+            $('#del_acc_modal').modal('hide')
+            error.innerHTML='Deletion is not successful, please try again'
+            
 
 
+
+        }
+        else{
+            $('#del_acc_modal').modal('hide')
+            error.innerHTML=''
+            sign_up_ok.innerHTML='Account deletion is successful'
+            vue_stuff.style.display='none'
+            sign_out()
+            //ADD STUFF
+
+        }
+    }
+    catch(err){
+        //ACCOUNT DELETION IS UNSUCCESSFUL 
+        $('#del_acc_modal').modal('hide')
+
+        console.log(err)
+        error.innerHTML=`Account deletion is not successful ${err}, please try again`
+        // inEoutD()
+        //ADD STUFF
+
+    }
+
+}
 
 //{
     
@@ -696,9 +760,11 @@ function mainVue(uid,u_n){
                 customer_id = this.customer_id
                 price = this.newPrice
                 customer_name=this.customer_name
+                time = new Date();
+                time=time.toLocaleString('en-US', { hour: 'numeric', minute: 'numeric', hour12: true })
 
 
-                msg=`NEW JOB \n Pick Up \:${pickup_location} \n Destination \:${destination} \n Customer Name \:${customer_name} \n Price \:${price}`
+                msg=`NEW JOB \n Pick Up \:${pickup_location} \n Destination \:${destination} \n Customer Name \:${customer_name} \n Price \:${price} \n Time \:${time}`
                 console.log(msg)
                 msg=encodeURIComponent(msg)
 

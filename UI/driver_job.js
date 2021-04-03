@@ -440,7 +440,7 @@ function mainVue(uid,u_n){
 
 
             //driver accepts order
-            accept_order:function(order_id,status){
+            accept_order:function(order_id,status, customer_id){
                 const response =
                 
                     fetch(delivery_management_URL + "update_order", 
@@ -479,7 +479,7 @@ function mainVue(uid,u_n){
                             //callmebot
                             this.ORDERID = order_id;
                             this.order_status = "On Delivery";
-                            this.alert_customers()
+                            this.alert_customers(customer_id)
                         }
                     })
                     .catch(err => {
@@ -492,7 +492,7 @@ function mainVue(uid,u_n){
             },
 
 
-            complete_delivery:function(order_id,status){
+            complete_delivery:function(order_id,customer_id){
                 const response =
                     // fetch(order_URL)
                     fetch(payment_management_URL + "order_completed", 
@@ -533,7 +533,7 @@ function mainVue(uid,u_n){
                             //callmebot
                             this.ORDERID = order_id;
                             this.order_status = "Completed";
-                            this.alert_customers()
+                            this.alert_customers(customer_id)
                            
                         }
                     })
@@ -576,11 +576,11 @@ function mainVue(uid,u_n){
     
             },
 
-            alert_customers:async function(){
+            alert_customers:async function(customer_id){
                 try{
                     const response = 
                         await fetch(
-                            customer_url+'/get_all_tele_id',{method:'GET'});
+                            customer_url+'/get_tele_id/' + customer_id ,{method:'GET'});
                     //responded but there is an error
                     if (!response.ok){
                         err=await response.json()['message']
@@ -588,9 +588,9 @@ function mainVue(uid,u_n){
 
                     }
                     else{
-                        const customer_tele_ids=await response.json() 
-                        console.log(customer_tele_ids)
-                        this.alert_call_me(customer_tele_ids)
+                        const customer_tele_id=await response.json() 
+                        console.log(customer_tele_id)
+                        this.alert_call_me(customer_tele_id)
                         // return  customer_tele_ids
                     }
                 }
@@ -602,20 +602,9 @@ function mainVue(uid,u_n){
 
             },
 
-            alert_call_me:async function(customer_tele_ids){
-                customer_tele_ids=customer_tele_ids.data
+            alert_call_me:async function(customer_tele_id){
+                customer_tele_id=customer_tele_id.data
                 users=''
-                // Need to delimit tele ids by '|'
-                if (customer_tele_ids.length>0){
-                    for (i=0;i<customer_tele_ids.length;i++){
-                        if (i==customer_tele_ids.length-1){
-                            users+=`${customer_tele_ids[i]}`
-                            break
-                        }
-                        users+=`${customer_tele_ids[i]}|`
-
-                    }
-                }
 
                 // Get data for delivery msg 
                 orderID = this.ORDERID;
@@ -628,7 +617,7 @@ function mainVue(uid,u_n){
                 console.log(msg)
                 msg=encodeURIComponent(msg)
 
-                response = await fetch(`https://green-shadow-bc6f.gowthamaravindfaiz.workers.dev?https://api.callmebot.com/text.php?user=${users}&text=${msg}&html=yes`,{method:'GET'})
+                response = await fetch(`https://green-shadow-bc6f.gowthamaravindfaiz.workers.dev?https://api.callmebot.com/text.php?user=${customer_tele_id}&text=${msg}&html=yes`,{method:'GET'})
                 
             }
 

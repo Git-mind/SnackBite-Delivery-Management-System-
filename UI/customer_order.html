@@ -29,7 +29,10 @@
                 <!-- WELCOME MESSAGE RENDERS HERE -->
                 <h2 id="welcome_msg" class="mr-sm-2"></h2>
                 <a class="btn btn-success" id='log_in'>Log In via <i class="fab fa-google">oogle</i></a>
-                <a class="btn btn-danger" id='log_out'>Log Out</a>
+                <a class="btn btn-info" id='log_out'>Log Out</a>
+                <a class="btn btn-danger" id='d_acc'>Delete Account</a>
+
+                
                 <!-- <a class="btn btn-danger" id='log_out' >Log Out</a> -->
 
 
@@ -371,6 +374,28 @@
             </div>
         </div>
     </div>
+
+
+    <!-- MODAL TO DELETE ACCOUNT -->
+    <div class="modal fade" id="del_acc_modal" tabindex="-1" role="dialog" >
+        <div class="modal-dialog" role="document">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title" id="exampleModalLabel">Modal title</h5>
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+            <div class="modal-body">
+              Woah, slow down cowboy! Are you sure you want to delete your SnackBite account?
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" data-dismiss="modal">No</button>
+              <button type="button" class="btn btn-outline-danger" id='confirm_remove'>Yes, please delete my account</button>
+            </div>
+          </div>
+        </div>
+      </div>
 
 
 
