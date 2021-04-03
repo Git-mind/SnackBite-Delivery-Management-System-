@@ -126,7 +126,7 @@
                           <th>Destination</th>
                           <th>Status</th>
                           <th>Action</th>
-                          <th>Get Directions</th>
+                          <th>Action</th>
 
 
                       </tr>
@@ -140,9 +140,6 @@
                         <!--Job Button-->
                         <td>
                           <button v-if="delivery.status == 'On Delivery'" class="btn btn-primary" @click="complete_delivery(delivery.order_id, delivery.customer_id)">Complete delivery</button>
-                        </td>
-                        <td>
-                          <button class="btn btn-primary" @click="getDirection(delivery.pickup_location, delivery.destination)">Get Directions</button>
                         </td>
                       </tr>
                   </thead>

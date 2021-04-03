@@ -6,11 +6,7 @@ var customer_url='http://localhost:5002/customers'
 var order_URL = "http://localhost:5004/order";
 
 
-// Google maps directions
-var directionsRenderer;
-// APIs that we are going to use
-var googleAPIKey = "AIzaSyC07WP9hBjhOYHS33f4m04IQlCimcCQig4";
-var map, infoWindow;
+
 
 //{
     
@@ -81,8 +77,6 @@ log_out.addEventListener('click',sign_out)
         //FUNCTIONS
 
 //}
-
-
 
 
 //LOG_IN FUNCTION 
@@ -315,17 +309,7 @@ function mainVue(uid,u_n){
                 window.location.reload()
 
             },
-            getDirection(startPoint, endPoint) {
-                // var lat = location.latitude;
-                // var lng = location.longitude;
-                // var endPoint = new google.maps.LatLng(lat, lng)
-                document.getElementById("des").value = event.target.value
-                // convert location object into string to pass it into hidden input value for sendBtn function
-                var locStr = JSON.stringify(location);
-                document.getElementById("hidDes").value = locStr;
-    
-                display(startPoint, endPoint, "DRIVING");
-            },
+
             //auto populate table/ polling new orders
             find_by_driver_id: function () {
           
@@ -639,105 +623,4 @@ function mainVue(uid,u_n){
         }
     });
 
-}
-
-//Google Maps function
-// Initialize and add the map
-function display(start, end, mode) {
-    const directionsRenderer = new google.maps.DirectionsRenderer();
-    const directionsService = new google.maps.DirectionsService();
-    map = new google.maps.Map(document.getElementById('map'), {
-        center: {
-            lat: -34.397,
-            lng: 150.644
-        },
-        zoom: 12
-    });
-    infoWindow = new google.maps.InfoWindow;
-
-    directionsRenderer.setMap(map);
-
-    if (document.getElementById("right-panel").innerHTML.length != 0) {
-        document.getElementById("right-panel").innerHTML = "";
-    }
-    // Try HTML5 geolocation.
-    if (navigator.geolocation) {
-        navigator.geolocation.getCurrentPosition(function (position) {
-            var pos = {
-                lat: position.coords.latitude,
-                lng: position.coords.longitude
-            };
-
-            infoWindow.setPosition(pos);
-            infoWindow.setContent('You are here!');
-            infoWindow.open(map);
-            map.setCenter(pos);
-            document.getElementById("right-panel").innerHTML += `<div class="box text-center w-100 h-50 m-auto rounded border border-dark m-10" style="background: #00b894; color: white; font-size:1rem; font-weight: bold;">
-                        <p class="my-auto py-auto">Route directions</p> 
-                    </div>`;
-            directionsRenderer.setPanel(document.getElementById("right-panel"));
-            calculateAndDisplayRoute(directionsService, directionsRenderer, start, end, mode, pos);
-        }, function () {
-            handleLocationError(true, infoWindow, map.getCenter());
-        });
-    } else {
-        // Browser doesn't support Geolocation
-        handleLocationError(false, infoWindow, map.getCenter());
-    }
-
-}
-
-function calculateAndDisplayRoute(directionsService, directionsRenderer, start, end, mode, pos) {
-    stPoint = start
-    if (start == "Your location") {
-        stPoint = pos
-    }
-
-    directionsService.route({
-            origin: stPoint,
-            destination: end,
-            // new google.maps.LatLng(1.2911354, 103.8501524),
-            travelMode: google.maps.TravelMode[mode],
-        },
-        (response, status) => {
-            if (status === "OK") {
-                directionsRenderer.setDirections(response);
-
-            } else {
-                window.alert("Directions request failed due to " + status + "\nUnable to find route to Destination");
-            }
-        }
-    );
-}
-
-function initMap() {
-    map = new google.maps.Map(document.getElementById('map'), {
-        center: {
-            lat: -34.397,
-            lng: 150.644
-        },
-        zoom: 12
-    });
-    infoWindow = new google.maps.InfoWindow;
-    // Try HTML5 geolocation.
-    if (navigator.geolocation) {
-        navigator.geolocation.getCurrentPosition(function (position) {
-            var pos = {
-                lat: position.coords.latitude,
-                lng: position.coords.longitude
-
-            };
-
-
-            infoWindow.setPosition(pos);
-            infoWindow.setContent('You are here!');
-            infoWindow.open(map);
-            map.setCenter(pos);
-        }, function () {
-            handleLocationError(true, infoWindow, map.getCenter());
-        });
-    } else {
-        // Browser doesn't support Geolocation
-        handleLocationError(false, infoWindow, map.getCenter());
-    }
 }
