@@ -16,8 +16,7 @@ CORS(app)
 
 order_URL = environ.get('order_URL') or "http://localhost:5004/order"
 customer_URL = environ.get('customer_URL') or "http://localhost:5002/customers/"
-payment_URL = "http://localhost:5006/payment"
-# payment_URL = 
+payment_URL = environ.get('payment_URL') or "http://localhost:5006/payment"
 
 @app.route("/order_completed", methods=['PUT'])
 def order_completed():

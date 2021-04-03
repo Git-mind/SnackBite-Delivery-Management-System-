@@ -361,7 +361,7 @@ function mainVue(uid,u_n){
                             this.no_on_delivery = false;
                             
                             //handle button 
-                            this.new_button=false;
+                            this.new_button=true;
                             this.completed_button=true;
                             this.reload_button=false;
 
@@ -509,6 +509,7 @@ function mainVue(uid,u_n){
                             this.reload_button=true;
                             //hide completed button
                             this.completed_button=false;
+                            this.new_button = false;
 
 
                             //callmebot
