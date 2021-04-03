@@ -1,5 +1,7 @@
-# Test om composite microservice 
+# Test om composite microservice
 from invokes import invoke_http
+
+# Run Customer, Driver, Review, Order, and Review Management on flask first
 
 # Update destination, pick up location, price 
 json = {"order_id":1, "feedback": "complex micro test"}

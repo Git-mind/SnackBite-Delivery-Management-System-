@@ -30,8 +30,8 @@ class Order(db.Model):
     customer_id = db.Column(db.String(100), nullable=False)
     c_phone_number = db.Column(db.Integer, nullable=False)
     customer_name= db.Column(db.String(100), nullable=False)
-    driver_id = db.Column(db.Integer, nullable=True)
-    driver_name = db.Column(db.String(100), nullable=False)
+    driver_id = db.Column(db.String(100), nullable=True)
+    driver_name = db.Column(db.String(100), nullable=True)
     d_phone_number = db.Column(db.Integer, nullable=True)
     date_time = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
     pickup_location = db.Column(db.String(100), nullable=False)
@@ -187,6 +187,54 @@ def find_by_customer_id(customer_id):
                 "data": {
                     "orders": [order.json() for order in orderlist]
                 }
+            }
+        )
+    return jsonify(
+        {
+            "code": 404,
+            "message": "There are no orders"
+        }
+    ), 404
+
+# # Delete order
+# @app.route("/order/<string:order_id>", methods=['DELETE'])
+# def delete_order(order_id):
+#     order = Order.query.filter_by(order_id=order_id).first()
+#     if order:
+#         db.session.delete(order)
+#         db.session.commit()
+#         return jsonify(
+#             {
+#                 "code": 200,
+#                 "data": {
+#                     "order_id": order_id
+#                 }
+#             }
+#         )
+
+#     return jsonify(
+#         {
+#             "code": 404,
+#             "data": {
+#                 "order_id": order_id
+#             },
+#             "message": "Order is not found."
+#         }
+#     ), 404
+
+# Delete all orders when customer delete account
+@app.route("/order/customer_delete/<string:customer_id>", methods=['DELETE'])
+def delete_by_customer_id(customer_id):
+    orderlist = Order.query.filter_by(customer_id=customer_id).all()
+    # orderlist = Order.query.all()
+    if len(orderlist):
+        for order in orderlist:
+            db.session.delete(order)
+        db.session.commit()
+        return jsonify(
+            {
+                "code": 200,
+                "message": "Orders deleted"
             }
         )
     return jsonify(
