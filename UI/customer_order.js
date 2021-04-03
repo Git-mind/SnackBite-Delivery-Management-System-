@@ -309,7 +309,7 @@ async function delete_acc(uid){
             error.innerHTML=''
             sign_up_ok.innerHTML='Account deletion is successful'
             vue_stuff.style.display='none'
-            
+            sign_out()
             //ADD STUFF
 
         }
