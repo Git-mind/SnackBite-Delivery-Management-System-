@@ -349,6 +349,31 @@ services:
     ports:
       - "5200:5200"
 
+  ###############################################
+  # Account Management microservice
+  ###############################################
+  account_management:
+    build:
+      context: ./
+      dockerfile: account_management.Dockerfile
+    image: javieryw/account_management:snackbite
+    restart: always
+    networks:
+      - kong-net
+    depends_on:
+      - order
+      - customer
+      - activity_log
+      - error
+      - rabbitmq
+    environment:
+      rabbit_host: rabbitmq
+      rabbit_port: 5672
+      order_URL: http://order:5004/order
+      customer_URL: http://customer:5002/customers
+      PYTHONUNBUFFERED: 1
+    ports:
+      - "5500:5500"
 
 
 
