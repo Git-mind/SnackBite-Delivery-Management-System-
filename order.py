@@ -93,7 +93,7 @@ def get_available_orders():
         }
     ),404
 
-#added by chin ning (on deiivery)
+#added by chin ning (on delivery)
 @app.route("/order/get_on_delivery")
 def get_on_delivery_orders():
     orderlist=Order.query.filter_by(status="On Delivery").all()
