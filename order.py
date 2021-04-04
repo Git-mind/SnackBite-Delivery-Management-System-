@@ -243,10 +243,10 @@ def delete_by_customer_id(customer_id):
         )
     return jsonify(
         {
-            "code": 404,
+            "code": 201,
             "message": "There are no orders"
         }
-    ), 404
+    ), 201
 
 @app.route("/order", methods=['POST'])
 def create_order():

@@ -46,3 +46,4 @@ def delete_customer():
     results=invoke_http(new_url,method='DELETE')
     print(results)
 
+add_customer()
