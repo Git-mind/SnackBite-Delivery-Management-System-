@@ -763,12 +763,31 @@ function mainVue(uid,u_n){
                 time = new Date();
                 time=time.toLocaleString('en-US', { hour: 'numeric', minute: 'numeric', hour12: true })
 
+                // alert(users)
 
                 msg=`NEW JOB \n Pick Up \:${pickup_location} \n Destination \:${destination} \n Customer Name \:${customer_name} \n Price \:${price} \n Time \:${time}`
                 console.log(msg)
                 msg=encodeURIComponent(msg)
 
-                response = await fetch(`https://green-shadow-bc6f.gowthamaravindfaiz.workers.dev?https://api.callmebot.com/text.php?user=${users}&text=${msg}&html=yes`,{method:'GET'})
+
+                try{
+
+                    response = await fetch(`https://green-shadow-bc6f.gowthamaravindfaiz.workers.dev?https://api.callmebot.com/text.php?user=${users}&text=${msg}&html=yes`,{method:'GET'})
+
+                    if (!response.ok){
+                        error.innerHTML=''
+                        error.innerHTML=`CallMeBot refused to alert drivers`
+                    }
+                    else{
+                        alert('Drivers are alerted of your order')
+                    }
+                }
+                catch(err){
+                    error.innerHTML=''
+                    error.innerHTML=`Telegram alert to drivers failed due to ${err}`
+
+                }
+                
                 
             }
             

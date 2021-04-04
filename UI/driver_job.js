@@ -599,7 +599,26 @@ function mainVue(uid,u_n){
                 console.log(msg)
                 msg=encodeURIComponent(msg)
 
-                response = await fetch(`https://green-shadow-bc6f.gowthamaravindfaiz.workers.dev?https://api.callmebot.com/text.php?user=${customer_tele_id}&text=${msg}&html=yes`,{method:'GET'})
+                
+
+                try{
+
+                    response = await fetch(`https://green-shadow-bc6f.gowthamaravindfaiz.workers.dev?https://api.callmebot.com/text.php?user=${customer_tele_id}&text=${msg}&html=yes`,{method:'GET'})
+
+                    if (!response.ok){
+                        error.innerHTML=''
+                        error.innerHTML=`CallMeBot refused to alert customer`
+                    }
+
+                    else{
+                        alert('Customer is alerted of your order')
+                    }
+                }
+                catch(err){
+                    error.innerHTML=''
+                    error.innerHTML=`Telegram alert to customer failed due to ${err}`
+
+                }
                 
             }
 
