@@ -583,6 +583,10 @@ function mainVue(uid,u_n){
                         this.message = "You have updated order details of order id" + order_id;
                         // update UI after cancelling order
                         this.find_by_customer_id();
+
+                        // CALL THE CALLMEBOT FUNCTION  
+                        // Alert drivers 
+                        this.alert_drivers(true)
                     }
                 })
                 .catch(err => {
@@ -648,7 +652,7 @@ function mainVue(uid,u_n){
                                 // GET THE PRICE 
                                 // CALL THE CALLMEBOT FUNCTION  
                                 this.newPrice=result.price_result.data.price
-                                this.alert_drivers()
+                                this.alert_drivers(false)
                                 break;
     
                             case 400:
@@ -722,7 +726,7 @@ function mainVue(uid,u_n){
                     });
     
             },
-            alert_drivers:async function(){
+            alert_drivers:async function(is_update){
                 try{
                     const response = 
                         await fetch(
@@ -736,7 +740,7 @@ function mainVue(uid,u_n){
                     else{
                         const driver_tele_ids=await response.json() 
                         console.log(driver_tele_ids)
-                        this.alert_call_me(driver_tele_ids)
+                        this.alert_call_me(driver_tele_ids,is_update)
                         // return  driver_tele_ids
                     }
                 }
@@ -748,7 +752,8 @@ function mainVue(uid,u_n){
 
             },
 
-            alert_call_me:async function(driver_tele_ids){
+            alert_call_me:async function(driver_tele_ids,is_update){
+                console.log(is_update)
                 driver_tele_ids=driver_tele_ids.data
                 users=''
                 // Need to delimit tele ids by '|'
@@ -763,19 +768,45 @@ function mainVue(uid,u_n){
                     }
                 }
 
+
+                // "order_id": this.update_order_id,
+                // "pickup_location": this.update_pickup_location,
+                // "destination": this.update_destination,
+                // "customer_id": this.customer_id,
+                // "order_desc": this.update_order_desc
                 // Get data for delivery msg 
-                pickup_location = this.pickup_location
-                destination = this.destination
-                customer_id = this.customer_id
-                price = this.newPrice
-                customer_name=this.customer_name
-                time = new Date();
-                time=time.toLocaleString('en-US', { hour: 'numeric', minute: 'numeric', hour12: true })
-                order_desc=this.order_desc
+                if (!is_update){
+                    pickup_location = this.pickup_location
+                    destination = this.destination
+                    // customer_id = this.customer_id
+                    // price = this.newPrice
+                    customer_name=this.customer_name
+                    time = new Date();
+                    time=time.toLocaleString('en-US', { hour: 'numeric', minute: 'numeric', hour12: true })
+                    order_desc=this.order_desc
+                    new_job='NEW JOB'
+                    order_id=''
+
+                }
+                else{
+                    pickup_location = this.update_pickup_location
+                    destination = this.update_destination
+                    // customer_id = this.customer_id
+                    // price = this.newPrice
+                    customer_name=this.customer_name
+                    time = new Date();
+                    time=time.toLocaleString('en-US', { hour: 'numeric', minute: 'numeric', hour12: true })
+                    order_desc=this.update_order_desc
+                    new_job='NEW JOB (UPDATED)'
+                    order_id= `Order ID\: ${this.update_order_id}\n`
+
+                }
+
 
                 // alert(users)
 
-                msg=`NEW JOB \n Pick Up \:${pickup_location} \n Destination \:${destination} \n Customer Name \:${customer_name} \n Price \:${price} \n Description \: ${order_desc} \n Time \:${time}`
+                // msg=`${new_job} \n ${order_id} Pick Up \:${pickup_location} \n Destination \:${destination} \n Customer Name \:${customer_name} \n Price \:${price} \n Description \: ${order_desc} \n Time \:${time}`
+                msg=`${new_job}\n${order_id}Pick Up\: ${pickup_location}\nDestination\: ${destination}\nCustomer Name\: ${customer_name}\nDescription\: ${order_desc}\nTime\: ${time}`
                 console.log(msg)
                 msg=encodeURIComponent(msg)
 
