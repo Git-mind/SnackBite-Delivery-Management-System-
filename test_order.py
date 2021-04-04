@@ -10,13 +10,21 @@ from invokes import invoke_http
 # 	'price': 6.50
 # })
 
-results = invoke_http("http://localhost:5004/order/1", method='PUT', json={
-	'driver_id': 1234,
-	'd_phone_number': 12345689,
-	'status': 'Delivering'
+# results = invoke_http("http://localhost:5004/order/1", method='PUT', json={
+# 	'driver_id': 1234,
+# 	'd_phone_number': 12345689,
+# 	'status': 'Delivering'
+# })
+
+results = invoke_http("http://localhost:5004/order", method="POST",json={
+	"customer_id": "2",
+	"c_phone_number": "333",
+	"customer_name": "John",
+	"pickup_location": "jurong",
+	"destination": "pasir ris",
+	"price": 3.14,
+	"order_desc": "3 packs of maggie mee"
 })
-
-
 # results = invoke_http("http://localhost:5004/order/get_available_orders", method='GET')
 
 print( type(results) )
