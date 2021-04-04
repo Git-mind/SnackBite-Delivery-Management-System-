@@ -42,7 +42,6 @@ def callback(channel, method, properties, body): # required signature for the ca
 
 def processOrderLog(order): 
     print("Recording an activity log:")
-    print(order)
 
     activity_date_time = datetime.now()
     activity_type = order['type']

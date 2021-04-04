@@ -226,7 +226,7 @@ def find_by_customer_id(customer_id):
 #         }
 #     ), 404
 
-# Delete all orders when customer delete account
+# Delete all orders when customer delete account 
 @app.route("/order/customer_delete/<string:customer_id>", methods=['DELETE'])
 def delete_by_customer_id(customer_id):
     orderlist = Order.query.filter_by(customer_id=customer_id).all()
@@ -238,13 +238,21 @@ def delete_by_customer_id(customer_id):
         return jsonify(
             {
                 "code": 200,
-                "message": "Orders deleted"
+                "data": {
+                    "customer_id": customer_id,
+                    "message": "Orders deleted"
+                }
+               
             }
         )
     return jsonify(
         {
             "code": 201,
-            "message": "There are no orders"
+            "data": {
+                "customer_id": customer_id,
+                "message": "There are no orders"
+            }
+           
         }
     ), 201
 
@@ -257,9 +265,6 @@ def create_order():
     destination = request.json.get('destination')
     price = request.json.get('price')
     order_desc = request.json.get('order_desc')
-
-    print("hello")
-    print(order_desc)
     
     order = Order(customer_id=customer_id, 
     c_phone_number=c_phone_number,

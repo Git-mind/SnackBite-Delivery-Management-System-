@@ -56,7 +56,6 @@ def delete_customer():
 def processDeleteCustomer(c_account):
     # 2. Delete customer using customer microservice
     # Invoke the customer microservice
-    print(c_account)
 
     print('\n-----Invoking customer microservice-----')
     customer_result = invoke_http(customer_URL + "/" + str(c_account['customer_id']), method='DELETE')
@@ -89,8 +88,9 @@ def processDeleteCustomer(c_account):
         # 5. Record customer deletion result
         # record the activity log anyway
         #print('\n\n-----Invoking activity_log microservice-----')
-        print('\n\n-----Publishing the (account deletion info) message with routing_key=account.info-----')        
-          
+        print('\n\n-----Publishing the (account deletion info) message with routing_key=account.info-----')  
+
+
         amqp_setup.channel.basic_publish(exchange=amqp_setup.exchangename, routing_key="account.info", 
             body=message)
     
@@ -100,7 +100,7 @@ def processDeleteCustomer(c_account):
         # Invoke order microservice
         
         print('\n-----Invoking order microservice-----')
-        order_result = invoke_http(order_URL + "/customer_delete/" + str(c_account['customer_id']), method='DELETE')
+        order_result = invoke_http(order_URL + "/customer_delete/" + str(c_account['customer_id']), method='DELETE') 
 
         print('order_result:', order_result)
             
@@ -110,7 +110,6 @@ def processDeleteCustomer(c_account):
         order_result['type'] = "order"
         order_result['activity_name'] = "order_deletion"
         message = json.dumps(order_result)
-        print(order_result)
 
         if code not in range(200, 300):
             #7. Inform the error microservice
@@ -136,9 +135,9 @@ def processDeleteCustomer(c_account):
             # Record the activity log anyway
             #print('\n\n-----Invoking activity_log microservice-----')
             print('\n\n-----Publishing the (order deletion info) message with routing_key=account.info-----')        
-        
+
             amqp_setup.channel.basic_publish(exchange=amqp_setup.exchangename, routing_key="account.info", 
-                body=message)
+            body=message)
         
         print("\nOrder deletion published to RabbitMQ Exchange.\n")
         # - reply from the invocation is not used;

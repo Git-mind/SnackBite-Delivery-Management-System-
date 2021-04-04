@@ -312,7 +312,12 @@ async function delete_acc(uid){
         if (!response.ok){
             //ADD STUFF
             $('#del_acc_modal').modal('hide')
-            error.innerHTML='Deletion is not successful, please try again'
+            // error.innerHTML='Deletion is not successful, please try again'
+
+            //TAG
+            console.log('Deletion is not successful, please try again')
+            sign_out()
+            location.reload()
             
 
 
@@ -323,7 +328,10 @@ async function delete_acc(uid){
             error.innerHTML=''
             sign_up_ok.innerHTML='Account deletion is successful'
             vue_stuff.style.display='none'
+            //TAG
             sign_out()
+            location.reload()
+
             //ADD STUFF
 
         }

@@ -22,7 +22,7 @@
   <div>
     <nav class="navbar navbar-light bg-light justify-content-between">
         <a class="navbar-brand"></a>
-        <h1>SnackBite</h1>
+        <h1>SnackBite Driver</h1>
         <form class="form-inline">
             <!-- WELCOME MESSAGE RENDERS HERE -->
             <h2 id="welcome_msg" class="mr-sm-2"></h2>
@@ -154,7 +154,7 @@
                       <tr>
                           <th>Time</th>
                           <th>Order ID</th>
-                          <th>Customer ID</th>
+                          <!-- <th>Customer ID</th> -->
                           <th>Customer Name</th>
                           <th>Pickup Location</th>
                           <th>Destination</th>
@@ -163,7 +163,7 @@
                       <tr v-for="completed in completed_delivery" v-show="no_completed_delivery" >
                         <td>{{ completed.date_time }}</td>
                         <td>{{ completed.order_id }}</td>
-                        <td>{{ completed.customer_id }}</td>
+                        <!-- <td>{{ completed.customer_id }}</td> -->
                         <td>{{ completed.customer_name }}</td>
                         <td>{{ completed.pickup_location }}</td>
                         <td>{{ completed.destination }}</td>

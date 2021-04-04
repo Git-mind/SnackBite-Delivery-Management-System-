@@ -59,7 +59,6 @@ def create_order():
 def processCreateOrder(order):
     # 2. Get pricing for delivery using pricing microservice
     # Invoke the pricing microservice
-    print(order)
 
     print('\n-----Invoking pricing microservice-----')
     price_result = invoke_http(pricing_URL, method='POST', json=order)
@@ -119,9 +118,6 @@ def processCreateOrder(order):
         price = price_result['data']['price']
         order_desc = order["order_desc"]
 
-        print("hello")
-        print(order_desc)
-
         order_result = invoke_http(order_URL, method='POST', json={
             'customer_id': customer_id,
             'c_phone_number': c_phone_number,
@@ -138,7 +134,6 @@ def processCreateOrder(order):
         order_result['type'] = "order"
         order_result['activity_name'] = "order_creation"
         message = json.dumps(order_result)
-        print(order_result)
         if code not in range(200, 300):
             #8. Inform the error microservice
             #print('\n\n-----Invoking error microservice as order creation fails-----')

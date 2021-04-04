@@ -24,7 +24,7 @@ def order_completed():
     if request.is_json:
         try:
             order = request.get_json()
-            print(order)
+            
             print("\nReceived an order in JSON:", order)
 
             # do the actual work
@@ -56,7 +56,6 @@ def processOrderCompleted(order):
     # 2. Updating the order status using order microservice
     # Invoke the order microservice
     order_id = order['order_id']
-    print(order_id)
     print('\n-----Invoking order microservice-----')
     order_result = invoke_http(order_URL + "/" + str(order_id), method='PUT', json=order)
     print('order_result:', order_result)
@@ -118,10 +117,7 @@ def processOrderCompleted(order):
         c_phone_number = customer_result["data"]["phone_number"]
         c_name = customer_result["data"]["customer_name"]
         credit_card = customer_result["data"]["credit_card"]
-        print(customer_id)
-        print(c_phone_number)
-        print(order_result['data']['price'])
-        print(credit_card)
+  
 
         payment_result = invoke_http(payment_URL, method='POST', json={
             'customer_id': customer_id,

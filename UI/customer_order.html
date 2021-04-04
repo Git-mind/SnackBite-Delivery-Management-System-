@@ -24,7 +24,7 @@
     <div>
         <nav class="navbar navbar-light bg-light justify-content-between">
             <a class="navbar-brand"></a>
-            <h1>SnackBite</h1>
+            <h1>SnackBite Customer</h1>
             <form class="form-inline">
                 <!-- WELCOME MESSAGE RENDERS HERE -->
                 <h2 id="welcome_msg" class="mr-sm-2"></h2>
@@ -125,7 +125,7 @@
                                                                 <h5 class="modal-title" id="exampleModalLabel">New
                                                                     review
                                                                 </h5>
-                                                                <button type="button" class="close" data-dismiss="modal"
+                                                                <button type="button" class="close" @click="review_successful = false; feedback = ''; review_msg = '' " data-dismiss="modal"
                                                                     aria-label="Close">
                                                                     <span aria-hidden="true">&times;</span>
                                                                 </button>
@@ -146,7 +146,7 @@
                                                                 </div>
                                                                 <button type="button" class="btn btn-secondary"
                                                                     data-dismiss="modal"
-                                                                    @click="review_successful = false; feedback = '' ">Close</button>
+                                                                    @click="review_successful = false; feedback = ''; review_msg = '' ">Close</button>
                                                                 <button type="button" class="btn btn-primary"
                                                                     @click="submit_review(order.customer_id, order.driver_id, order.order_id);">Submit
                                                                     Review</button>
@@ -395,7 +395,7 @@
         <div class="modal-dialog" role="document">
           <div class="modal-content">
             <div class="modal-header">
-              <h5 class="modal-title" id="exampleModalLabel">Modal title</h5>
+              <h5 class="modal-title" id="exampleModalLabel">Eh wait!</h5>
               <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                 <span aria-hidden="true">&times;</span>
               </button>
