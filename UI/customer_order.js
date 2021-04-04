@@ -771,10 +771,11 @@ function mainVue(uid,u_n){
                 customer_name=this.customer_name
                 time = new Date();
                 time=time.toLocaleString('en-US', { hour: 'numeric', minute: 'numeric', hour12: true })
+                order_desc=this.order_desc
 
                 // alert(users)
 
-                msg=`NEW JOB \n Pick Up \:${pickup_location} \n Destination \:${destination} \n Customer Name \:${customer_name} \n Price \:${price} \n Time \:${time}`
+                msg=`NEW JOB \n Pick Up \:${pickup_location} \n Destination \:${destination} \n Customer Name \:${customer_name} \n Price \:${price} \n Description \: ${order_desc} \n Time \:${time}`
                 console.log(msg)
                 msg=encodeURIComponent(msg)
 
