@@ -513,7 +513,7 @@ function mainVue(uid,u_n){
         
                 const response =
                     // fetch(order_URL)
-                    fetch(review_management_URL + "/create_review", 
+                    fetch(review_management_URL, 
                     {
                         method: "POST",
                         headers: {
