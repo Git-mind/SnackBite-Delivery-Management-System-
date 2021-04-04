@@ -1,9 +1,21 @@
-var delivery_management_URL = "http://localhost:5200/";
-var driver_url="http://localhost:5001/driver";
-var payment_management_URL = "http://localhost:5300/";
-var review_URL = "http://localhost:5005/review";
-var customer_url='http://localhost:5002/customers'
-var order_URL = "http://localhost:5004/order";
+// var delivery_management_URL = "http://localhost:5200/";
+// var driver_url="http://localhost:5001/driver";
+// var payment_management_URL = "http://localhost:5300/";
+// var review_URL = "http://localhost:5005/review";
+// var customer_url='http://localhost:5002/customers'
+// var order_URL = "http://localhost:5004/order";
+
+
+// var update_delivery_management_URL = "http://localhost:5200/update_order";
+
+var update_delivery_management_URL = "http://localhost:8000/api/v1/delivery_update_order";
+var display_delivery_management_URL = "http://localhost:8000/api/v1/display_order";
+var driver_url="http://localhost:8000/api/v1/driver";
+var payment_management_URL = "http://localhost:8000/api/v1/order_completed";
+var review_URL = "http://localhost:8000/api/v1/review";
+var customer_url='http://localhost:8000/api/v1/customers'
+var order_URL = "http://localhost:8000/api/v1/order";
+
 
 
 //{
@@ -425,7 +437,7 @@ function mainVue(uid,u_n){
             accept_order:function(order_id,status, customer_id){
                 const response =
                 
-                    fetch(delivery_management_URL + "update_order", 
+                    fetch(update_delivery_management_URL , 
                     {
                         method: "PUT",
                         headers: {
@@ -477,7 +489,7 @@ function mainVue(uid,u_n){
             complete_delivery:function(order_id,customer_id){
                 const response =
                     // fetch(order_URL)
-                    fetch(payment_management_URL + "order_completed", 
+                    fetch(payment_management_URL, 
                     {
                         method: "PUT",
                         headers: {
