@@ -3,6 +3,8 @@ var driver_url="http://localhost:5001/driver";
 var payment_management_URL = "http://localhost:5300/";
 var review_URL = "http://localhost:5005/review";
 var customer_url='http://localhost:5002/customers'
+var order_URL = "http://localhost:5004/order";
+
 
 //{
     
@@ -132,7 +134,7 @@ function inEoutD(){
 //THIS FUNCTION CHECKS THE SESSION AND SEE IF A USER HAS LOGGED IN OR NOT 
 firebase.auth().onAuthStateChanged(function(user) {
 if (user) {
-
+    console.log("hello")
     check_cus(driver_url,user.uid,user.displayName)
     //console.log(driver_url)
     //console.log(user.id)
@@ -237,6 +239,7 @@ async function create_account(uid,user_name,pid,tid){
         else{
             $('#signUpModal').modal('hide')
             error.innerHTML=''
+            console.log(sign_up_ok)
             sign_up_ok.innerHTML='Sign-up is successful, please sign-in using your google account again'
             
             //ADD STUFF
@@ -307,11 +310,11 @@ function mainVue(uid,u_n){
 
             //auto populate table/ polling new orders
             find_by_driver_id: function () {
-         
+          
                 
                 const response =
                     // fetch(order_URL)
-                    fetch(delivery_management_URL + "display_order")
+                    fetch(order_URL + "/get_available_orders")
                     .then(response => response.json())
                     .then(data => {
                         console.log(data.code);
@@ -324,7 +327,8 @@ function mainVue(uid,u_n){
                         } else {
                             console.log(data)
                             this.no_order = true;
-                            this.orders = data.data.order_result.data.customers;
+                            this.orders = data.data.customers;
+                            console.log(this.orders)
                             this.show_completed="";
                             this.show_new=true;
                             this.find_by_driver_id_on_delivery();
@@ -346,7 +350,7 @@ function mainVue(uid,u_n){
             find_by_driver_id_on_delivery: function () {
                 const response =
                     // fetch(order_URL)
-                    fetch(delivery_management_URL + "display_on_delivery")
+                    fetch(order_URL + "/get_on_delivery/" + this.driver_id)
                     .then(response => response.json())
                     .then(data => {
                         console.log(response);
@@ -357,14 +361,14 @@ function mainVue(uid,u_n){
                             this.no_on_delivery = false;
                             
                             //handle button 
-                            this.new_button=false;
+                            this.new_button=true;
                             this.completed_button=true;
                             this.reload_button=false;
 
                         } else {
                             console.log(data)
                             this.no_on_delivery = true;
-                            this.on_delivery = data.data.order_result.data.customers;
+                            this.on_delivery = data.data.customers;
                         
                         }
                     })
@@ -382,7 +386,7 @@ function mainVue(uid,u_n){
             find_by_driver_id_completed: function () {
                 const response =
                     // fetch(order_URL)
-                    fetch(delivery_management_URL + "display_completed_delivery")
+                    fetch(order_URL + "/get_completed_delivery/" + this.driver_id)
                     .then(response => response.json())
                     .then(data => {
                         console.log(response);
@@ -394,7 +398,7 @@ function mainVue(uid,u_n){
                             this.error_new=false;
                         } else {
                             this.no_completed_delivery = true;
-                            this.completed_delivery = data.data.order_result.data.customers;
+                            this.completed_delivery = data.data.customers;
 
                             this.show_completed=true;
                             this.show_new=false;
@@ -418,7 +422,7 @@ function mainVue(uid,u_n){
 
 
             //driver accepts order
-            accept_order:function(order_id,status){
+            accept_order:function(order_id,status, customer_id){
                 const response =
                 
                     fetch(delivery_management_URL + "update_order", 
@@ -457,7 +461,7 @@ function mainVue(uid,u_n){
                             //callmebot
                             this.ORDERID = order_id;
                             this.order_status = "On Delivery";
-                            this.alert_customers()
+                            this.alert_customers(customer_id)
                         }
                     })
                     .catch(err => {
@@ -470,7 +474,7 @@ function mainVue(uid,u_n){
             },
 
 
-            complete_delivery:function(order_id,status){
+            complete_delivery:function(order_id,customer_id){
                 const response =
                     // fetch(order_URL)
                     fetch(payment_management_URL + "order_completed", 
@@ -505,12 +509,13 @@ function mainVue(uid,u_n){
                             this.reload_button=true;
                             //hide completed button
                             this.completed_button=false;
+                            this.new_button = false;
 
 
                             //callmebot
                             this.ORDERID = order_id;
                             this.order_status = "Completed";
-                            this.alert_customers()
+                            this.alert_customers(customer_id)
                            
                         }
                     })
@@ -553,11 +558,11 @@ function mainVue(uid,u_n){
     
             },
 
-            alert_customers:async function(){
+            alert_customers:async function(customer_id){
                 try{
                     const response = 
                         await fetch(
-                            customer_url+'/get_all_tele_id',{method:'GET'});
+                            customer_url+'/get_tele_id/' + customer_id ,{method:'GET'});
                     //responded but there is an error
                     if (!response.ok){
                         err=await response.json()['message']
@@ -565,9 +570,9 @@ function mainVue(uid,u_n){
 
                     }
                     else{
-                        const customer_tele_ids=await response.json() 
-                        console.log(customer_tele_ids)
-                        this.alert_call_me(customer_tele_ids)
+                        const customer_tele_id=await response.json() 
+                        console.log(customer_tele_id)
+                        this.alert_call_me(customer_tele_id)
                         // return  customer_tele_ids
                     }
                 }
@@ -579,20 +584,9 @@ function mainVue(uid,u_n){
 
             },
 
-            alert_call_me:async function(customer_tele_ids){
-                customer_tele_ids=customer_tele_ids.data
+            alert_call_me:async function(customer_tele_id){
+                customer_tele_id=customer_tele_id.data
                 users=''
-                // Need to delimit tele ids by '|'
-                if (customer_tele_ids.length>0){
-                    for (i=0;i<customer_tele_ids.length;i++){
-                        if (i==customer_tele_ids.length-1){
-                            users+=`${customer_tele_ids[i]}`
-                            break
-                        }
-                        users+=`${customer_tele_ids[i]}|`
-
-                    }
-                }
 
                 // Get data for delivery msg 
                 orderID = this.ORDERID;
@@ -605,7 +599,26 @@ function mainVue(uid,u_n){
                 console.log(msg)
                 msg=encodeURIComponent(msg)
 
-                response = await fetch(`https://green-shadow-bc6f.gowthamaravindfaiz.workers.dev?https://api.callmebot.com/text.php?user=${users}&text=${msg}&html=yes`,{method:'GET'})
+                
+
+                try{
+
+                    response = await fetch(`https://green-shadow-bc6f.gowthamaravindfaiz.workers.dev?https://api.callmebot.com/text.php?user=${customer_tele_id}&text=${msg}&html=yes`,{method:'GET'})
+
+                    if (!response.ok){
+                        error.innerHTML=''
+                        error.innerHTML=`CallMeBot refused to alert customer`
+                    }
+
+                    else{
+                        alert('Customer is alerted of your order')
+                    }
+                }
+                catch(err){
+                    error.innerHTML=''
+                    error.innerHTML=`Telegram alert to customer failed due to ${err}`
+
+                }
                 
             }
 
@@ -613,15 +626,17 @@ function mainVue(uid,u_n){
             
         },
         created: function () {
-           
+            this.find_by_driver_id();
+            this.find_by_driver_id_on_delivery();
+            this.find_reviews_by_driver_id();
+
             if (this.driver_name != ""){
                 userName = document.getElementById('userName')
                 userName.innerHTML = 'Welcome back ' + this.driver_name + "!"
         
             }
-            this.find_by_driver_id();
-            this.find_by_driver_id_on_delivery();
-            this.find_reviews_by_driver_id();
+            
+            
         }
     });
 

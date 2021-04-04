@@ -7,7 +7,7 @@ from os import environ
 import requests
 from invokes import invoke_http
 
-# import amqp_setup
+import amqp_setup
 import pika
 import json
 
@@ -65,106 +65,72 @@ def processCreateReview(review):
     order_result = invoke_http(order_URL + "/" + str(review['order_id']) , method='GET')
     print('order_result:', order_result)
 
-    # 3. Check the price result; if a failure, send it to the error microservice.
-    code = order_result["code"]
-    order_result['type'] = "review"
-    order_result['activity_name'] = "order_result"
-    message = json.dumps(order_result)
+    # 6. Get customer name from customer microservice.
+    print('\n-----Invoking customer microservice-----')
+    customer_result = invoke_http(customer_URL + "/" + str(review['customer_id']), method='GET')
+    customer_name = customer_result["data"]["customer_name"]
+    print(customer_name)
+
+    # 7. Get driver name from driver microservice.
+    print('\n-----Invoking driver microservice-----')
+    driver_result = invoke_http(driver_URL + "/" + str(review['driver_id']), method='GET')
+    print(driver_result)
+    driver_name = driver_result["data"]["driver_name"]
+
+    # 8. Create review using order microservice
+    # Invoke review microservice 
+    print('\n-----Invoking review microservice-----')
+    customer_id = order_result["data"]["customer_id"]
+    driver_id = order_result["data"]["driver_id"]
+    order_id = order_result["data"]["order_id"]
+    feedback = review["feedback"]
+    review_result = invoke_http(review_URL, method='POST', json={
+        'customer_id': customer_id,
+        'customer_name': customer_name,
+        'driver_id': driver_id,
+        'driver_name': driver_name,
+        'order_id': order_id,
+        'feedback': feedback
+    })
+    print('review_result:', review_result)
+    # Check the order result;
+    # if a failure, send it to the error microservice.
+    code = review_result['code']
+    review_result['type'] = "review"
+    review_result['activity_name'] = "review_creation"
+    message = json.dumps(review_result)
+    print(review_result)
     if code not in range(200, 300):
-        # Inform the pricing microservice
-        #print('\n\n-----Invoking error microservice as order creation fails-----')
+        #8. Inform the error microservice
+        #print('\n\n-----Invoking error microservice as review creation fails-----')
         print('\n\n-----Publishing the (review error) message with routing_key=review.error-----')
 
-        # amqp_setup.channel.basic_publish(exchange=amqp_setup.exchangename, routing_key="pricing.error", 
-        #     body=message, properties=pika.BasicProperties(delivery_mode = 2))
+        amqp_setup.channel.basic_publish(exchange=amqp_setup.exchangename, routing_key="order.error", 
+            body=message, properties=pika.BasicProperties(delivery_mode = 2))
 
-        print("\Review status ({:d}) published to the RabbitMQ Exchange:".format(
-            code), order_result)
+        print("\Review Creation status ({:d}) published to the RabbitMQ Exchange:".format(
+            code), review_result)
 
-        # 4. Return error
+        # 9. Return error
         return {
             "code": 400,
             "data": {
-                "order_result": order_result
+                "review_result": review_result
             },
-            "message": "Simulated review error sent for error handling."
+            "message": "Simulated review creation record error sent for error handling."
         }
     else:
-        # 5. Record price result
+        # 10. Record new review
         # record the activity log anyway
         #print('\n\n-----Invoking activity_log microservice-----')
         print('\n\n-----Publishing the (review info) message with routing_key=review.info-----')        
-          
-        # amqp_setup.channel.basic_publish(exchange=amqp_setup.exchangename, routing_key="pricing.info", 
-        #     body=message)
     
-        print("\Review published to RabbitMQ Exchange.\n")
-        # 6. Get customer name from customer microservice.
-        print('\n-----Invoking customer microservice-----')
-        customer_result = invoke_http(customer_URL + "/" + review['customer_id'], method='GET')
-        customer_name = customer_result["data"]["customer_name"]
-        print(customer_name)
-
-        # 7. Get driver name from driver microservice.
-        print('\n-----Invoking driver microservice-----')
-        driver_result = invoke_http(driver_URL + "/" + str(review['driver_id']), method='GET')
-        print(driver_result)
-        driver_name = driver_result["data"]["driver_name"]
-
-        # 8. Create review using order microservice
-        # Invoke review microservice 
-        print('\n-----Invoking review microservice-----')
-        customer_id = order_result["data"]["customer_id"]
-        driver_id = order_result["data"]["driver_id"]
-        order_id = order_result["data"]["order_id"]
-        feedback = review["feedback"]
-        review_result = invoke_http(review_URL, method='POST', json={
-            'customer_id': customer_id,
-            'customer_name': customer_name,
-            'driver_id': driver_id,
-            'driver_name': driver_name,
-            'order_id': order_id,
-            'feedback': feedback
-        })
-        print('review_result:', review_result)
-        # Check the order result;
-        # if a failure, send it to the error microservice.
-        code = review_result['code']
-        review_result['type'] = "review"
-        review_result['activity_name'] = "review_creation"
-        message = json.dumps(review_result)
-        print(review_result)
-        if code not in range(200, 300):
-            #8. Inform the error microservice
-            #print('\n\n-----Invoking error microservice as review creation fails-----')
-            print('\n\n-----Publishing the (review error) message with routing_key=review.error-----')
-
-            # amqp_setup.channel.basic_publish(exchange=amqp_setup.exchangename, routing_key="order.error", 
-            #     body=message, properties=pika.BasicProperties(delivery_mode = 2))
-
-            print("\Review Creation status ({:d}) published to the RabbitMQ Exchange:".format(
-                code), review_result)
-
-            # 9. Return error
-            return {
-                "code": 400,
-                "data": {
-                    "review_result": review_result
-                },
-                "message": "Simulated review creation record error sent for error handling."
-            }
-        else:
-            # 10. Record new review
-            # record the activity log anyway
-            #print('\n\n-----Invoking activity_log microservice-----')
-            print('\n\n-----Publishing the (review info) message with routing_key=review.info-----')        
-        
-            # amqp_setup.channel.basic_publish(exchange=amqp_setup.exchangename, routing_key="review.info", 
-            #     body=message)
-        
-        print("\Review published to RabbitMQ Exchange.\n")
-        # - reply from the invocation is not used;
-        # continue even if this invocation fails
+        amqp_setup.channel.basic_publish(exchange=amqp_setup.exchangename, routing_key="review.info", 
+            body=message)
+    
+    print("\Review published to RabbitMQ Exchange.\n")
+    # - reply from the invocation is not used;
+    # continue even if this invocation fails
 
     # 11. Return created review
     return {

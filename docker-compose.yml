@@ -102,6 +102,8 @@ services:
     image: rabbitmq:3-management
     hostname: snackbite-rabbit
     restart: always
+    networks:
+      - kong-net
     ports:
       - "5672:5672"
       - "15672:15672"
@@ -117,11 +119,14 @@ services:
       dockerfile: activity_log.Dockerfile
     image: javieryw/activity_log:snackbite
     restart: always
+    networks:
+      - kong-net
     depends_on:
       - rabbitmq
     environment:
       rabbit_host: rabbitmq
       rabbit_port: 5672
+      dbURL: mysql+mysqlconnector://is213@host.docker.internal:3306/activity
       PYTHONUNBUFFERED: 1
 
 
@@ -135,6 +140,8 @@ services:
       dockerfile: error.Dockerfile
     image: javieryw/error:snackbite
     restart: always
+    networks:
+      - kong-net
     depends_on:
       - rabbitmq
     environment:
@@ -153,13 +160,29 @@ services:
       dockerfile: order.Dockerfile
     image: javieryw/order:snackbite
     restart: always
-    networks: 
+    networks:
       - kong-net
     environment:
       dbURL: mysql+mysqlconnector://is213@host.docker.internal:3306/order
       PYTHONUNBUFFERED: 1 
     ports:
       - "5004:5004"
+
+  ###################################
+  # Payment: The Payment microservice
+  ###################################
+  payment:
+    build:
+      context: ./
+      dockerfile: payment.Dockerfile
+    image: javieryw/payment:snackbite
+    restart: always
+    networks:
+      - kong-net
+    environment:
+      PYTHONUNBUFFERED: 1 
+    ports:
+      - "5006:5006"
 
   ###################################
   # Pricing: The Pricing microservice
@@ -231,6 +254,9 @@ services:
       PYTHONUNBUFFERED: 1 
     ports:
       - "5005:5005"
+
+
+
     
 
 ###############################################
@@ -282,6 +308,7 @@ services:
       rabbit_port: 5672
       order_URL: http://order:5004/order
       customer_URL: http://customer:5002/customers
+      payment_URL: http://payment:5006/payment
       PYTHONUNBUFFERED: 1
     ports:
       - "5300:5300"
@@ -374,14 +401,4 @@ services:
       PYTHONUNBUFFERED: 1
     ports:
       - "5500:5500"
-
-
-
-
-
-
-
-
-
-
-
+      

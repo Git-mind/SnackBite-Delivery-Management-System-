@@ -50,6 +50,7 @@ def processPayment(details):
 
 	# by default driving mode considered 
 	# print the value of distance
+	r["customer_id"] = customer
 	if r:
 		return {
 			'code': 201,
@@ -69,7 +70,7 @@ def processPayment(details):
 # execute this program only if it is run as a script (not by 'import')
 if __name__ == "__main__":
     print("This is flask " + os.path.basename(__file__) +
-          ": pricing for orders ...")
+          ": getting payment for completed orders ...")
     app.run(host='0.0.0.0', port=5006, debug=True)
 
 

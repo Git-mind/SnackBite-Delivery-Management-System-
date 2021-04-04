@@ -7,7 +7,7 @@ from os import environ
 import requests
 from invokes import invoke_http
 
-#import amqp_setup
+import amqp_setup
 import pika
 import json
 
@@ -19,96 +19,7 @@ order_URL = environ.get('order_URL') or  "http://localhost:5004/order"
 #activity_log_URL = "http://localhost:5003/activity_log"
 #error_URL =  "http://localhost:5004/error
 
-@app.route("/display_order", methods=['GET'])
-def display_orders():
-    # 1. Get order info {customer_id, pickup_location, destination}
-    # Invoke the order microservice
-    print('\n-----Invoking order microservice-----')
-    order_result = invoke_http(order_URL + "/get_available_orders" , method='GET')
-    print('order_result:', order_result)
 
-    # 2. Check the order result; if a failure, send it to the error microservice.
-    code = order_result["code"]
-    if code not in range(200, 300):
-        # Inform the error microservice
-        #print('\n\n-----Invoking error microservice as pricing fails-----')
-        print('\n\n-----Publishing the (order error) message with routing_key=order.error-----')
-
-        # invoke_http(error_URL, method="POST", json=price_result)
-
-        # amqp_setup.channel.basic_publish(exchange=amqp_setup.exchangename, routing_key="order.error", 
-        #     body=message, properties=pika.BasicProperties(delivery_mode = 2)) 
-
-        # make message persistent within the matching queues until it is received by some receiver 
-        # (the matching queues have to exist and be durable and bound to the exchange)
-
-        # - reply from the invocation is not used;
-        # continue even if this invocation fails        
-        print("\nOrder status ({:d}) published to the RabbitMQ Exchange:".format(
-        code), order_result)
-
-        # 7. Return error
-        return {
-            "code": 500,
-            "data": {"order_result": order_result},
-            "message": "Retrieval of new orders failure sent for error handling."
-        }
-
-    else:
-    # 3. Get all drivers using driver microservice
-    # Invoke driver microservice
-        return {
-            "code": 201,
-            "data": {
-            "order_result": order_result
-            }
-        }
-
-#added by chin ning (on delivery)
-@app.route("/display_on_delivery", methods=['GET'])
-def display_on_delivery():
-    # 1. Get order info {customer_id, pickup_location, destination}
-    # Invoke the order microservice
-    print('\n-----Invoking order microservice-----')
-    order_result = invoke_http(order_URL + "/get_on_delivery" , method='GET')
-    print('order_result:', order_result)
-
-    # 2. Check the order result; if a failure, send it to the error microservice.
-    code = order_result["code"]
-    if code not in range(200, 300):
-        # Inform the error microservice
-        #print('\n\n-----Invoking error microservice as pricing fails-----')
-        print('\n\n-----Publishing the (order error) message with routing_key=order.error-----')
-
-        # invoke_http(error_URL, method="POST", json=price_result)
-
-        # amqp_setup.channel.basic_publish(exchange=amqp_setup.exchangename, routing_key="order.error", 
-        #     body=message, properties=pika.BasicProperties(delivery_mode = 2)) 
-
-        # make message persistent within the matching queues until it is received by some receiver 
-        # (the matching queues have to exist and be durable and bound to the exchange)
-
-        # - reply from the invocation is not used;
-        # continue even if this invocation fails        
-        print("\nOrder status ({:d}) published to the RabbitMQ Exchange:".format(
-        code), order_result)
-
-        # 7. Return error
-        return {
-            "code": 500,
-            "data": {"order_result": order_result},
-            "message": "Retrieval of on delivery orders failure sent for error handling."
-        }
-
-    else:
-    # 3. Get all drivers using driver microservice
-    # Invoke driver microservice
-        return {
-            "code": 201,
-            "data": {
-            "order_result": order_result
-            }
-        }
 
 #added by chin ning (on completed deiivery)
 @app.route("/display_completed_delivery", methods=['GET'])
@@ -122,22 +33,6 @@ def display_completed_delivery():
     # 2. Check the order result; if a failure, send it to the error microservice.
     code = order_result["code"]
     if code not in range(200, 300):
-        # Inform the error microservice
-        #print('\n\n-----Invoking error microservice as pricing fails-----')
-        print('\n\n-----Publishing the (order error) message with routing_key=order.error-----')
-
-        # invoke_http(error_URL, method="POST", json=price_result)
-
-        # amqp_setup.channel.basic_publish(exchange=amqp_setup.exchangename, routing_key="order.error", 
-        #     body=message, properties=pika.BasicProperties(delivery_mode = 2)) 
-
-        # make message persistent within the matching queues until it is received by some receiver 
-        # (the matching queues have to exist and be durable and bound to the exchange)
-
-        # - reply from the invocation is not used;
-        # continue even if this invocation fails        
-        print("\nOrder status ({:d}) published to the RabbitMQ Exchange:".format(
-        code), order_result)
 
         # 7. Return error
         return {
@@ -167,30 +62,32 @@ def update_order():
             order_accept['driver_name'] = driver_result["data"]["driver_name"]
             order_accept['d_phone_number'] = driver_result["data"]["phone_number"]
             order_accept['driver_tele_id'] = driver_result["data"]["tele_id"]
-
             # 2. Update the order details using order microservice
             # Invoke the order microservice
             result = invoke_http(order_URL + "/" + str(order_accept['order_id']) , method='PUT', json=order_accept)
            
             # 2. Check the order update result; if a failure, send it to the error microservice.
             code = result["code"]
+            result['type'] = "delivery"
+            result['activity_name'] = "accept_delivery"
+
+            message = json.dumps(result)
             if code not in range(200, 300): 
                 # Inform the error microservice
                 #print('\n\n-----Invoking error microservice as pricing fails-----')
-                print('\n\n-----Publishing the (order update error) message with routing_key=order.error-----')
+                print('\n\n-----Publishing the (accept error) message with routing_key=accept.error-----')
 
-                # invoke_http(error_URL, method="POST", json=price_result)
+                amqp_setup.channel.basic_publish(exchange=amqp_setup.exchangename, routing_key="accept.error", 
+                    body=message, properties=pika.BasicProperties(delivery_mode = 2))
 
-                # amqp_setup.channel.basic_publish(exchange=amqp_setup.exchangename, routing_key="order.error", 
-                #     body=message, properties=pika.BasicProperties(delivery_mode = 2)) 
+                print("\nOrder Update status ({:d}) published to the RabbitMQ Exchange:".format(
+                    code), result)
 
                 # make message persistent within the matching queues until it is received by some receiver 
                 # (the matching queues have to exist and be durable and bound to the exchange)
 
                 # - reply from the invocation is not used;
                 # continue even if this invocation fails        
-                print("\nOrder update status ({:d}) published to the RabbitMQ Exchange:".format(
-                code), result)
 
                 # Return error
                 return {
@@ -199,6 +96,15 @@ def update_order():
                     "message": "Update of accept order failure sent for error handling."
                 }           
             else:
+                # 10. Record order update
+                # record the activity log anyway
+                # print('\n\n-----Invoking activity_log microservice-----')
+                print('\n\n-----Publishing the (accept info) message with routing_key=accept.info-----')        
+            
+                amqp_setup.channel.basic_publish(exchange=amqp_setup.exchangename, routing_key="accept.info", 
+                    body=message)
+            
+                print("\nOrder update published to RabbitMQ Exchange.\n")
                 # 3. Update the Driver UI 
                 delivery_URL = "http://localhost:5200/display_order" 
                 order_result = invoke_http(delivery_URL, method='GET')
@@ -207,7 +113,7 @@ def update_order():
                     "data": {
                     "order_result": order_result
                     }
-                }
+                } 
         except Exception as e:
             # Unexpected error in code
             exc_type, exc_obj, exc_tb = sys.exc_info()
@@ -217,7 +123,7 @@ def update_order():
 
             return jsonify({
                 "code": 500,
-                "message": "order_management.py internal error: " + ex_str
+                "message": "delivery_management.py internal error: " + ex_str
             }), 500
 
         # if reached here, not a JSON request.

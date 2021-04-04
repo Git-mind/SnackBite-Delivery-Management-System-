@@ -38,6 +38,7 @@ class Order(db.Model):
     destination = db.Column(db.String(100), nullable=False)
     status = db.Column(db.String(10), nullable=False, default='NEW')
     price = db.Column(db.Float(precision=2), nullable=False)
+    order_desc = db.Column(db.String(100), nullable=False)
 
     def json(self):
         return {
@@ -52,7 +53,8 @@ class Order(db.Model):
             'pickup_location': self.pickup_location,
             'destination': self.destination,
             'status': self.status,
-            'price': self.price
+            'price': self.price,
+            'order_desc': self.order_desc
         }
 
 
@@ -94,10 +96,10 @@ def get_available_orders():
         }
     ),404
 
-#added by chin ning (on delivery)
-@app.route("/order/get_on_delivery")
-def get_on_delivery_orders():
-    orderlist=Order.query.filter_by(status="On Delivery").all()
+#added by chin ning (on deiivery)
+@app.route("/order/get_on_delivery/<string:driver_id>")
+def get_on_delivery_orders(driver_id):
+    orderlist=Order.query.filter_by(driver_id=driver_id, status="On Delivery").all()
     if len(orderlist):
         return jsonify(
             {
@@ -117,9 +119,9 @@ def get_on_delivery_orders():
 
 
 #added by chin ning (completed deiivery)
-@app.route("/order/get_completed_delivery")
-def get_completed_delivery_orders():
-    orderlist=Order.query.filter_by(status="Completed").all()
+@app.route("/order/get_completed_delivery/<string:driver_id>")
+def get_completed_delivery_orders(driver_id):
+    orderlist=Order.query.filter_by(driver_id=driver_id, status="Completed").all()
     if len(orderlist):
         return jsonify(
             {
@@ -254,12 +256,18 @@ def create_order():
     pickup_location = request.json.get('pickup_location')
     destination = request.json.get('destination')
     price = request.json.get('price')
+    order_desc = request.json.get('order_desc')
+
+    print("hello")
+    print(order_desc)
+    
     order = Order(customer_id=customer_id, 
     c_phone_number=c_phone_number,
     customer_name=customer_name,
     pickup_location=pickup_location,
     destination=destination,
-    price=price)
+    price=price,
+    order_desc=order_desc)
     
     try:
         db.session.add(order)
@@ -310,6 +318,9 @@ def update_order(order_id):
 
         if 'status' in data:
             order.status = data['status']
+        
+        if 'order_desc' in data:
+            order.order_desc = data['order_desc']
 
         # Customer update details of order
         if 'pickup_location' in data:
