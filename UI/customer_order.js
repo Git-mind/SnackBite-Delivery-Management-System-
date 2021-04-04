@@ -12,6 +12,11 @@ var review_URL = "http://localhost:5005/review";
 var cus_url='http://localhost:5002/customers'
 var driver_url='http://localhost:5001/driver'
 var account_url='http://localhost:5500/'
+
+
+
+
+
 //{
     
         //HTML ELEMENTS
@@ -373,7 +378,9 @@ function mainVue(uid,u_n){
             review_successful: false,
             review_msg: "problem submitting review",
             review_message: "",
-            no_review: ""
+            no_review: "",
+            order_desc: "",
+            update_order_desc: ""
         },
         methods: {
             find_by_customer_id: function () {
@@ -553,7 +560,8 @@ function mainVue(uid,u_n){
                             "order_id": this.update_order_id,
                             "pickup_location": this.update_pickup_location,
                             "destination": this.update_destination,
-                            "customer_id": this.customer_id
+                            "customer_id": this.customer_id,
+                            "order_desc": this.update_order_desc
                         })
                 }) 
                 .then(response => response.json())
@@ -603,7 +611,8 @@ function mainVue(uid,u_n){
                         body: JSON.stringify({
                             pickup_location: this.pickup_location,
                             destination: this.destination,
-                            customer_id: this.customer_id
+                            customer_id: this.customer_id,
+                            order_desc: this.order_desc
                         })
                     })
                     .then(response => response.json())
@@ -762,13 +771,33 @@ function mainVue(uid,u_n){
                 customer_name=this.customer_name
                 time = new Date();
                 time=time.toLocaleString('en-US', { hour: 'numeric', minute: 'numeric', hour12: true })
+                order_desc=this.order_desc
 
+                // alert(users)
 
-                msg=`NEW JOB \n Pick Up \:${pickup_location} \n Destination \:${destination} \n Customer Name \:${customer_name} \n Price \:${price} \n Time \:${time}`
+                msg=`NEW JOB \n Pick Up \:${pickup_location} \n Destination \:${destination} \n Customer Name \:${customer_name} \n Price \:${price} \n Description \: ${order_desc} \n Time \:${time}`
                 console.log(msg)
                 msg=encodeURIComponent(msg)
 
-                response = await fetch(`https://green-shadow-bc6f.gowthamaravindfaiz.workers.dev?https://api.callmebot.com/text.php?user=${users}&text=${msg}&html=yes`,{method:'GET'})
+
+                try{
+
+                    response = await fetch(`https://green-shadow-bc6f.gowthamaravindfaiz.workers.dev?https://api.callmebot.com/text.php?user=${users}&text=${msg}&html=yes`,{method:'GET'})
+
+                    if (!response.ok){
+                        error.innerHTML=''
+                        error.innerHTML=`CallMeBot refused to alert drivers`
+                    }
+                    else{
+                        alert('Drivers are alerted of your order')
+                    }
+                }
+                catch(err){
+                    error.innerHTML=''
+                    error.innerHTML=`Telegram alert to drivers failed due to ${err}`
+
+                }
+                
                 
             }
             
