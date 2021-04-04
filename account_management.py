@@ -7,7 +7,7 @@ from os import environ
 import requests
 from invokes import invoke_http
 
-# import amqp_setup
+import amqp_setup
 import pika
 import json
 
@@ -65,14 +65,14 @@ def processDeleteCustomer(c_account):
     # 3. Check the customer deletion result; if a failure, send it to the error microservice.
     code = customer_result["code"]
     customer_result['type'] = "delete"
-    customer_result['activity_name'] = "customer_result"
+    customer_result['activity_name'] = "customer_deletion"
     message = json.dumps(customer_result)
     if code not in range(200, 300):
         #print('\n\n-----Invoking error microservice as order creation fails-----')
         print('\n\n-----Publishing the (account error) message with routing_key=account.error-----')
 
-        # amqp_setup.channel.basic_publish(exchange=amqp_setup.exchangename, routing_key="account.error", 
-        #     body=message, properties=pika.BasicProperties(delivery_mode = 2))
+        amqp_setup.channel.basic_publish(exchange=amqp_setup.exchangename, routing_key="account.error", 
+            body=message, properties=pika.BasicProperties(delivery_mode = 2))
 
         print("\Customer deletion status ({:d}) published to the RabbitMQ Exchange:".format(
             code), customer_result)
@@ -91,8 +91,8 @@ def processDeleteCustomer(c_account):
         #print('\n\n-----Invoking activity_log microservice-----')
         print('\n\n-----Publishing the (account deletion info) message with routing_key=account.info-----')        
           
-        # amqp_setup.channel.basic_publish(exchange=amqp_setup.exchangename, routing_key="account.info", 
-        #     body=message)
+        amqp_setup.channel.basic_publish(exchange=amqp_setup.exchangename, routing_key="account.info", 
+            body=message)
     
         print("\nOrder published to RabbitMQ Exchange.\n")
             
@@ -117,8 +117,8 @@ def processDeleteCustomer(c_account):
             #print('\n\n-----Invoking error microservice as order deletion fails-----')
             print('\n\n-----Publishing the (order error) message with routing_key=account.error-----')
 
-            # amqp_setup.channel.basic_publish(exchange=amqp_setup.exchangename, routing_key="account.error", 
-            #     body=message, properties=pika.BasicProperties(delivery_mode = 2))
+            amqp_setup.channel.basic_publish(exchange=amqp_setup.exchangename, routing_key="account.error", 
+                body=message, properties=pika.BasicProperties(delivery_mode = 2))
 
             print("\nOrder deletion status ({:d}) published to the RabbitMQ Exchange:".format(
                 code), order_result)
@@ -137,8 +137,8 @@ def processDeleteCustomer(c_account):
             #print('\n\n-----Invoking activity_log microservice-----')
             print('\n\n-----Publishing the (order deletion info) message with routing_key=account.info-----')        
         
-            # amqp_setup.channel.basic_publish(exchange=amqp_setup.exchangename, routing_key="account.info", 
-            #     body=message)
+            amqp_setup.channel.basic_publish(exchange=amqp_setup.exchangename, routing_key="account.info", 
+                body=message)
         
         print("\nOrder deletion published to RabbitMQ Exchange.\n")
         # - reply from the invocation is not used;
