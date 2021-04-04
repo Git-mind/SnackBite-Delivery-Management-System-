@@ -5,16 +5,25 @@
 //CONNECTION TO ORDER ERRORS ARE SHOWN VIA INNER HTML TO THE PAGE IN RED 
 
 
-var order_URL = "http://localhost:5004/order";
-var order_management_URL = "http://localhost:5100/";
-var review_management_URL = "http://localhost:5400";
-var review_URL = "http://localhost:5005/review";
-var cus_url='http://localhost:5002/customers'
-var driver_url='http://localhost:5001/driver'
-var account_url='http://localhost:5500/'
+// var order_URL = "http://localhost:5004/order";
+// var order_management_URL = "http://localhost:5100/";
+// var review_management_URL = "http://localhost:5400";
+// var review_URL = "http://localhost:5005/review";
+// var cus_url='http://localhost:5002/customers'
+// var driver_url='http://localhost:5001/driver'
+// var account_url='http://localhost:5500/'
 
 
 
+
+var order_URL = "http://localhost:8000/api/v1/order";
+var update_order_management_URL = "http://localhost:8000/api/v1/update_order";
+var create_order_management_URL = "http://localhost:8000/api/v1/create_order";
+var review_management_URL = "http://localhost:8000/api/v1/create_review";
+var review_URL = "http://localhost:8000/api/v1/review";
+var cus_url='http://localhost:8000/api/v1/customers'
+var driver_url='http://localhost:8000/api/v1/driver'
+var account_url='http://localhost:8000/api/v1/delete_customer'    
 
 
 //{
@@ -289,7 +298,7 @@ async function create_account(uid,user_name,pid,credit_num,tid){
 //DELETE ACCOUNT 
 async function delete_acc(uid){
     try{
-        response=await fetch(`${account_url}/delete_customer`,{
+        response=await fetch(`${account_url}`,{
             method: "POST",
             headers: {
                 "Content-type": "application/json"
@@ -504,7 +513,7 @@ function mainVue(uid,u_n){
         
                 const response =
                     // fetch(order_URL)
-                    fetch(review_management_URL + "/create_review", 
+                    fetch(review_management_URL, 
                     {
                         method: "POST",
                         headers: {
@@ -549,7 +558,7 @@ function mainVue(uid,u_n){
             customer_id = this.customer_id
             const response =
                 // fetch(order_URL)
-                fetch(order_management_URL + "/update_order", 
+                fetch(update_order_management_URL, 
                 {
                     method: "PUT",
                     headers: {
@@ -606,7 +615,7 @@ function mainVue(uid,u_n){
                 destination = this.destination
                 customer_id = this.customer_id
                 price = this.newPrice
-                fetch(order_management_URL + "/create_order", {
+                fetch(create_order_management_URL, {
                        
                         method: "POST",
                         headers: {
