@@ -69,7 +69,6 @@ def processCreateReview(review):
     print('\n-----Invoking customer microservice-----')
     customer_result = invoke_http(customer_URL + "/" + str(review['customer_id']), method='GET')
     customer_name = customer_result["data"]["customer_name"]
-    print(customer_name)
 
     # 7. Get driver name from driver microservice.
     print('\n-----Invoking driver microservice-----')

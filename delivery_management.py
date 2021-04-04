@@ -65,7 +65,7 @@ def update_order():
             # 2. Update the order details using order microservice
             # Invoke the order microservice
             result = invoke_http(order_URL + "/" + str(order_accept['order_id']) , method='PUT', json=order_accept)
-           
+            print('order_result:', result)
             # 2. Check the order update result; if a failure, send it to the error microservice.
             code = result["code"]
             result['type'] = "delivery"
