@@ -195,6 +195,13 @@
                                                 <input v-model="destination" type="text" class="form-control"
                                                     id="destination" placeholder="Enter destination">
                                             </div>
+                                            <div class="form-group">
+                                                <label for="desc-text">Order description</label>
+                                    
+                                                <textarea class="form-control" id="desc-text"
+                                                v-model="order_desc"></textarea>
+                                            </div>
+                                            
                                 
                                             <button @click="create_order()" class="btn btn-primary"
                                                 v-on:submit.prevent="onSubmit">Create
@@ -220,6 +227,13 @@
                                                 <input v-model="update_destination" type="text" class="form-control"
                                                     id="update_destination" placeholder="Enter destination">
                                             </div>
+
+                                            <div class="form-group">
+                                                <label for="update-desc-text">Order description</label>
+                                                <textarea class="form-control" id="update-desc-text"
+                                                v-model="update_order_desc"></textarea>
+                                            </div>
+
 
                                             <button @click="update_order();" class="btn btn-primary"
                                                 v-on:submit.prevent="onSubmit">Update

@@ -117,13 +117,19 @@ def processCreateOrder(order):
         pickup_location = price_result['data']['pickup_location']
         destination = price_result['data']['destination']
         price = price_result['data']['price']
+        order_desc = order["order_desc"]
+
+        print("hello")
+        print(order_desc)
+
         order_result = invoke_http(order_URL, method='POST', json={
             'customer_id': customer_id,
             'c_phone_number': c_phone_number,
             'customer_name': customer_name,
             'pickup_location': pickup_location,
             'destination': destination,
-            'price': price
+            'price': price,
+            "order_desc": order_desc
         })
         print('order_result:', order_result)
         # Check the order result;
@@ -263,11 +269,13 @@ def processUpdateOrder(order):
         pickup_location = price_result['data']['pickup_location']
         destination = price_result['data']['destination']
         price = price_result['data']['price']
+        order_desc = order["order_desc"]
         order_result = invoke_http(order_URL + f"/{order_id}", method='PUT', json={
             'pickup_location': pickup_location,
             'destination': destination,
             'price': price,
-            'customer_id': customer_id
+            'customer_id': customer_id,
+            "order_desc": order_desc
         })
         print('order_result:', order_result)
         # Check the order result;

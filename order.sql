@@ -16,6 +16,7 @@ CREATE TABLE IF NOT EXISTS `order` (
   `destination` varchar(100) NOT NULL,
   `status` varchar(20) NOT NULL DEFAULT 'NEW', /*Added by chin ning*/
   `price` float(2) NOT NULL,
+  `order_desc` varchar(100) NOT NULL,
   CONSTRAINT order_id_pk PRIMARY KEY (`order_id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
 

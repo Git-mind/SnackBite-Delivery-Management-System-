@@ -12,6 +12,11 @@ var review_URL = "http://localhost:5005/review";
 var cus_url='http://localhost:5002/customers'
 var driver_url='http://localhost:5001/driver'
 var account_url='http://localhost:5500/'
+
+
+
+
+
 //{
     
         //HTML ELEMENTS
@@ -373,7 +378,9 @@ function mainVue(uid,u_n){
             review_successful: false,
             review_msg: "problem submitting review",
             review_message: "",
-            no_review: ""
+            no_review: "",
+            order_desc: "",
+            update_order_desc: ""
         },
         methods: {
             find_by_customer_id: function () {
@@ -553,7 +560,8 @@ function mainVue(uid,u_n){
                             "order_id": this.update_order_id,
                             "pickup_location": this.update_pickup_location,
                             "destination": this.update_destination,
-                            "customer_id": this.customer_id
+                            "customer_id": this.customer_id,
+                            "order_desc": this.update_order_desc
                         })
                 }) 
                 .then(response => response.json())
@@ -603,7 +611,8 @@ function mainVue(uid,u_n){
                         body: JSON.stringify({
                             pickup_location: this.pickup_location,
                             destination: this.destination,
-                            customer_id: this.customer_id
+                            customer_id: this.customer_id,
+                            order_desc: this.order_desc
                         })
                     })
                     .then(response => response.json())
