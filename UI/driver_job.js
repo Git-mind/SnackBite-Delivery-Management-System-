@@ -182,7 +182,7 @@ async function check_cus(driver_url,uid,user_name){
             sign_up.addEventListener('click',function(){
                 pid=p_num.value
                 tid=t_id.value
-                alert(`${uid}`)
+                // alert(`${uid}`)
                 create_account(uid,user_name,pid,tid)
             })
 

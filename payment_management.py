@@ -8,6 +8,8 @@ import requests
 from invokes import invoke_http
 
 import amqp_setup
+from amqp_setup import *
+
 import pika
 import json
 
@@ -53,6 +55,13 @@ def order_completed():
     }), 400
 
 def processOrderCompleted(order):
+    # check for amqp connection. If connection timeout, re-establish connection to amqp
+    # The shared connection and channel created when the module is imported may be expired, 
+    # timed out, disconnected by the broker or a client;
+    # - re-establish the connection/channel is they have been closed
+    check_setup()
+
+
     # 2. Updating the order status using order microservice
     # Invoke the order microservice
     order_id = order['order_id']
