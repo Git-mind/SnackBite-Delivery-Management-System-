@@ -47,7 +47,7 @@ def processOrderLog(order):
     activity_type = order['type']
     activity_name = order['activity_name']
     customer_id = order['data']['customer_id']
-    info = "successful"
+    info = json.dumps(order)
     activity = Activity(activity_date_time=activity_date_time,activity_type=activity_type,activity_name=activity_name,customer_id=customer_id, info=info)
     db.session.add(activity)
     db.session.commit()
