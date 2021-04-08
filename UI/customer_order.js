@@ -209,7 +209,7 @@ async function check_cus(cus_url,uid,user_name){
                 pid=p_num.value
                 credit_num=c_num.value
                 tid=t_id.value
-                alert(`${uid}`)
+                // alert(`${uid}`)
                 create_account(uid,user_name,pid,credit_num,tid)
             })
 
@@ -515,7 +515,7 @@ function mainVue(uid,u_n){
     
                     });
     
-            },
+            }, 
             submit_review: function (customer_id, driver_id, order_id) {
                 // on Vue instance created, load the book list
         

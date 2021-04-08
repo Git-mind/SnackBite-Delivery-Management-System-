@@ -8,6 +8,8 @@ import requests
 from invokes import invoke_http
 
 import amqp_setup
+from amqp_setup import *
+
 import pika
 import json
 
@@ -66,6 +68,14 @@ def processDeleteCustomer(c_account):
     customer_result['type'] = "delete"
     customer_result['activity_name'] = "customer_deletion"
     message = json.dumps(customer_result)
+
+    # check for amqp connection. If connection timeout, re-establish connection to amqp
+    # The shared connection and channel created when the module is imported may be expired, 
+    # timed out, disconnected by the broker or a client;
+    # - re-establish the connection/channel is they have been closed
+    check_setup()
+
+
     if code not in range(200, 300):
         #print('\n\n-----Invoking error microservice as order creation fails-----')
         print('\n\n-----Publishing the (account error) message with routing_key=account.error-----')

@@ -65,6 +65,7 @@ def check_setup():
     if not is_connection_open(connection):
         connection = pika.BlockingConnection(pika.ConnectionParameters(host=hostname, port=port))
     if channel.is_closed:
+        print("connection closed re-establishing connection to amqp")
         channel = connection.channel()
         channel.exchange_declare(exchange=exchangename, exchange_type=exchangetype, durable=True)
 
