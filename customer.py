@@ -186,7 +186,7 @@ def delete_customers(id):
         return jsonify(
             {
                 "code": 200,
-                "data": {
+                "data": {   
                     "customer_id": id
                 }
             }

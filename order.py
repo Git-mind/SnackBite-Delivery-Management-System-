@@ -112,7 +112,7 @@ def get_on_delivery_orders(driver_id):
     return jsonify(
         {
             "code":404,
-            "message":"There are no available orders"
+            "message":"There are no orders on delivery by the driver"
         }
     ),404
 
@@ -134,7 +134,7 @@ def get_completed_delivery_orders(driver_id):
     return jsonify(
         {
             "code":404,
-            "message":"There are no available orders"
+            "message":"There are no completed orders by driver"
         }
     ),404
 

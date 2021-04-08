@@ -37,7 +37,6 @@ def display_completed_delivery():
         # 7. Return error
         return {
             "code": 500,
-            "data": {"order_result": order_result},
             "message": "Retrieval of completed orders failure sent for error handling."
         }
 
@@ -91,9 +90,9 @@ def update_order():
 
                 # Return error
                 return {
-                    "code": 500,
+                    "code": 401,
                     "data": {"result": result},
-                    "message": "Update of accept order failure sent for error handling."
+                    "message": "Order status update failure sent for error handling."
                 }           
             else:
                 # 10. Record order update

@@ -82,7 +82,7 @@ def processCreateOrder(order):
 
         # 4. Return error
         return {
-            "code": 400,
+            "code": 401,
             "data": {
                 "price_result": price_result
             },
@@ -147,7 +147,7 @@ def processCreateOrder(order):
 
             # 9. Return error
             return {
-                "code": 400,
+                "code": 402,
                 "data": {
                     "order_result": order_result
                 },
@@ -237,7 +237,7 @@ def processUpdateOrder(order):
 
         # 4. Return error
         return {
-            "code": 400,
+            "code": 401,
             "data": {
                 "price_result": price_result
             },
@@ -293,7 +293,7 @@ def processUpdateOrder(order):
 
             # 9. Return error
             return {
-                "code": 400,
+                "code": 402,
                 "data": {
                     "order_result": order_result
                 },

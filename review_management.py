@@ -112,7 +112,7 @@ def processCreateReview(review):
 
         # 9. Return error
         return {
-            "code": 400,
+            "code": 401,
             "data": {
                 "review_result": review_result
             },

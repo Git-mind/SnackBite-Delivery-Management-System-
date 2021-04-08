@@ -78,7 +78,7 @@ def processDeleteCustomer(c_account):
 
         # 4. Return error
         return {
-            "code": 400,
+            "code": 401,
             "data": {
                 "customer_result": customer_result
             },
@@ -124,7 +124,7 @@ def processDeleteCustomer(c_account):
 
             # 8. Return error
             return {
-                "code": 400,
+                "code": 402,
                 "data": {
                     "order_result": order_result
                 },

@@ -63,7 +63,6 @@ def processPayment(details):
 		return {
 			'code': code,
 			'message': message,
-			'data': r
 		}
 
 

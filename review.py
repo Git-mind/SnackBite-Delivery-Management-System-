@@ -53,7 +53,7 @@ def get_all():
             {
                 "code": 200,
                 "data": {
-                    "orders": [review.json() for review in reviewlist]
+                    "reviews": [review.json() for review in reviewlist]
                 }
             }
         )

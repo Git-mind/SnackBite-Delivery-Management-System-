@@ -148,7 +148,7 @@ def processOrderCompleted(order):
 
             # 7. Return error
             return {
-                "code": 400,
+                "code": 401,
                 "data": {
                     "payment_result": payment_result
                 },
