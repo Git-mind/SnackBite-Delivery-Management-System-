@@ -17,12 +17,8 @@ CORS(app)
 
 driver_URL = environ.get('driver_URL') or "http://localhost:5001/driver"
 order_URL = environ.get('order_URL') or  "http://localhost:5004/order"
-#activity_log_URL = "http://localhost:5003/activity_log"
-#error_URL =  "http://localhost:5004/error
 
 
-
-#added by chin ning (on completed deiivery)
 @app.route("/display_completed_delivery", methods=['GET'])
 def display_completed_delivery():
     # 1. Get order info {customer_id, pickup_location, destination}

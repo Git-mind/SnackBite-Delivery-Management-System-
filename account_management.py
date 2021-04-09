@@ -18,8 +18,6 @@ CORS(app)
 
 customer_URL = environ.get('customer_URL') or "http://localhost:5002/customers"
 order_URL = environ.get('order_URL') or "http://localhost:5004/order" 
-#activity_log_URL = "http://localhost:5003/activity_log"
-#error_URL = "http://localhost:5004/error"
 
 @app.route("/delete_customer", methods=['POST'])
 def delete_customer():

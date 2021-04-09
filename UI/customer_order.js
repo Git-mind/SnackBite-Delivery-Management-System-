@@ -390,6 +390,7 @@ function mainVue(uid,u_n){
             update_order_id: "",
             update_pickup_location: "",
             update_destination: "",
+            
             orderUpdated: false,
             feedback: "",
             review_successful: false,

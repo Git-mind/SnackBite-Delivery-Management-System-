@@ -8,7 +8,7 @@ from datetime import datetime
 import json
 
 
-#everything need
+
 
 app = Flask(__name__)
 # 3308 port used here, please alter to 3306 if necessary 
