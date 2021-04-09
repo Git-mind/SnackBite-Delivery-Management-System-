@@ -276,9 +276,10 @@ async function create_account(uid,user_name,pid,credit_num,tid){
         else{
             $('#signUpModal').modal('hide')
             error.innerHTML=''
-            sign_up_ok.innerHTML='Sign-up is successful, please sign-in using your google account again'
+            sign_up_ok.innerHTML='Sign-up is successful,please <a href="https://api2.callmebot.com/txt/login.php" target="_blank">allow CallMeBot to text you via telegram </a> and sign-in using your google account again'
             
             //ADD STUFF
+            
 
         }
     }
